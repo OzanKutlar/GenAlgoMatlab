@@ -10,12 +10,12 @@ function [best_chrom, configurations] = runIt()
     % -Add to evaluate
     % -add to gas.isMin
     % -change the gas.numberOfObjectives
-    gas.algorithm = "kur";
+    gas.algorithm = "zdt1";
 
     % NOTE : Gene Bounds can be changed in generateRandomChromosome
     gas.numberOfDecisionVar = 3;
     gas.generations = 100;
-    gas.numberOfObjectives = 3;
+    gas.numberOfObjectives = 2;
     gas.isMin = [1 1 1]; %vector for determining if the objectives are to minimize or maximize, 1 for minimize, 0 for maximize
     gas.onlyStrictlyDominance = false;
     gas.n_individuals = 300;
