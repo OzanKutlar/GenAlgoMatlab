@@ -1,0 +1,71 @@
+% Runs the Genetic Algorithm
+%
+% INPUT: none
+%
+% OUTPUT: 
+% 'pop_archive' is the population of elites at the last generation of the algorithm 
+% 'fit_array_archive', is a matrix with 'fitness values','index in the pop array', 'strength', 'raw fitness', 'density', 'fitness values composed of the summation of raw_fitness and density' 
+function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
+    global op;  % optimization problem
+    global gas; % genetic algorithm settings
+    
+    % in case a funny user decides to have an odd number of idividuals in the population...
+    if mod(gas.n_individuals,2) ~= 0
+        gas.n_individuals = gas.n_individuals + 1;
+    end
+    
+    % a funnier user...
+    if gas.n_individuals <= 0
+        gas.n_individuals = 1;
+    end
+ 
+    %--RANDOM INITIALIZATION
+    pop = initializeRandomPopulation();                                                                                                                                
+    fit_array_archive = zeros(gas.n_archive,gas.fitArraySize);
+    pop_archive = zeros(gas.n_archive,2);
+
+    %--EVALUATION
+    [pop, fit_array_P] = evaluate(pop);
+    fit_array_P = SPEA_Strength(fit_array_P);
+    fit_array_P = SPEA_Raw_Fitness(fit_array_P);
+    [fit_array_P] = SPEA_Density(fit_array_P);
+    fit_array_P(:,gas.lastFitnessIndex) = fit_array_P(:,gas.rawFitnessIndex) + fit_array_P(:,gas.densityIndex); % Fitness value
+
+    %--SURVIVOR FOR NON_ELITES REMOVAL
+    fit_array_P = sortrows(fit_array_P,gas.lastFitnessIndex,"ascend");
+    fit_array_archive = fit_array_P(fit_array_P(:,gas.lastFitnessIndex) < 1, :); % non-dominated solutions
+    [fit_array_archive] = Survival_SPEA2(fit_array_archive, fit_array_P);
+   
+    for i = 1:gas.n_archive
+        pop_archive(i,1) = pop(fit_array_archive(i,gas.solutionIndex),1); % update the pop archive 
+        pop_archive(i,2) = pop(fit_array_archive(i,gas.solutionIndex),2);
+    end
+    for i=1:gas.n_archive
+        fit_array_archive(i,gas.solutionIndex)=i;  % update the indices
+    end
+    
+    %--ITERATIONS
+    for gen=1:1:gas.generations
+        %--SELECTION
+        matPool = selection(fit_array_archive);   % passing to selection only rank fitness and pop-related id
+          
+        %--VARIATION
+        offspring = variation(pop_archive, matPool); % only performed on the archive to have individuals in size of population
+        %--EVALUATION
+        [offspring, fit_array_O] = evaluate(offspring); % evaluation of offspring
+         
+        %--SURVIVOR 
+        [pop_archive, fit_array_archive] = survivor(pop_archive, offspring, fit_array_archive, fit_array_O);
+
+        % Visualize population
+        % Change This If there is more than 2 objective
+        first_obj = fit_array_archive(:,1);
+        second_obj= fit_array_archive(:,2);
+        figure
+        scatter(first_obj,second_obj,'filled','DisplayName',num2str(1))
+        legend
+        hold off
+
+    end  % place a breakpoint here as you run the algorithm to pause, and check how the individuals are evolving by plotting the best one with 'drawProblem2D(decodeIndividual(pop(:,:,1)))'
+
+end
