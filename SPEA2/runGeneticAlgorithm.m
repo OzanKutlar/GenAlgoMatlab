@@ -61,10 +61,15 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
         % Change This If there is more than 2 objective
         first_obj = fit_array_archive(:,1);
         second_obj= fit_array_archive(:,2);
-        figure
+        
+        %figure
+        clf
         scatter(first_obj,second_obj,'filled','DisplayName',num2str(1))
         legend
-        hold off
+        
+        % Added for continious figure
+        drawnow
+        %hold off
 
     end  % place a breakpoint here as you run the algorithm to pause, and check how the individuals are evolving by plotting the best one with 'drawProblem2D(decodeIndividual(pop(:,:,1)))'
 
