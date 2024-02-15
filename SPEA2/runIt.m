@@ -10,6 +10,10 @@ function [best_chrom, configurations] = runIt()
     % -Add to evaluate
     % -add to gas.isMin
     % -change the gas.numberOfObjectives
+    gas.algorithm = "kur";
+
+    % NOTE : Gene Bounds can be changed in generateRandomChromosome
+    gas.numberOfDecisionVar = 3;
     gas.generations = 100;
     gas.numberOfObjectives = 3;
     gas.isMin = [1 1 1]; %vector for determining if the objectives are to minimize or maximize, 1 for minimize, 0 for maximize
@@ -30,6 +34,10 @@ function [best_chrom, configurations] = runIt()
     gas.lastFitnessIndex = gas.numberOfObjectives + 5;
     gas.fitArraySize = gas.numberOfObjectives + 5;
      
+    % Added so 1 figure can be updated continiously instead of opening
+    % figures one by one.
+    clf
+    hold on
     
     %---------------------RUN---------------------
     rng shuffle;
