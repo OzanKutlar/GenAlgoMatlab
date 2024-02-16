@@ -7,7 +7,8 @@
 % 'fit_array', is a matrix with 'fitness values' and 'index in the pop array'
 function [pop, fit_array] = evaluate(pop)
     global gas; % genetic algorithm settings
-    disp("Evaluating : " + gas.algorithm);
+    global op; % Optimization problem
+    disp("Evaluating : " + op.name);
     fit_array = zeros(gas.n_individuals,gas.fitArraySize);
 
     for i=1:gas.n_individuals 
@@ -15,8 +16,8 @@ function [pop, fit_array] = evaluate(pop)
         % fit_array(i,2) = 1+ pop(i,2) - pop(i,1)^2; % second function 1 + y - x^2
 
         % ADD FUNCTIONS HERE
-        [fit_array(i,1), fit_array(i,2)] = benchmark(gas.algorithm, pop(i, :));
+        fit_array(i,:) = benchmark(pop(i, :));
 
-        fit_array(i,gas.numberOfObjectives + 1) = i; % index for later use
+        fit_array(i,op.numberOfObjectives + 1) = i; % index for later use
     end
 end  

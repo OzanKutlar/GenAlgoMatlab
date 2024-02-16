@@ -15,7 +15,7 @@
 
 function[fit_array] = SPEA_Raw_Fitness(fit_array)
 global gas;
-
+global op;
 for i=1:height(fit_array)
     rawFitness=0;
     for j=1:height(fit_array)
@@ -23,7 +23,7 @@ for i=1:height(fit_array)
             continue;
         end
         % if i is dominated by j (in case of Min--Min problem)
-        if dominates(fit_array(j,1:gas.numberOfObjectives),fit_array(i,1:gas.numberOfObjectives),gas.isMin,gas.onlyStrictlyDominance)
+        if dominates(fit_array(j,1:op.numberOfObjectives),fit_array(i,1:op.numberOfObjectives),gas.isMin,gas.onlyStrictlyDominance)
             rawFitness=rawFitness+fit_array(j,gas.strengthIndex);
         end
         fit_array(i,gas.rawFitnessIndex)=rawFitness; % assign strength to index 5

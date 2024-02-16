@@ -11,6 +11,7 @@
 
 function [fit_array] = SPEA_Strength(fit_array)
 global gas;
+global op;
 for i = 1:height(fit_array)
     %declare a counter which count every solution j that is dominated by solution i
     counter = 0;
@@ -18,7 +19,7 @@ for i = 1:height(fit_array)
         if i == j
             continue;
         end
-        if dominates(fit_array(i,1:gas.numberOfObjectives),fit_array(j,1:gas.numberOfObjectives),gas.isMin,gas.onlyStrictlyDominance) % if j is dominated by i (in case of Min--Min problem)
+        if dominates(fit_array(i,1:op.numberOfObjectives),fit_array(j,1:op.numberOfObjectives),gas.isMin,gas.onlyStrictlyDominance) % if j is dominated by i (in case of Min--Min problem)
             counter = counter + 1;
         end
     end

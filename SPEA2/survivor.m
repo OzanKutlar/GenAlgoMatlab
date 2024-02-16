@@ -38,7 +38,7 @@ function [nextGenPop_final, fit_array_NGP_Final] = elitistSurvivalFull(pop_archi
     global MOO_Method;
 
     % declare a static array of chromosomes filled with zeros
-    nextGenPop = zeros(gas.n_archive,2);   
+    nextGenPop = zeros(gas.n_archive,op.numberOfDecisionVar);   
 
     % array containing fitness for each individual of the new population
     fit_array_NGP = zeros(gas.n_individuals*2,gas.fitArraySize);   
@@ -68,8 +68,9 @@ function [nextGenPop_final, fit_array_NGP_Final] = elitistSurvivalFull(pop_archi
 
     nextGenPop_final = zeros(gas.n_archive,2);
     for i = 1:gas.n_archive
-        nextGenPop_final(i,1) = nextGenPop(fit_array_NGP_Final(i,gas.solutionIndex),1);
-        nextGenPop_final(i,2) = nextGenPop(fit_array_NGP_Final(i,gas.solutionIndex),2);
+        for j = 1:op.numberOfDecisionVar
+            nextGenPop_final(i,j) = nextGenPop(fit_array_NGP_Final(i,gas.solutionIndex),j);
+        end
     end
     for i=1:gas.n_archive
         fit_array_NGP_Final(i,gas.solutionIndex)=i;  % update the indices

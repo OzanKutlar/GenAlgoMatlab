@@ -1,17 +1,36 @@
-function [x, y] = benchmark(str, z)
-    switch upper(str)
+function resultArr = benchmark(individual)
+    global op;
+    switch upper(op.name)
         case "ZDT1"
-            [x, y] = zdt1(z);
+            op.numberOfDecisionVar = 2;
+            op.numberOfObjectives = 2;
+            op.bounds = [0,1];
+            resultArr = zdt1(individual);
         case "ZDT2"
-            [x, y] = zdt2(z);
+            resultArr = zdt2(individual);
+            op.numberOfDecisionVar = 2;
+            op.numberOfObjectives = 2;
+            op.bounds = [0,1];
         case "ZDT3"
-            [x, y] = zdt3(z);
+            resultArr = zdt3(individual);
+            op.numberOfDecisionVar = 2;
+            op.numberOfObjectives = 2;
+            op.bounds = [0,1];
         case "ZDT4"
-            [x, y] = zdt4(z);
+            resultArr = zdt4(individual);
+            op.numberOfDecisionVar = 2;
+            op.numberOfObjectives = 2;
+            op.bounds = [0,1];
         case "ZDT6"
-            [x, y] = zdt6(z);
+            resultArr = zdt6(individual);
+            op.numberOfDecisionVar = 2;
+            op.numberOfObjectives = 2;
+            op.bounds = [0,1];
         case "KUR"
-            [x, y] = kur(z);
+            resultArr = kur(individual);
+            op.numberOfDecisionVar = 3;
+            op.numberOfObjectives = 2;
+            op.bounds = [-5,5];
         otherwise
             disp("No matches found.")
             return;

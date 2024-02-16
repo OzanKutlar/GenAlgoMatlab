@@ -14,33 +14,33 @@
 % individuals
 
 function [fit_array] = SPEA_Density(fit_array)
-global gas;
-
-% declare a Density Array which contains the distances of each individual to
-% all other individuals
-densityArray = zeros(size(fit_array,1),size(fit_array,1));
-for i = 1:size(fit_array,1)
-    for j = 1:size(fit_array,1)
-        overall_distance = 0;
-        for m = 1:gas.numberOfObjectives
-            dist = ((fit_array(i,m) - fit_array(j,m)) / (max(fit_array(:,m)) - min(fit_array(:,m))))^2;
-            overall_distance = overall_distance + dist;
+    global gas;
+    global op;
+    % declare a Density Array which contains the distances of each individual to
+    % all other individuals
+    densityArray = zeros(size(fit_array,1),size(fit_array,1));
+    for i = 1:size(fit_array,1)
+        for j = 1:size(fit_array,1)
+            overall_distance = 0;
+            for m = 1:op.numberOfObjectives
+                dist = ((fit_array(i,m) - fit_array(j,m)) / (max(fit_array(:,m)) - min(fit_array(:,m))))^2;
+                overall_distance = overall_distance + dist;
+            end
+            densityArray(i,j) = sqrt(overall_distance);
         end
-        densityArray(i,j) = sqrt(overall_distance);
     end
-end
-
-% sort the Density Array for finding k-th nearest solution to each
-% individual
-for i = 1:size(fit_array,1)
-    densityArray(:,i) = sort(densityArray(:,i));
-end
-
-% declare k as the square root of the sample size
-k = ceil(sqrt(size(fit_array,1)*2));
-
-% assign the density to index 6 according to density formula
-for i = 1:size(fit_array,1)
-    fit_array(i,gas.densityIndex) = 1 / (densityArray(k,i) + 2);
-end
+    
+    % sort the Density Array for finding k-th nearest solution to each
+    % individual
+    for i = 1:size(fit_array,1)
+        densityArray(:,i) = sort(densityArray(:,i));
+    end
+    
+    % declare k as the square root of the sample size
+    k = ceil(sqrt(size(fit_array,1)*2));
+    
+    % assign the density to index 6 according to density formula
+    for i = 1:size(fit_array,1)
+        fit_array(i,gas.densityIndex) = 1 / (densityArray(k,i) + 2);
+    end
 end

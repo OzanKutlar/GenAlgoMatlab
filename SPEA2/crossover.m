@@ -40,42 +40,25 @@ end
 
 %--------------BLX-ALPHA CROSSOVER--------------
 
-function [child] = blendCrossover(p1, p2, alpha, bounds)
-global op;  % optimization problem
-global gas; % genetic algorithm settings
-child = zeros(1,2);
-for i = 1:1:2
-    gamma = (1+2*alpha)*rand - alpha;
-    if(p1(1,i) < p2(1,i))
-        child(1,i) = (1-gamma)*p1(1,i) + gamma*p2(1,i);
-    else
-        child(1,i) = (1-gamma)*p2(1,i) + gamma*p1(1,i);
+function [child] = blendCrossover(p1, p2, alpha)
+    global op;  % optimization problem
+    global gas; % genetic algorithm settings
+    child = zeros(1,op.numberOfDecisionVar);
+    
+    for i = 1:op.numberOfDecisionVar
+        gamma = (1+2*alpha)*rand - alpha;
+        if(p1(1,i) < p2(1,i))
+            child(1,i) = (1-gamma)*p1(1,i) + gamma*p2(1,i);
+        else
+            child(1,i) = (1-gamma)*p2(1,i) + gamma*p1(1,i);
+        end
+    end
+    for i = 1:op.numberOfDecisionVar
+        child(1,i) = min(max(child(1,i),op.bounds(1)),op.bounds(2));
     end
 end
-child(1,1) = min(max(child(1,1),0),1);
-child(1,2) = min(max(child(1,2),0),3);
-
-end
 
 
-function [gene_c] = blendValues(gene_p1, gene_p2, alpha, bounds, isInteger)
-if gene_p1 < gene_p2
-    minGene = gene_p1;
-    maxGene = gene_p2;
-else
-    minGene = gene_p2;
-    maxGene = gene_p1;
-end
-u = rand();
-gamma = (1+2*alpha)*u-alpha;
-gene_c = (1-gamma)*minGene + gamma*maxGene;
-gene_c = max(min(bounds(2),gene_c),bounds(1));
-
-% if the gene is an integer number, transform it
-if isInteger==true
-    gene_c = nearest(gene_c);
-end
-end
 
 
 %--------------SBX CROSSOVER--------------

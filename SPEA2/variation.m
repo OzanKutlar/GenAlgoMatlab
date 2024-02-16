@@ -12,12 +12,12 @@ function [offspring] = variation(pop, matPool)
     global gas; % genetic algorithm settings
 
     % declare a static array of chromosomes filled with zeros
-    offspring = zeros(gas.n_individuals,2);
+    offspring = zeros(gas.n_individuals,op.numberOfDecisionVar);
     
     % shuffle the mating pool
     matPool = matPool(randperm(length(matPool))); 
     
-    % this cannot be parallelized (or can it?)
+    % this cannot be parallelized (or can it?) (*vsauce theme plays*)
     for i=1:2:gas.n_archive
         % crossover
         index_p1 = matPool(i);

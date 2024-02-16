@@ -7,9 +7,9 @@
 
 function [pop] = initializeRandomPopulation()
     global gas; % genetic algorithm settings
-
+    global op
     % declare a static array of chromosomes filled with zeros
-    pop = zeros(gas.n_individuals,gas.numberOfDecisionVar);
+    pop = zeros(gas.n_individuals,op.numberOfDecisionVar);
     
     % create a random chromosome for each individual in the population
     for i=1:1:gas.n_individuals

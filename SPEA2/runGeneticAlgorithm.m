@@ -22,7 +22,7 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
     %--RANDOM INITIALIZATION
     pop = initializeRandomPopulation();                                                                                                                                
     fit_array_archive = zeros(gas.n_archive,gas.fitArraySize);
-    pop_archive = zeros(gas.n_archive,2);
+    pop_archive = zeros(gas.n_archive,op.numberOfDecisionVar);
 
     %--EVALUATION
     [pop, fit_array_P] = evaluate(pop);
@@ -37,8 +37,9 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
     [fit_array_archive] = Survival_SPEA2(fit_array_archive, fit_array_P);
    
     for i = 1:gas.n_archive
-        pop_archive(i,1) = pop(fit_array_archive(i,gas.solutionIndex),1); % update the pop archive 
-        pop_archive(i,2) = pop(fit_array_archive(i,gas.solutionIndex),2);
+        for j = 1:op.numberOfDecisionVar
+            pop_archive(i,j) = pop(fit_array_archive(i,gas.solutionIndex),j); % update the pop archive 
+        end
     end
     for i=1:gas.n_archive
         fit_array_archive(i,gas.solutionIndex)=i;  % update the indices
