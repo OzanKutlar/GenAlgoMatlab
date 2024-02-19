@@ -33,9 +33,14 @@ function resultArr = benchmark(individual)
             op.bounds = [-5,5];
         case "DTLZ1"
             op.bounds = [0, 1];
-            op.numberOfDecisionVar = 5;
+            op.numberOfDecisionVar = 6;
             op.numberOfObjectives = 3;
             resultArr = dtlz1(individual, op.numberOfObjectives);
+        case "VIENNET"
+            op.bounds = [-3, 3];
+            op.numberOfDecisionVar = 2;
+            op.numberOfObjectives = 3;
+            resultArr = Viennet(individual);
         otherwise
             disp("No matches found.")
             return;
@@ -65,6 +70,16 @@ function arr2 = kur(x)
     end
     arr2 = [f1, f2];
 end
+
+function resultArr = Viennet(x)
+    f1 = 0.5 * (x(1)^2 + x(2)^2) + sin(x(1)^2 + x(2)^2);
+    f2 = (((3*x(1) - 2*x(2) + 4).^2 ) / 8) + (((x(1) - x(2) + 1)^2)/27) + 15;
+    f3 = (1 / (x(1)^2 + x(2)^2 + 1)) - 1.1 * exp(-(x(1)^2 +x(2)^2));
+    resultArr = [f1, f2, f3];
+end
+
+
+
 
 function arr2 = dtlz1(arr, objectiveCount)
     k = (length(arr) - objectiveCount) + 1;

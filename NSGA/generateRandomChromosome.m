@@ -10,7 +10,6 @@ function [chrom] =  generateRandomChromosome()
     global op;  % optimization problem
     global gas;
 %     chrom = zeros(1,gas.n_variables);
-    chrom(1,1)= rand;
-    chrom(1,2)= rand*3;
+    chrom(1,:)= rand(1, op.numberOfDecisionVar);
 end
 

@@ -25,7 +25,7 @@ fit_array_P = nonDomSortingGeneric(fit_array_P);
 fit_array_P = crowding_distance_generic(fit_array_P);
 
 
-
+hold on
 for gen=1:1:gas.generations
     tic
     %--SELECTION
@@ -51,9 +51,13 @@ for gen=1:1:gas.generations
     
     first_obj = fit_array_P(:,1);
     second_obj= fit_array_P(:,2);
-    scatter(first_obj,second_obj,'filled','DisplayName',num2str(1))
+    third_obj= fit_array_P(:,3);
+    clf
+    %scatter(first_obj,second_obj,'filled','DisplayName',num2str(1))
+    scatter3(first_obj,second_obj, third_obj,'filled','DisplayName',num2str(1))
+    drawnow
     legend
-    hold off
+    %hold off
     toc
 end
 

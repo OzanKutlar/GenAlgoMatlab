@@ -17,4 +17,6 @@ function [pop, fit_array] = evaluate(pop)
       
         fit_array(i,gas.n_ObjectiveFunctions+1) = i;
     end
-end  
+end
+
+
