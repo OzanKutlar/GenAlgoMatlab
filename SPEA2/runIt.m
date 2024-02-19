@@ -2,16 +2,19 @@ function [best_chrom, configurations] = runIt()
     
     %---------------------PROBLEM DEFINITION---------------------  
     global op;          % Optimization problem
-    op.name = "zdt2";
+    op.name = "VIENNET";
     benchmark(zeros(2,2));
     %---------------------GA SETTINGS---------------------
     global gas;         % genetic algorithm settings
-
     
-    % WHEN ADDING A NEW OBJECTIVE FUNCTION:
-    % -Add to evaluate
-    % -add to gas.isMin
-    % -change the gas.numberOfObjectives
+    %  IF THERE IS DIFFERENT BOUNDS FOR DECISION VARIABLES, op.bounds
+    %  should be changed in benchmark.m, and also
+    %  generateRandomChromosome.m should change
+    
+    % Evaluation functions can be added to the benchmark.m, number of
+    % decision variables, bounds, and number of objectives should be
+    % defined in benchmark.m too.
+    
 
     % NOTE : Gene Bounds can be changed in generateRandomChromosome
     gas.generations = 100;
