@@ -37,10 +37,11 @@ function resultArr = benchmark(individual)
     end
 end
 
-function [f1, f2] = zdt1(arr)
+function arr2 = zdt1(arr)
     g = g1(arr);
     f1 = arr(1);
     f2 = g * (1 - sqrt(arr(1) / g));
+    arr2 = [f1, f2];
 end
 
 function [f1, f2] = zdt2(arr)
@@ -49,13 +50,14 @@ function [f1, f2] = zdt2(arr)
     f2 = g * (1 - power(arr(1) / g, 2));
 end
 
-function [f1, f2] = kur(x) 
+function arr2 = kur(x) 
     f1 = 0;
     f2 = power(abs(x(1)), 0.8) + 5 * sin(power(x(1), 3));
     for i = 1:length(x)-1
         f1 = f1 + (-10 * exp(-0.2 * sqrt(x(i) * x(i) + x(i+1) * x(i+1))));
         f2 = f2 + power(abs(x(i+1)), 0.8) + 5 * sin(power(x(i+1), 3));
     end
+    arr2 = [f1, f2];
 end
 
 function [f1, f2] = zdt3(arr)
