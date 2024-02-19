@@ -31,6 +31,11 @@ function resultArr = benchmark(individual)
             op.numberOfDecisionVar = 3;
             op.numberOfObjectives = 2;
             op.bounds = [-5,5];
+        case "DTLZ1"
+            op.bounds = [0, 1];
+            op.numberOfDecisionVar = 5;
+            op.numberOfObjectives = 3;
+            resultArr = dtlz1(individual, op.numberOfObjectives);
         otherwise
             disp("No matches found.")
             return;
@@ -44,10 +49,11 @@ function arr2 = zdt1(arr)
     arr2 = [f1, f2];
 end
 
-function [f1, f2] = zdt2(arr)
+function arr2 = zdt2(arr)
     g = g1(arr);
     f1 = arr(1);
     f2 = g * (1 - power(arr(1) / g, 2));
+    arr2 = [f1, f2];
 end
 
 function arr2 = kur(x) 
@@ -60,22 +66,48 @@ function arr2 = kur(x)
     arr2 = [f1, f2];
 end
 
-function [f1, f2] = zdt3(arr)
+function arr2 = dtlz1(arr, objectiveCount)
+    k = (length(arr) - objectiveCount) + 1;
+    g = g4(arr(length(arr) - k:length(arr)));
+    arr2 = zeros(1, objectiveCount);
+    arr2(1) = 0.5 * prod(arr(1:objectiveCount - 1)) * (1 + g);
+    for i = 2:objectiveCount
+        if i == objectiveCount
+            product = 1;
+        else
+            product = prod(arr(1:objectiveCount - i));
+        end
+        arr2(i) = 0.5 * product * (1 - arr((objectiveCount - i) + 1)) * (1 + g);
+    end
+end
+
+function result = g4(arr)
+    summation = 0;
+    for i = 1:length(arr)
+        summation = summation + power(arr(i) - 0.5, 2) - cos(20 * pi * (arr(i) - 0.5));
+    end
+    result = 100 * (length(arr) + summation);
+end
+
+function arr2 = zdt3(arr)
     g = g1(arr);
     f1 = arr(1);
     f2 = g * (1 - sqrt(arr(1) / g) - arr(1) / g * sin(10 * pi * arr(1)));
+    arr2 = [f1, f2];
 end
 
-function [f1, f2] = zdt4(arr)
+function arr2 = zdt4(arr)
     g = g2(arr);
     f1 = arr(1);
     f2 = g * (1 - sqrt(arr(1) / g));
+    arr2 = [f1, f2];
 end
 
-function [f1, f2] = zdt6(arr)
+function arr2 = zdt6(arr)
     g = g3(arr);
     f1 = 1 - exp(-4 * arr(1)) * power(sin(6 * pi * arr(1)), 6);
     f2 = g * (1 - power(f1 / g, 2));
+    arr2 = [f1, f2];
 end
 
 function result = g1(arr)
