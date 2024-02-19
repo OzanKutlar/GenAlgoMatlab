@@ -41,6 +41,11 @@ function resultArr = benchmark(individual)
             op.numberOfDecisionVar = 2;
             op.numberOfObjectives = 3;
             resultArr = Viennet(individual);
+        case "DTLZ5"
+            op.bounds = [0, 1];
+            op.numberOfDecisionVar = 2;
+            op.numberOfObjectives = 3;
+            resultArr = dtlz5(individual);
         otherwise
             disp("No matches found.")
             return;
@@ -78,6 +83,25 @@ function resultArr = Viennet(x)
     resultArr = [f1, f2, f3];
 end
 
+function resultArr = dtlz5(arr)
+    k = length(arr) - 3 + 1;
+    g = g5(arr(length(arr) - k:length(arr))); 
+    f1 = (1 + g) * cos((o(g, arr, 1) * pi) / 2) * cos((o(g, arr, 2) * pi) / 2);
+    f2 = (1 + g) * cos((o(g, arr, 1) * pi) / 2) * sin((o(g, arr, 2) * pi) / 2);
+    f3 = (1 + g) * sin((o(g, arr, 1) * pi) / 2);
+    resultArr = [f1, f2, f3];
+end
+
+function result = o(g, arr, i)
+    result = (1/(2 * (1 + g))) * (1 + 2 * g * arr(i));
+end
+
+function result = g5(arr)
+    result = 0;
+    for i = 1:length(arr)
+        result = result + power(arr(i) - 0.5, 2);
+    end
+end
 
 
 

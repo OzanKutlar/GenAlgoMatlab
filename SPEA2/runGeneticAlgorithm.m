@@ -60,14 +60,18 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
 
         % Visualize population
         % Change This If there is more than 2 objective
-        first_obj = -fit_array_archive(:,1);
-        second_obj= -fit_array_archive(:,2);
+        first_obj = fit_array_archive(:,1);
+        second_obj= fit_array_archive(:,2);
         third_obj= fit_array_archive(:,3);
         
         %figure
         clf
-        %scatter(first_obj,second_obj,'filled','DisplayName',num2str(1))
-        scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', 'aaa' )
+        if op.numberOfObjectives == 2
+            scatter(first_obj,second_obj,'filled','DisplayName',strcat("Generating gen : ", num2str(gen)))
+        end
+        if op.numberOfObjectives == 3
+            scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("Generating gen : ", num2str(gen)) )
+        end
         legend
         
         % Added for continious figure
