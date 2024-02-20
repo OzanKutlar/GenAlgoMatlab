@@ -2,7 +2,7 @@ function [best_chrom, configurations] = runIt()
     
     %---------------------PROBLEM DEFINITION---------------------  
     global op;          % Optimization problem
-    op.name = "VIENNET";
+    op.name = "KUR";
     benchmark(zeros(2,2));
     %---------------------GA SETTINGS---------------------
     global gas;         % genetic algorithm settings
@@ -18,7 +18,7 @@ function [best_chrom, configurations] = runIt()
 
     % NOTE : Gene Bounds can be changed in generateRandomChromosome
     gas.generations = 100;
-    gas.isMin = [1 1 1]; %vector for determining if the objectives are to minimize or maximize, 1 for minimize, 0 for maximize
+    gas.isMin = [1 1]; %vector for determining if the objectives are to minimize or maximize, 1 for minimize, 0 for maximize
     gas.onlyStrictlyDominance = false;
     gas.n_individuals = 300;
     gas.n_archive = 300;

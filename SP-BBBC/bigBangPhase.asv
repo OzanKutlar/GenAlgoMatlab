@@ -1,0 +1,11 @@
+function [pop]= bigBangPhase()
+    global bbbcs;
+    for i=1:1:bbbcs.N
+        pop(i,1) = bbbcs.LOWER_BOUND_First + (bbbcs.UPPER_BOUND_First-bbbcs.LOWER_BOUND_First)*rand();
+        pop(i,2) = bbbcs.LOWER_BOUND_Second + (bbbcs.UPPER_BOUND_Second-bbbcs.LOWER_BOUND_Second)*rand();
+
+        [pop(i,3),pop(i,4)] = evaluateIndividual(pop(i,:));
+        pop(i,5) = 1/pop(i,3);
+    end
+
+end
