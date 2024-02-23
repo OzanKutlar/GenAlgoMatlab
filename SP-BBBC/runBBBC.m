@@ -7,13 +7,18 @@
  
 function [archive] = runBBBC()
     global bbbcs;       % big bang-big crunch settings
+
+    global op;          % Optimization problem
+    op.name = "ZDT1";
+    benchmark(zeros(2,2), true);
+
     bbbcs.N = 300;  % number of individuals
     bbbcs.k = 3; % number of individual to generate for every cmass
-    bbbcs.n_variables = 3;
-    bbbcs.numberOfObjectives = 2;
-    bbbcs.isMin = [1 1];
+    bbbcs.n_variables = op.numberOfDecisionVar;
+    bbbcs.numberOfObjectives = op.numberOfObjectives;
+    bbbcs.isMin = ones(1, op.numberOfObjectives);
     bbbcs.MAX_GENERATIONS = 100;
-    bbbcs.bounds = [-5 5;-5 5; -5 5]; 
+    bbbcs.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
     bbbcs.cMass_n = 1;
     bbbcs.strengthIndex = bbbcs.numberOfObjectives + bbbcs.n_variables + 1;
     bbbcs.rawFitnessIndex = bbbcs.numberOfObjectives + bbbcs.n_variables + 2;
@@ -43,6 +48,7 @@ function [archive] = runBBBC()
     end
 
     for t=1:1:bbbcs.MAX_GENERATIONS
+        tic
         if t~=1
             archive = bigBangPhase_1(cMass,t,archive);
         end
@@ -51,11 +57,20 @@ function [archive] = runBBBC()
         
         first_obj = archive(:,4); %fitness_1
         second_obj= archive(:,5); %fitness_2
-        scatter(first_obj,second_obj,'filled','DisplayName',num2str(1))
-        
+        third_obj= archive(:,3);
+        %figure
+        toc
+        clf
+        if op.numberOfObjectives == 2
+            scatter(first_obj,second_obj,'filled','DisplayName',strcat("SP-BBBC Generating gen : ", num2str(t)))
+        end
+        if op.numberOfObjectives == 3
+            scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("SP-BBBC Generating gen : ", num2str(t)) )
+        end
         legend
         drawnow
-        hold off
+
+
     end       
 end
 

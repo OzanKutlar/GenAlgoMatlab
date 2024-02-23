@@ -66,6 +66,7 @@ for gen=1:1:gas.generations
     % Added for continious figure
     drawnow
     %hold off
+    toc
 end
 
 

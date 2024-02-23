@@ -1,51 +1,73 @@
-function resultArr = benchmark(individual)
+function resultArr = benchmark(individual, setup)
     global op;
+    if(nargin == 1) 
+        setup = false; 
+    end
     switch upper(op.name)
         case "ZDT1"
-            op.numberOfDecisionVar = 2;
-            op.numberOfObjectives = 2;
-            op.bounds = [0,1];
+            if setup
+                op.numberOfDecisionVar = 3;
+                op.numberOfObjectives = 2;
+                op.bounds = [0,1];
+                return;
+            end
             resultArr = zdt1(individual);
         case "ZDT2"
+            if setup
+                op.numberOfDecisionVar = 2;
+                op.numberOfObjectives = 2;
+                op.bounds = [0,1];
+                return;
+            end
             resultArr = zdt2(individual);
-            op.numberOfDecisionVar = 2;
-            op.numberOfObjectives = 2;
-            op.bounds = [0,1];
         case "ZDT3"
+            if setup
+                op.numberOfDecisionVar = 2;
+                op.numberOfObjectives = 2;
+                op.bounds = [0,1];
+                return;
+            end
             resultArr = zdt3(individual);
-            op.numberOfDecisionVar = 2;
-            op.numberOfObjectives = 2;
-            op.bounds = [0,1];
         case "ZDT4"
+            if setup
+                op.numberOfDecisionVar = 2;
+                op.numberOfObjectives = 2;
+                op.bounds = [0,1];
+                return;
+            end
             resultArr = zdt4(individual);
-            op.numberOfDecisionVar = 2;
-            op.numberOfObjectives = 2;
-            op.bounds = [0,1];
         case "ZDT6"
+            if setup
+                op.numberOfDecisionVar = 2;
+                op.numberOfObjectives = 2;
+                op.bounds = [0,1];
+                return;
+            end
             resultArr = zdt6(individual);
-            op.numberOfDecisionVar = 2;
-            op.numberOfObjectives = 2;
-            op.bounds = [0,1];
         case "KUR"
+            if setup
+                op.numberOfDecisionVar = 3;
+                op.numberOfObjectives = 2;
+                op.bounds = [-5,5];
+                return;
+            end
             resultArr = kur(individual);
-            op.numberOfDecisionVar = 3;
-            op.numberOfObjectives = 2;
-            op.bounds = [-5,5];
-        case "DTLZ1"
-            op.bounds = [0, 1];
-            op.numberOfDecisionVar = 6;
-            op.numberOfObjectives = 3;
-            resultArr = dtlz1(individual, op.numberOfObjectives);
         case "VIENNET"
-            op.bounds = [-3, 3];
-            op.numberOfDecisionVar = 2;
-            op.numberOfObjectives = 3;
+            if setup
+                op.numberOfDecisionVar = 2;
+                op.numberOfObjectives = 3;
+                op.bounds = [-3,3];
+                return;
+            end
             resultArr = Viennet(individual);
-        case "DTLZ5"
-            op.bounds = [0, 1];
-            op.numberOfDecisionVar = 2;
-            op.numberOfObjectives = 3;
-            resultArr = dtlz5(individual);
+        case "DTLZ1"
+            if setup
+                op.numberOfDecisionVar = 10;
+                op.numberOfObjectives = 3;
+                op.bounds = [0,1];
+                return;
+            end
+            resultArr = dtlz1(individual);
         otherwise
             disp("No matches found.")
             return;
@@ -83,51 +105,6 @@ function resultArr = Viennet(x)
     resultArr = [f1, f2, f3];
 end
 
-function resultArr = dtlz5(arr)
-    k = length(arr) - 3 + 1;
-    g = g5(arr(length(arr) - k:length(arr))); 
-    f1 = (1 + g) * cos((o(g, arr, 1) * pi) / 2) * cos((o(g, arr, 2) * pi) / 2);
-    f2 = (1 + g) * cos((o(g, arr, 1) * pi) / 2) * sin((o(g, arr, 2) * pi) / 2);
-    f3 = (1 + g) * sin((o(g, arr, 1) * pi) / 2);
-    resultArr = [f1, f2, f3];
-end
-
-function result = o(g, arr, i)
-    result = (1/(2 * (1 + g))) * (1 + 2 * g * arr(i));
-end
-
-function result = g5(arr)
-    result = 0;
-    for i = 1:length(arr)
-        result = result + power(arr(i) - 0.5, 2);
-    end
-end
-
-
-
-function arr2 = dtlz1(arr, objectiveCount)
-    k = (length(arr) - objectiveCount) + 1;
-    g = g4(arr(length(arr) - k:length(arr)));
-    arr2 = zeros(1, objectiveCount);
-    arr2(1) = 0.5 * prod(arr(1:objectiveCount - 1)) * (1 + g);
-    for i = 2:objectiveCount
-        if i == objectiveCount
-            product = 1;
-        else
-            product = prod(arr(1:objectiveCount - i));
-        end
-        arr2(i) = 0.5 * product * (1 - arr((objectiveCount - i) + 1)) * (1 + g);
-    end
-end
-
-function result = g4(arr)
-    summation = 0;
-    for i = 1:length(arr)
-        summation = summation + power(arr(i) - 0.5, 2) - cos(20 * pi * (arr(i) - 0.5));
-    end
-    result = 100 * (length(arr) + summation);
-end
-
 function arr2 = zdt3(arr)
     g = g1(arr);
     f1 = arr(1);
@@ -149,6 +126,22 @@ function arr2 = zdt6(arr)
     arr2 = [f1, f2];
 end
 
+function arr2 = dtlz1(arr)
+    global op;
+    g = g4(arr(length(arr) - op.numberOfObjectives - 1:length(arr)), k_value());
+    x = arr(1:op.numberOfObjectives - 1);
+    arr2 = zeros(1, op.numberOfObjectives);
+
+    for i = 1:op.numberOfObjectives
+        f = 0.5 * (1 + g);
+        f = f * prod(x(1:length(x) - (i - 1)));
+        if i > 1
+            f = f * (1 - x(length(x) - (i - 2)));
+        end
+        arr2(i) = f;
+    end
+end
+
 function result = g1(arr)
     result = 1 + 9 * sum(arr(2:length(arr))) / (length(arr) - 1);
 end
@@ -163,4 +156,17 @@ end
 
 function result = g3(arr)
     result = 1 + 9 * power(sum(arr(2:length(arr))) / (length(arr) - 1), 0.25);
+end
+
+function result = g4(arr, k)
+    result = 100 * (k + sum(power(arr - 0.5, 2) - cos(20 * pi * (arr - 0.5))));
+end
+
+function result = g5(arr)
+    result = sum(power(arr - 0.5, 2));
+end
+
+function k = k_value()
+    global op;
+    k = op.numberOfDecisionVar - op.numberOfObjectives + 1;
 end

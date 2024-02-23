@@ -2,8 +2,8 @@ function [best_chrom, configurations] = runIt()
     
     %---------------------PROBLEM DEFINITION---------------------  
     global op;          % Optimization problem
-    op.name = "KUR";
-    benchmark(zeros(2,2));
+    op.name = "VIENNET";
+    benchmark(zeros(2,2), true);
     %---------------------GA SETTINGS---------------------
     global gas;         % genetic algorithm settings
     
@@ -16,11 +16,11 @@ function [best_chrom, configurations] = runIt()
     % defined in benchmark.m too.
     
 
-    % NOTE : Gene Bounds can be changed in generateRandomChromosome
+    gas.algotihm_name = "SPEA2";
     gas.generations = 100;
-    gas.isMin = [1 1]; %vector for determining if the objectives are to minimize or maximize, 1 for minimize, 0 for maximize
+    gas.isMin = [1 1 1]; %vector for determining if the objectives are to minimize or maximize, 1 for minimize, 0 for maximize
     gas.onlyStrictlyDominance = false;
-    gas.n_individuals = 1000;
+    gas.n_individuals = 300;
     gas.n_archive = gas.n_individuals;
     gas.selection_method = 'tournament';    % 'tournament', 'proportionate'
     gas.crossover_method = 'blxa';  % 'blxa'

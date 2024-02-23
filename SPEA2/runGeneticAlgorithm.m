@@ -47,6 +47,7 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
     
     %--ITERATIONS
     for gen=1:1:gas.generations
+        tic
         %--SELECTION
         matPool = selection(fit_array_archive);   % passing to selection only rank fitness and pop-related id
           
@@ -57,7 +58,7 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
          
         %--SURVIVOR 
         [pop_archive, fit_array_archive] = survivor(pop_archive, offspring, fit_array_archive, fit_array_O);
-
+        toc
         % Visualize population
         % Change This If there is more than 2 objective
         first_obj = fit_array_archive(:,1);
