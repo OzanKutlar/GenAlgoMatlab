@@ -6,6 +6,7 @@
 % 'archive' is the best individuals with the attributes of [x1, x2, fitness_1, fitness_2, fitnessInv, strength, raw_fitness, density, fitness, index]
  
 function [archive] = runBBBC()
+    addpath 'C:\Users\akbas\OneDrive\Masaüstü\GenAlgoMatlab\Shared'
     global bbbcs;       % big bang-big crunch settings
 
     global op;          % Optimization problem
@@ -55,9 +56,9 @@ function [archive] = runBBBC()
         
         cMass = bigCrunchPhase(archive,bbbcs.crunchMethod);
         
-        first_obj = archive(:,4); %fitness_1
-        second_obj= archive(:,5); %fitness_2
-        third_obj= archive(:,3);
+        first_obj = archive(:,bbbcs.n_variables + 1); %fitness_1
+        second_obj= archive(:,bbbcs.n_variables + 2); %fitness_2
+        third_obj= archive(:,bbbcs.n_variables + 3); %fitness 3
         %figure
         toc
         clf
