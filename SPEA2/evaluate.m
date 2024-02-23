@@ -16,7 +16,11 @@ function [pop, fit_array] = evaluate(pop)
         % fit_array(i,2) = 1+ pop(i,2) - pop(i,1)^2; % second function 1 + y - x^2
 
         % ADD FUNCTIONS HERE
-        fit_array(i,:) = benchmark(pop(i, :));
+        temp = benchmark(pop(i, :));
+        for j=1:op.numberOfObjectives
+            fit_array(i,j) = temp(j);
+        end
+        
 
         fit_array(i,op.numberOfObjectives + 1) = i; % index for later use
     end

@@ -2,24 +2,26 @@ function [best_chrom, configurations] = runIt()
     
     %---------------------PROBLEM DEFINITION---------------------  
     global op;          % Optimization problem
-    op.name = "zdt1";
+    op.name = "KUR";
     benchmark(zeros(2,2));
     %---------------------GA SETTINGS---------------------
     global gas;         % genetic algorithm settings
-
     
-    % WHEN ADDING A NEW OBJECTIVE FUNCTION:
-    % -Add to evaluate
-    % -add to gas.isMin
-    % -change the gas.numberOfObjectives
+    %  IF THERE IS DIFFERENT BOUNDS FOR DECISION VARIABLES, op.bounds
+    %  should be changed in benchmark.m, and also
+    %  generateRandomChromosome.m should change
+    
+    % Evaluation functions can be added to the benchmark.m, number of
+    % decision variables, bounds, and number of objectives should be
+    % defined in benchmark.m too.
+    
 
     % NOTE : Gene Bounds can be changed in generateRandomChromosome
     gas.generations = 100;
-    gas.numberOfObjectives = 2;
     gas.isMin = [1 1]; %vector for determining if the objectives are to minimize or maximize, 1 for minimize, 0 for maximize
     gas.onlyStrictlyDominance = false;
-    gas.n_individuals = 300;
-    gas.n_archive = 300;
+    gas.n_individuals = 1000;
+    gas.n_archive = gas.n_individuals;
     gas.selection_method = 'tournament';    % 'tournament', 'proportionate'
     gas.crossover_method = 'blxa';  % 'blxa'
     gas.crossover_probability = 0.9;

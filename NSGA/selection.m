@@ -40,12 +40,12 @@ winner = 0;
 for j=1:k
     index = ceil((gas.n_individuals)*rand);
     if j==1
-        bestFit = fit_array(index,7);
-        winner = fit_array(index,3);
+        bestFit = fit_array(index,gas.lastFitnessIndex);
+        winner = fit_array(index,gas.solutionIndex);
     else
-        if bestFit > fit_array(index,7)
-            bestFit = fit_array(index,7);
-            winner = fit_array(index,3);
+        if bestFit > fit_array(index,gas.lastFitnessIndex)
+            bestFit = fit_array(index,gas.lastFitnessIndex);
+            winner = fit_array(index,gas.solutionIndex);
         end
     end
 end

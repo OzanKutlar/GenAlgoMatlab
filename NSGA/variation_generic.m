@@ -8,7 +8,7 @@ offspring = zeros(gas.n_individuals,gas.n_variables);
 
 matPool = matPool(randperm(length(matPool))); % shuffle the mating pool
 
-for i=1:2:gas.n_individuals
+for i=1:gas.n_individuals
 
     % crossover
     index_p1 = matPool(i);
