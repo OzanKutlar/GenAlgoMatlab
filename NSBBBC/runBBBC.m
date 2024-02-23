@@ -3,7 +3,9 @@ function [] = runBBBC()
     global bbbcs;       % big bang-big crunch settings
 
     global op;          % Optimization problem
-    op.name = "VIENNET";
+    addpath 'C:\Users\akbas\OneDrive\Masaüstü\GenAlgoMatlab\Shared'
+
+    op.name = "ZDT1";
     benchmark(zeros(2,2), true);
 
     bbbcs.N = 300;
@@ -35,9 +37,9 @@ function [] = runBBBC()
 %         end
         cMass = bigCrunchPhase(pop,bbbcs.crunchMethod);
         
-        first_obj = pop(:,3);
-        second_obj= pop(:,4);
-        third_obj= pop(:,5);
+        first_obj = pop(:,bbbcs.n_variables + 1);
+        second_obj= pop(:,bbbcs.n_variables + 2);
+        third_obj= pop(:,bbbcs.n_variables + 3);
         toc
         clf
         if op.numberOfObjectives == 2
