@@ -1,11 +1,14 @@
 global gas;         % genetic algorithm settings
+global op;          % Optimization problem
+op.name = "ZDT1";
+benchmark(zeros(2,2));
 
 
 gas.generations = 100;
-gas.n_individuals = 900;
-gas.n_variables = 5;
+gas.n_individuals = 300;
+gas.n_variables = op.numberOfDecisionVar;
 gas.isMin = [1 1 1];
-gas.n_ObjectiveFunctions=3; % number of functions to solve
+gas.n_ObjectiveFunctions=op.numberOfObjectives; % number of functions to solve
 gas.strongDominance=false;
 gas.selection_method = 'tournament';    % 'tournament', 'proportionate' 
 gas.crossover_method = 'blxa';  % 'blxa'

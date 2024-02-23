@@ -8,7 +8,7 @@ offspring = zeros(gas.n_individuals,gas.n_variables);
 
 matPool = matPool(randperm(length(matPool))); % shuffle the mating pool
 
-for i=1:gas.n_individuals
+for i=1:gas.n_individuals - 1
 
     % crossover
     index_p1 = matPool(i);
@@ -21,9 +21,11 @@ for i=1:gas.n_individuals
     % mutation
     o1 = mutation(o1);
     o2 = mutation(o2);
-
-    offspring(i,:) = o1;
-    offspring(i+1,:) = o2;
+    for j = 1:op.numberOfDecisionVar
+        offspring(i,j) = o1(j);
+        offspring(i+1,j) = o2(j);
+    end
+    
 end
 
 end

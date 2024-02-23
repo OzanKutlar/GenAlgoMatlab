@@ -1,6 +1,7 @@
 function [pop, fit_array_P] = RunNSGA()
 
 global gas; % genetic algorithm settings
+global op;
 % in case a funny user decides to have an odd number of idividuals in the population...
 if mod(gas.n_individuals,2) ~= 0
     gas.n_individuals = gas.n_individuals + 1;
@@ -52,13 +53,19 @@ for gen=1:1:gas.generations
     first_obj = fit_array_P(:,1);
     second_obj= fit_array_P(:,2);
     third_obj= fit_array_P(:,3);
+    %figure
     clf
-    %scatter(first_obj,second_obj,'filled','DisplayName',num2str(1))
-    scatter3(first_obj,second_obj, third_obj,'filled','DisplayName',num2str(1))
-    drawnow
+    if op.numberOfObjectives == 2
+        scatter(first_obj,second_obj,'filled','DisplayName',strcat("Generating gen : ", num2str(gen)))
+    end
+    if op.numberOfObjectives == 3
+        scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("Generating gen : ", num2str(gen)) )
+    end
     legend
+    
+    % Added for continious figure
+    drawnow
     %hold off
-    toc
 end
 
 
