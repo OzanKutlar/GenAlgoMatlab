@@ -1,6 +1,7 @@
 function [best_chrom, configurations] = runIt()
     
     %---------------------PROBLEM DEFINITION---------------------  
+    addpath 'C:\Users\onur_\OneDrive\Masaüstü\GenAlgoMatlab\Shared'
     global op;          % Optimization problem
     op.name = "VIENNET";
     benchmark(zeros(2,2), true);
@@ -24,7 +25,7 @@ function [best_chrom, configurations] = runIt()
     gas.n_archive = gas.n_individuals;
     gas.selection_method = 'tournament';    % 'tournament', 'proportionate'
     gas.crossover_method = 'blxa';  % 'blxa'
-    gas.crossover_probability = 0.9;
+    gas.crossover_probability = 1;
     gas.mutation_method = 'random';   % 'random', 'modifiedRandom', 'polynomial'
     gas.mutation_probability = 0.2;  % -1 is dynamic 
     gas.survival_method = 'elitist_full'; % 'elitist_full', 'elitist_alpha'
