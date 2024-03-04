@@ -21,7 +21,8 @@ function [pop, fit_array] = evaluate(pop)
             fit_array(i,j) = temp(j);
         end
         
-
+        
         fit_array(i,op.numberOfObjectives + 1) = i; % index for later use
+
     end
 end  

@@ -1,6 +1,6 @@
 global gas;         % genetic algorithm settings
 global op;          % Optimization problem
-op.name = "VIENNET";
+op.name = "df1";
 benchmark(zeros(2,2), true);
 
 gas.algotihm_name = "NSGA";

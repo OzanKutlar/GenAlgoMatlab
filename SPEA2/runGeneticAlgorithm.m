@@ -47,6 +47,7 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
     
     %--ITERATIONS
     for gen=1:1:gas.generations
+        op.currentGen = gen;
         tic
         %--SELECTION
         matPool = selection(fit_array_archive);   % passing to selection only rank fitness and pop-related id

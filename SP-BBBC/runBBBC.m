@@ -6,11 +6,10 @@
 % 'archive' is the best individuals with the attributes of [x1, x2, fitness_1, fitness_2, fitnessInv, strength, raw_fitness, density, fitness, index]
  
 function [archive] = runBBBC()
-    addpath 'C:\Users\akbas\OneDrive\Masaüstü\GenAlgoMatlab\Shared'
     global bbbcs;       % big bang-big crunch settings
 
     global op;          % Optimization problem
-    op.name = "ZDT1";
+    op.name = "DF1";
     benchmark(zeros(2,2), true);
 
     bbbcs.N = 300;  % number of individuals
@@ -49,6 +48,7 @@ function [archive] = runBBBC()
     end
 
     for t=1:1:bbbcs.MAX_GENERATIONS
+        op.currentGen = t;
         tic
         if t~=1
             archive = bigBangPhase_1(cMass,t,archive);

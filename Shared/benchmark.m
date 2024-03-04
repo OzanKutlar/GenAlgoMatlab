@@ -6,7 +6,7 @@ function resultArr = benchmark(individual, setup)
     switch upper(op.name)
         case "ZDT1"
             if setup
-                op.numberOfDecisionVar = 4;
+                op.numberOfDecisionVar = 2;
                 op.numberOfObjectives = 2;
                 op.bounds = [0,1];
                 return;
@@ -60,14 +60,17 @@ function resultArr = benchmark(individual, setup)
                 return;
             end
             resultArr = Viennet(individual);
-        case "DTLZ1"
+        case "DF1"
             if setup
+                op.changeFreq = 1 / 3;
+                op.changeSeverity = 1 / 3;
+                op.currentGen = 0;
                 op.numberOfDecisionVar = 10;
-                op.numberOfObjectives = 3;
+                op.numberOfObjectives = 2;
                 op.bounds = [0,1];
                 return;
             end
-            resultArr = dtlz1(individual);
+            resultArr = df1(individual, op.currentGen);
         otherwise
             disp("No matches found.")
             return;
@@ -79,6 +82,28 @@ function arr2 = zdt1(arr)
     f1 = arr(1);
     f2 = g * (1 - sqrt(arr(1) / g));
     arr2 = [f1, f2];
+end
+
+function arr2 = df1(arr, gen)
+    global op;
+    t = op.changeSeverity * (gen * op.changeFreq);
+    f1 = arr(1);
+    f2 = gdf1(arr, t);
+    f2 = f2 * (1 - power((arr(1)/f2), 0.75*sin(0.5*pi) + 1.25));
+    arr2 = [f1, f2];
+end
+
+function arr2 = df12(arr, gen)
+    global op;
+    t = op.changeSeverity * (gen * op.changeFreq);
+    f1 = arr(1);
+    f2 = gdf1(arr, t);
+    f2 = f2 * (1 - power((arr(1)/f2), 0.75*sin(0.5*pi) + 1.25));
+    arr2 = [f1, f2];
+end
+
+function result = gdf1(arr, t)
+    result = 1 + sum( power(arr(2:length(arr)) - abs(sin(0.5*pi*t) ), 2)  );
 end
 
 function arr2 = zdt2(arr)

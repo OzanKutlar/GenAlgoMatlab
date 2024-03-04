@@ -2,7 +2,7 @@ function [best_chrom, configurations] = runIt()
     
     %---------------------PROBLEM DEFINITION---------------------  
     global op;          % Optimization problem
-    op.name = "VIENNET";
+    op.name = "zdt1";
     benchmark(zeros(2,2), true);
     %---------------------GA SETTINGS---------------------
     global gas;         % genetic algorithm settings
