@@ -9,11 +9,14 @@ temp_pop = zeros(1,bbbcs.solutionIndex);
             temp_pop((i-1)* bbbcs.k +j,l) = cMass(i,l) + ((bbbcs.bounds(l,2) - bbbcs.bounds(l,1))*r1)/t;
 
             temp_pop((i-1)* bbbcs.k +j,l) = max(min(temp_pop((i-1)* bbbcs.k +j,l), bbbcs.bounds(l,2)), bbbcs.bounds(l,1));
-        end
+            end
         temp_pop((i-1)* bbbcs.k +j,bbbcs.n_variables+1:bbbcs.n_variables + bbbcs.numberOfObjectives) = evaluateIndividual(temp_pop((i-1)* bbbcs.k +j,1:bbbcs.n_variables));
         end
     end
     pop = [pop; temp_pop];
     pop = nonDomSorting(pop);
+    pop = crowding_distance_BBBC(pop);
+    rank_at_half = pop(bbbcs.N,bbbcs.rankIndex);
+    pop(pop(:,bbbcs.rankIndex) == rank_at_half,:) = sortrows(pop(pop(:,bbbcs.rankIndex) == rank_at_half,:),bbbcs.crowdingDistIndex,"descend");
     pop=pop(1:bbbcs.N,:);
 end
