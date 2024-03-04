@@ -1,8 +1,7 @@
 global gas;         % genetic algorithm settings
+op.name = "df1";
 global op;   
 addpath('C:\Users\onur_\OneDrive\Masaüstü\GenAlgoMatlab\Shared');
-% Optimization problem
-op.name = "ZDT3";
 benchmark(zeros(2,2), true);
 
 gas.algotihm_name = "NSGA";

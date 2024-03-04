@@ -10,7 +10,7 @@ function [archive] = runBBBC()
     global bbbcs;       % big bang-big crunch settings
 
     global op;          % Optimization problem
-    op.name = "ZDT1";
+    op.name = "DF1";
     benchmark(zeros(2,2), true);
 
     bbbcs.N = 300;  % number of individuals
@@ -49,6 +49,7 @@ function [archive] = runBBBC()
     end
 
     for t=1:1:bbbcs.MAX_GENERATIONS
+        op.currentGen = t;
         tic
         if t~=1
             archive = bigBangPhase_1(cMass,t,archive);

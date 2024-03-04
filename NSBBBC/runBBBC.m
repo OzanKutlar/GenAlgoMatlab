@@ -3,9 +3,7 @@ function [] = runBBBC()
     global bbbcs;       % big bang-big crunch settings
 
     global op;          % Optimization problem
-    addpath 'C:\Users\akbas\OneDrive\Masaüstü\GenAlgoMatlab\Shared'
-
-    op.name = "VIENNET";
+    op.name = "DF1";
     benchmark(zeros(2,2), true);
 
     bbbcs.N = 600;
@@ -28,6 +26,7 @@ function [] = runBBBC()
     pop = nonDomSorting(pop);
     pop = crowding_distance_BBBC(pop);
     for t=1:1:bbbcs.MAX_GENERATIONS
+        op.currentGen = t;
         if t~=1
             pop = bigBangPhase_1(cMass,t,pop);
         end
