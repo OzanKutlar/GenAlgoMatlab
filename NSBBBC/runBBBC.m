@@ -3,11 +3,10 @@ function [] = runBBBC()
     global bbbcs;       % big bang-big crunch settings
 
     global op;          % Optimization problem
-
     op.name = "DF1";
     benchmark(zeros(2,2), true);
 
-    bbbcs.N = 300;
+    bbbcs.N = 600;
     bbbcs.n_cmass = bbbcs.N / 10;
     bbbcs.k = bbbcs.N / bbbcs.n_cmass; % number of individual to generate for every cmass
     bbbcs.MAX_GENERATIONS = 100;
@@ -25,6 +24,7 @@ function [] = runBBBC()
     pop = zeros(bbbcs.N,bbbcs.solutionIndex);    %   [x1, x2, fitness, fitness2, Rank, Crowding distance]
     pop = bigBangPhase();
     pop = nonDomSorting(pop);
+    pop = crowding_distance_BBBC(pop);
     for t=1:1:bbbcs.MAX_GENERATIONS
         op.currentGen = t;
         if t~=1

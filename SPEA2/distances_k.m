@@ -13,15 +13,16 @@
 function [distances] = distances_k(fit_array_archive)
 % declare a distance array which contains the distances of each individual to
 % all other individuals
+global op;
 distances = zeros(size(fit_array_archive,1),size(fit_array_archive,1));
-first_obj_index = 1;
-second_obj_index = 2;
 for i = 1:size(fit_array_archive,1)
     for j = 1:size(fit_array_archive,1)
-
-        dist_mag = ((fit_array_archive(i,first_obj_index) - fit_array_archive(j,first_obj_index)) / (max(fit_array_archive(:,first_obj_index)) - min(fit_array_archive(:,first_obj_index))))^2;
-        dist_rel = ((fit_array_archive(i,second_obj_index) - fit_array_archive(j,second_obj_index)) / (max(fit_array_archive(:,second_obj_index)) - min(fit_array_archive(:,second_obj_index))))^2;
-        distances(i,j) = sqrt(dist_rel + dist_mag);
+        total_dist = 0;
+        for k= 1:op.numberOfObjectives
+            dist = ((fit_array_archive(i,k) - fit_array_archive(j,k)) / (max(fit_array_archive(:,k)) - min(fit_array_archive(:,k))))^2;
+            total_dist = dist + total_dist;
+        end
+        distances(i,j) = sqrt(total_dist);
     end
 end
 

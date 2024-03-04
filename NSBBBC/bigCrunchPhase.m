@@ -14,7 +14,7 @@ global bbbcs;
         cMass = pop(1:bbbcs.n_cmass,1:bbbcs.n_variables);
     else
         tempPop = pop(pop(:,bbbcs.rankIndex) == 1,:);
-        tempPop=sortrows(tempPop, [bbbcs.rankIndex bbbcs.crowdingDistIndex]);
+        tempPop=sortrows(tempPop, bbbcs.crowdingDistIndex,"descend");
         cMass=tempPop(1:bbbcs.n_cmass,1:bbbcs.n_variables);
     end
 end

@@ -6,6 +6,7 @@
 % 'archive' is the best individuals with the attributes of [x1, x2, fitness_1, fitness_2, fitnessInv, strength, raw_fitness, density, fitness, index]
  
 function [archive] = runBBBC()
+    addpath('C:\Users\onur_\OneDrive\Masaüstü\GenAlgoMatlab\Shared');
     global bbbcs;       % big bang-big crunch settings
 
     global op;          % Optimization problem
@@ -31,7 +32,7 @@ function [archive] = runBBBC()
      %--RANDOM INITIALIZATION
     cMass = zeros(1,bbbcs.n_variables);        %   [x1, x2]
     pop = zeros(bbbcs.N,bbbcs.n_variables + bbbcs.numberOfObjectives + 5);    %   [x1, x2, fitness_1, fitness_2, strength, raw_fitness, density, fitness, index]
-    pop = bigBangPhase();
+    pop = bigBangPhase(pop);
     archive = zeros(bbbcs.N,bbbcs.n_variables + bbbcs.numberOfObjectives + 5);  
     %--EVALUATION
     pop = SPEA_Strength(pop);

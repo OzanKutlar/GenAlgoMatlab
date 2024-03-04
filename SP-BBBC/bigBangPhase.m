@@ -6,7 +6,7 @@
 % 'pop' is the population at the first generation of the algorithm 
 
 
-function [pop]= bigBangPhase()
+function [pop]= bigBangPhase(pop)
     global bbbcs;
     for i=1:1:bbbcs.N
         for j = 1:1:bbbcs.n_variables

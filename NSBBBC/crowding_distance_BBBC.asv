@@ -20,12 +20,12 @@ for i=1:n
     end
     for k=1:bbbcs.numberOfObjectives
         front=[front (1:size(front, 1))'];
-        sortedFront=[sortrows(front,bbbcs.n_variables+1:bbbcs.n_variables + 1 + k)];
+        sortedFront=[sortrows(front,1:k)];
 
         sortedFront(1,bbbcs.crowdingDistIndex)=1000;
         sortedFront(end,bbbcs.crowdingDistIndex)=1000;
         for m=2:l-1
-            sortedFront(m,bbbcs.crowdingDistIndex)= sortedFront(m,bbbcs.crowdingDistIndex)+ ((abs(sortedFront(m+1,bbbcs.n_variables+1:bbbcs.n_variables + 1 + k)-sortedFront(m-1,bbbcs.n_variables+1:bbbcs.n_variables + 1 + k)))/(max(pop(:,bbbcs.n_variables+1:bbbcs.n_variables + 1 + k))-min(pop(:,bbbcs.n_variables+1:bbbcs.n_variables + 1 + k))));
+            sortedFront(m,bbbcs.crowdingDistIndex)= sortedFront(m,bbbcs.crowdingDistIndex)+ ((abs(sortedFront(m+1,bbbcs.n_variables+1:bbbcs.n_variables + 1 + k)-sortedFront(m-1,1:k)))/(max(pop(:,1:k))-min(pop(:,1:k))));
         end
 
         sortedFront=[sortrows(sortedFront,size(sortedFront,2))];
