@@ -3,10 +3,10 @@ function [] = runBBBC()
     global bbbcs;       % big bang-big crunch settings
 
     global op;          % Optimization problem
-    op.name = "DF1";
+    op.name = "KUR";
     benchmark(zeros(2,2), true);
 
-    bbbcs.N = 600;
+    bbbcs.N = 300;
     bbbcs.n_cmass = bbbcs.N / 10;
     bbbcs.k = bbbcs.N / bbbcs.n_cmass; % number of individual to generate for every cmass
     bbbcs.MAX_GENERATIONS = 100;

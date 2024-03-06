@@ -1,13 +1,13 @@
 % Evaluate the distances sorted for finding k-th nearest solution to each
 % individual
 %
-% INPUT: 
+% INPUT:
 % 'fit_array_archive' contains the fitness of each individual in the population of elites,
 % the index of the individual in the array 'pop', strength of the
 % individuals, raw fitness of the individuals, and density of the
 % individuals
 %
-% OUTPUT: 
+% OUTPUT:
 % 'distances' which are the distance of each individual from the k-closest individual
 
 function [distances] = distances_k(fit_array_archive)
@@ -15,11 +15,19 @@ function [distances] = distances_k(fit_array_archive)
 % all other individuals
 global op;
 distances = zeros(size(fit_array_archive,1),size(fit_array_archive,1));
+
+max_min_obj = zeros(op.numberOfObjectives,2);
+
+for k= 1:op.numberOfObjectives
+    max_min_obj(k,1) = max(fit_array_archive(:,k));
+    max_min_obj(k,2) = min(fit_array_archive(:,k));
+end
+
 for i = 1:size(fit_array_archive,1)
     for j = 1:size(fit_array_archive,1)
         total_dist = 0;
         for k= 1:op.numberOfObjectives
-            dist = ((fit_array_archive(i,k) - fit_array_archive(j,k)) / (max(fit_array_archive(:,k)) - min(fit_array_archive(:,k))))^2;
+            dist = ((fit_array_archive(i,k) - fit_array_archive(j,k)) / (max_min_obj(k,1) - max_min_obj(k,2)))^2;
             total_dist = dist + total_dist;
         end
         distances(i,j) = sqrt(total_dist);

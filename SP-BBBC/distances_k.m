@@ -14,13 +14,19 @@ function [distances] = distances_k(pop)
 % declare a distance array which contains the distances of each individual to
 % all other individuals
 global bbbcs;
+global op;
 distances = zeros(size(pop,1),size(pop,1));
+max_min_obj = zeros(bbbcs.numberOfObjectives,2);
+for k= 1:op.numberOfObjectives
+    max_min_obj(k,1) = max(pop(:,bbbcs.n_variables + k));
+    max_min_obj(k,2) = min(pop(:,bbbcs.n_variables + k));
+end
 
 for i = 1:size(pop,1)
     for j = 1:size(pop,1)
         total_dist = 0;
         for k = 1:bbbcs.numberOfObjectives
-            dist = ((pop(i,bbbcs.n_variables + k) - pop(j,bbbcs.n_variables + k)) / (max(pop(:,bbbcs.n_variables + k)) - min(pop(:,bbbcs.n_variables + k))))^2;
+            dist = (abs(pop(i,bbbcs.n_variables + k) - pop(j,bbbcs.n_variables + k)) / (max_min_obj(k,1) - max_min_obj(k,2)))^2;
             total_dist= total_dist + dist;
         end
         distances(i,j) = sqrt(total_dist);

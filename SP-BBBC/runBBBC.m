@@ -10,17 +10,17 @@ function [archive] = runBBBC()
     global bbbcs;       % big bang-big crunch settings
 
     global op;          % Optimization problem
-    op.name = "DF1";
+    op.name = "ZDT1";
     benchmark(zeros(2,2), true);
 
-    bbbcs.N = 300;  % number of individuals
-    bbbcs.k = 3; % number of individual to generate for every cmass
+    bbbcs.N = 600;  % number of individuals
+    bbbcs.k = 1; % number of individual to generate for every cmass
     bbbcs.n_variables = op.numberOfDecisionVar;
     bbbcs.numberOfObjectives = op.numberOfObjectives;
     bbbcs.isMin = ones(1, op.numberOfObjectives);
     bbbcs.MAX_GENERATIONS = 100;
     bbbcs.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
-    bbbcs.cMass_n = 1;
+%     bbbcs.cMass_n = 1;
     bbbcs.strengthIndex = bbbcs.numberOfObjectives + bbbcs.n_variables + 1;
     bbbcs.rawFitnessIndex = bbbcs.numberOfObjectives + bbbcs.n_variables + 2;
     bbbcs.densityIndex = bbbcs.numberOfObjectives + bbbcs.n_variables + 3;
