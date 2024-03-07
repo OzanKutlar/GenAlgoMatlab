@@ -15,15 +15,20 @@
 
 function [fit_array] = SPEA_Density(fit_array)
 global bbbcs;
-
+global op;
 % declare a Density Array which contains the distances of each individual to
 % all other individuals
 densityArray = zeros(size(fit_array,1),size(fit_array,1));
+max_min_obj = zeros(op.numberOfObjectives,2);
+for m = 1:op.numberOfObjectives
+    max_min_obj(m,1) = max(fit_array(:,bbbcs.n_variables + m));
+    max_min_obj(m,2) = min(fit_array(:,bbbcs.n_variables + m));
+end
 for i = 1:size(fit_array,1)
     for j = 1:size(fit_array,1)
         overall_distance = 0;
         for m = 1:bbbcs.numberOfObjectives
-            dist = ((fit_array(i,m) - fit_array(j,m)) / (max(fit_array(:,m)) - min(fit_array(:,m))))^2;
+            dist = ((fit_array(i,bbbcs.n_variables + m) - fit_array(j,bbbcs.n_variables + m)) / (max_min_obj(m,1) - max_min_obj(m,2)))^2;
             overall_distance = overall_distance + dist;
         end
         densityArray(i,j) = sqrt(overall_distance);
