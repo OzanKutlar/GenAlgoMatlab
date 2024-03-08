@@ -1,7 +1,7 @@
 function [] = runBBBC()
     
     global bbbcs;       % big bang-big crunch settings
-
+    addpath '..\Shared'
     global op;          % Optimization problem
     op.name = "KUR";
     benchmark(zeros(2,2), true);

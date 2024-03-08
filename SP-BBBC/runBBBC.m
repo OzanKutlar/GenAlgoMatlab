@@ -6,7 +6,7 @@
 % 'archive' is the best individuals with the attributes of [x1, x2, fitness_1, fitness_2, fitnessInv, strength, raw_fitness, density, fitness, index]
  
 function [archive] = runBBBC()
-    addpath('C:\Users\onur_\OneDrive\Masaüstü\GenAlgoMatlab\Shared');
+    addpath '..\Shared'
     global bbbcs;       % big bang-big crunch settings
 
     global op;          % Optimization problem

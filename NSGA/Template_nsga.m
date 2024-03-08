@@ -1,12 +1,12 @@
 global gas;         % genetic algorithm settings
 op.name = "VIENNET";
 global op;   
-addpath('C:\Users\onur_\OneDrive\Masaüstü\GenAlgoMatlab\Shared');
+addpath('..\Shared');
 benchmark(zeros(2,2), true);
 
 gas.algotihm_name = "NSGA";
 gas.generations = 50;
-gas.n_individuals = 600;
+gas.n_individuals = 200;
 gas.n_variables = op.numberOfDecisionVar;
 gas.isMin = [1 1 1];
 gas.n_ObjectiveFunctions=op.numberOfObjectives; % number of functions to solve
