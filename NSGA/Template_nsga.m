@@ -1,12 +1,14 @@
 global gas;         % genetic algorithm settings
-op.name = "VIENNET";
-global op;   
+global op; 
+
+op.name = "DF1";  
 addpath('..\Shared');
 benchmark(zeros(2,2), true);
 
+
 gas.algotihm_name = "NSGA";
-gas.generations = 50;
-gas.n_individuals = 200;
+gas.generations = 100;
+gas.n_individuals = 70;
 gas.n_variables = op.numberOfDecisionVar;
 gas.isMin = [1 1 1];
 gas.n_ObjectiveFunctions=op.numberOfObjectives; % number of functions to solve
@@ -22,7 +24,7 @@ gas.survival_method = 'elitist_full'; % 'elitist_full', 'elitist_alpha'
 
 
 tic
-[pop, fit_array] = RunNSGA();
+    [pop, fit_array] = RunNSGA();
 toc;
 
 

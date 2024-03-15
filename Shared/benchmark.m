@@ -12,6 +12,15 @@ function resultArr = benchmark(individual, setup)
                 return;
             end
             resultArr = zdt1(individual);
+        case "ZDT11"
+            if setup
+                op.numberOfDecisionVar = 2;
+                op.numberOfObjectives = 2;
+                op.bounds = repmat([0,1], op.numberOfDecisionVar, 1);
+                %op.bounds(2, :) = op.bounds(2, :) * 5;
+                return;
+            end
+            resultArr = zdt1(individual);
         case "ZDT2"
             if setup
                 op.numberOfDecisionVar = 2;
@@ -62,8 +71,8 @@ function resultArr = benchmark(individual, setup)
             resultArr = Viennet(individual);
         case "DF1"
             if setup
-                op.changeFreq = 1 / 3;
-                op.changeSeverity = 1 / 3;
+                op.changeFreq = 1 / 10;
+                op.changeSeverity = 1 / 10;
                 op.currentGen = 0;
                 op.numberOfDecisionVar = 10;
                 op.numberOfObjectives = 2;
@@ -71,6 +80,17 @@ function resultArr = benchmark(individual, setup)
                 return;
             end
             resultArr = df1(individual, op.currentGen);
+        case "DF3"
+            if setup
+                op.changeFreq = 1 / 10;
+                op.changeSeverity = 1 / 50;
+                op.currentGen = 0;
+                op.numberOfDecisionVar = 10;
+                op.numberOfObjectives = 2;
+                op.bounds = [0,1];
+                return;
+            end
+            resultArr = df3(individual, op.currentGen);
         otherwise
             disp("No matches found.")
             return;
@@ -86,10 +106,22 @@ end
 
 function arr2 = df1(arr, gen)
     global op;
+    gen = max(gen + op.changeFreq - (51), 0);
+    t = op.changeSeverity * floor(gen * op.changeFreq);
+
+    G = 1 + sum( power(arr(2:length(arr)) - abs(sin(0.5*pi*t) ), 2)  );
+    H = 0.75*sin(0.5*pi*t)+1.25;
+    f1 = arr(1);
+    f2 = G * (1 - power((arr(1)/G), H));
+    arr2 = [f1, f2];
+end
+
+function arr2 = df3(arr, gen)
+    global op;
     t = op.changeSeverity * (gen * op.changeFreq);
     f1 = arr(1);
-    f2 = gdf1(arr, t);
-    f2 = f2 * (1 - power((arr(1)/f2), 0.75*sin(0.5*pi) + 1.25));
+    g_x = 1 + sum(arr(2:end) - sin(0.5*pi*t) - arr(1).^(1.5 + sin(0.5*pi*t)).^2);
+    f2 = g_x * (1 - (arr(1)/g_x).^(1.5 + sin(0.5*pi*t)));
     arr2 = [f1, f2];
 end
 
@@ -102,9 +134,6 @@ function arr2 = df12(arr, gen)
     arr2 = [f1, f2];
 end
 
-function result = gdf1(arr, t)
-    result = 1 + sum( power(arr(2:length(arr)) - abs(sin(0.5*pi*t) ), 2)  );
-end
 
 function arr2 = zdt2(arr)
     g = g1(arr);
