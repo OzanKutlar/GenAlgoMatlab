@@ -1,7 +1,7 @@
 global gas;         % genetic algorithm settings
 global op; 
 
-op.name = "DF1";  
+op.name = "KUR";  
 addpath('..\Shared');
 benchmark(zeros(2,2), true);
 
