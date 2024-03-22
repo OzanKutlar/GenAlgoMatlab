@@ -3,10 +3,10 @@ clear
 hold on
 
 %% Problem settings
-lb = [0 0 0 0 0];   % Lower bound
-ub = [1 1 1 1 1];   % Upper bound
-prob = @zdt1;       % Fitness function
-objectives = 2;     % Objective count
+lb = repmat(-5, 1, 2);   % Lower bound
+ub = repmat(5, 1, 2);   % Upper bound
+prob = @viennet;       % Fitness function
+objectives = 3;     % Objective count
 
 %% Parameters for Differential Evolution
 Np = 500;   % Population size

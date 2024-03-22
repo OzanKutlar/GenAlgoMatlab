@@ -6,7 +6,7 @@ function resultArr = benchmark(individual, setup)
     switch upper(op.name)
         case "ZDT1"
             if setup
-                op.numberOfDecisionVar = 2;
+                op.numberOfDecisionVar = 30;
                 op.numberOfObjectives = 2;
                 op.bounds = [0,1];
                 return;
@@ -31,7 +31,7 @@ function resultArr = benchmark(individual, setup)
             resultArr = zdt2(individual);
         case "ZDT3"
             if setup
-                op.numberOfDecisionVar = 2;
+                op.numberOfDecisionVar = 30;
                 op.numberOfObjectives = 2;
                 op.bounds = [0,1];
                 return;
