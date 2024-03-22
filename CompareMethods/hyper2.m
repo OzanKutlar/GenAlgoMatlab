@@ -21,8 +21,9 @@ function hyperVolume=hyper2(input_matrix)
     reference_point = ones(1,m) * 1.1;
     
     % Monte Carlo approximation
-    N = 1000000; % number of random samples
+    N = 1e6; % number of random samples
     counter = 0;
+    
     for i = 1:N
         % Generate a random point in the objective space
         random_point = rand(1, m) .* reference_point;
@@ -35,7 +36,7 @@ function hyperVolume=hyper2(input_matrix)
             end
         end
     end
-    hyperVolume = prod(reference_point) * (counter / N);
+    hyperVolume = prod(reference_point) * (1-counter / N);
 end
 
 function normalizedMatrix = normalizeMatrix(matrix)

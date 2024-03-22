@@ -1,7 +1,7 @@
-function swarm = runSwarm()
+function currentParetoValues = runSwarm()
     global parameters;
     global op;
-    op.name = "ZDT3";
+    op.name = "VIENNET";
     addpath('..\Shared');
     whitebg("black");
     benchmark(zeros(2,2), true);
@@ -150,9 +150,9 @@ function swarm = runSwarm()
             % plot(sortedPareto(:, 1), sortedPareto(:, 2), "-x", MarkerFaceColor="red", MarkerEdgeColor="red", Color="red")
         end
         if op.numberOfObjectives == 3
-            %scatter3(bestPosVal(:, 1),bestPosVal(:, 2), bestPosVal(:, 3),'filled');
+            scatter3(bestPosVal(:, 1),bestPosVal(:, 2), bestPosVal(:, 3),'filled');
             scatter3(currentParetoValues(:, 1),currentParetoValues(:, 2), currentParetoValues(:, 3),'filled');
-            %plot3(sortedPareto(:, 1), sortedPareto(:, 2), sortedPareto(:, 3), "-x")
+            plot3(sortedPareto(:, 1), sortedPareto(:, 2), sortedPareto(:, 3), "-x")
         end
         %hold off
         legend({'Swarm', 'Pareto'});
@@ -169,8 +169,8 @@ function swarm = runSwarm()
         %plot(sortedPareto(:, 1), sortedPareto(:, 2), "-x")
     end
     if op.numberOfObjectives == 3
-        scatter3(bestPosVal(:, 1),bestPosVal(:, 2), bestPosVal(:, 3),'filled','DisplayName', "Particle Swarm");
-        scatter3(sortedPareto(:, 1),sortedPareto(:, 2), sortedPareto(:, 3),'filled','DisplayName', "Particle");
+        %scatter3(bestPosVal(:, 1),bestPosVal(:, 2), bestPosVal(:, 3),'filled','DisplayName', "Particle Swarm");
+        scatter3(sortedPareto(:, 1),sortedPareto(:, 2), sortedPareto(:, 3),'filled','DisplayName', "Particle",  MarkerFaceColor="red");
         %plot3(currentParetoValues(:, 1), currentParetoValues(:, 2), currentParetoValues(:, 3), "-x")
     end
     hold off

@@ -1,15 +1,15 @@
-function [] = runBBBC()
+function [pop] = runBBBC()
     
     global bbbcs;       % big bang-big crunch settings
     addpath '..\Shared'
     global op;          % Optimization problem
-    op.name = "DF1";
+    op.name = "VIENNET";
     benchmark(zeros(2,2), true);
 
-    bbbcs.N = 70;
+    bbbcs.N = 300;
     bbbcs.n_cmass = bbbcs.N / 10;
     bbbcs.k = bbbcs.N / bbbcs.n_cmass; % number of individual to generate for every cmass
-    bbbcs.MAX_GENERATIONS = 100;
+    bbbcs.MAX_GENERATIONS = 50;
     bbbcs.n_variables = op.numberOfDecisionVar;
     bbbcs.numberOfObjectives = op.numberOfObjectives;
     bbbcs.isMin = ones(1, op.numberOfObjectives);
