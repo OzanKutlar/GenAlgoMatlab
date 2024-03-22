@@ -36,7 +36,7 @@ function hyperVolume=hyper2(input_matrix)
             end
         end
     end
-    hyperVolume = prod(reference_point) * (1-counter / N);
+    hyperVolume = prod(reference_point) * (counter / N);
 end
 
 function normalizedMatrix = normalizeMatrix(matrix)
