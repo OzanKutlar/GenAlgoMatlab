@@ -1,6 +1,5 @@
 function f = zdt1(x)
     g = g1(x);
-    f = zeros(1, 2);
     f(1) = x(1);
     f(2) = g * (1 - sqrt(x(1) / g));
 end
