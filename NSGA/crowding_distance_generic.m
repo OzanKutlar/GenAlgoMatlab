@@ -28,12 +28,12 @@ for i=1:n
     end
     for k=1:gas.n_ObjectiveFunctions
         front=[front (1:size(front, 1))'];
-        sortedFront=[sortrows(front,1:k)];
+        sortedFront=[sortrows(front,k)];
 
         sortedFront(1,DistanceIndex)=inf;
         sortedFront(end,DistanceIndex)=inf;
         for m=2:l-1
-            sortedFront(m,DistanceIndex)= sortedFront(m,DistanceIndex)+ ((abs(sortedFront(m+1,1:k)-sortedFront(m-1,1:k)))/(max(fit_array(:,1:k))-min(fit_array(:,1:k))));
+            sortedFront(m,DistanceIndex)= sortedFront(m,DistanceIndex)+ ((abs(sortedFront(m+1,k)-sortedFront(m-1,k)))/(max(fit_array(:,k))-min(fit_array(:,k))));
         end
 
         sortedFront=[sortrows(sortedFront,size(sortedFront,2))];
