@@ -26,10 +26,9 @@ function [bestPosVal, personalBest, currentPareto, currentParetoValues, swarmPar
             end
         end
         if ~dominated
-                currentPareto(end+1, :) = swarm(i, 1:op.numberOfDecisionVar);
-                currentParetoValues(end+1, :) = value(:);
+            currentPareto(end+1, :) = swarm(i, 1:op.numberOfDecisionVar);
+            currentParetoValues(end+1, :) = value(:);
         end
         swarmParetoCoords(i, :) = value;
     end
-
 end

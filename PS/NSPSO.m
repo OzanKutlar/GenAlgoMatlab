@@ -28,6 +28,19 @@ bestPosVal = currentParetoValues;
 
 % Cycle
 for i = 2:parameters.iterationTime
+    
+    swarmRanking = zeros(height(swarm), 2);
+    swarmRanking(:, 2) = 1:1:height(swarm);
+    for ii = 1:height(swarm)
+        for iii = 1:height(currentParetoValues)
+            if(any(currentParetoValues(iii, :) < swarmParetoCoords(ii, :)))
+                swarmRanking(ii, 1) = swarmRanking(ii, 1) + 1;
+            end
+        end
+    end
+    
+    swarmRanking = sortrows(swarmRanking, 1);
+
     disp(i);
     % Calculate new speed
     for ii = 1:parameters.particleCount
@@ -63,6 +76,9 @@ for i = 2:parameters.iterationTime
 
     % Evaluate
     [bestPosVal, personalBest, currentPareto, currentParetoValues, swarmParetoCoords] = evaluate(swarm, parameters, op, currentPareto, currentParetoValues, bestPosVal, personalBest, swarmParetoCoords);
+
+
+
 
     clf;
     hold on
