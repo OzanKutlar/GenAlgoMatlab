@@ -12,65 +12,65 @@
 %   result: true if solution A dominates or weakly dominates solution B, false otherwise.
 %
 function A_dominates_B = dominates(A, B, isMin, strong)
-% get the number of objectives
-M = numel(A);
-A_dominates_B = false;
-
-% get number of inputs if strong is not given set it to false as default
-numargs = nargin;
-if numargs == 3
-    strong = false;
-end
-
-% if dominance is not strong, A is not worse than B in all objectives and A
-% is better in at least one objective
-if strong==false
-    strictlyBetter=false;
-    noWorse=true;
-
-    % check if A dominates B
-    for i = 1:M
-        % for objectives to be minimized
-        if isMin(i)
-            if A(i)>B(i)
-                noWorse=false;
-            end
-            if(A(i)< B(i))
-                strictlyBetter=true;
-            end
-        else 
-            % for objectives to be maximized
-            if A(i)<B(i)
-                noWorse=false;
-            end
-            if(A(i)> B(i))
-                strictlyBetter=true;
-            end
-
-        end
-
+    % get the number of objectives
+    M = numel(A);
+    A_dominates_B = false;
+    
+    % get number of inputs if strong is not given set it to false as default
+    numargs = nargin;
+    if numargs == 3
+        strong = false;
     end
-    % A is better in at least one objective and not worse in all objectives
-    if noWorse==true && strictlyBetter==true
+    
+    % if dominance is not strong, A is not worse than B in all objectives and A
+    % is better in at least one objective
+    if strong==false
+        strictlyBetter=false;
+        noWorse=true;
+    
+        % check if A dominates B
+        for i = 1:M
+            % for objectives to be minimized
+            if isMin(i)
+                if A(i)>B(i)
+                    noWorse=false;
+                end
+                if(A(i)< B(i))
+                    strictlyBetter=true;
+                end
+            else 
+                % for objectives to be maximized
+                if A(i)<B(i)
+                    noWorse=false;
+                end
+                if(A(i)> B(i))
+                    strictlyBetter=true;
+                end
+    
+            end
+    
+        end
+        % A is better in at least one objective and not worse in all objectives
+        if noWorse==true && strictlyBetter==true
+            A_dominates_B=true;
+        end
+    % Check for strong dominance meaning A is better in all objectives than B
+    else
         A_dominates_B=true;
-    end
-% Check for strong dominance meaning A is better in all objectives than B
-else
-    A_dominates_B=true;
-    for i=1:M
-        % objectives to be minimized
-        if isMin(i)
-            if A(i)>=B(i)
-                A_dominates_B=false;
-            end
-        % objectives to be maximized
-        else 
-            if A(i) <=B(i)
-                A_dominates_B=false;
+        for i=1:M
+            % objectives to be minimized
+            if isMin(i)
+                if A(i)>=B(i)
+                    A_dominates_B=false;
+                end
+            % objectives to be maximized
+            else 
+                if A(i) <=B(i)
+                    A_dominates_B=false;
+                end
             end
         end
     end
-end
 end
 
 

@@ -9,10 +9,13 @@
 % OUTPUT:
 % hyperVolume: it represents the space covered by the set of non-dominated solutions.
 
-function hyperVolume=hyper2(input_matrix)
-% pareto_front: a matrix where each row represents a point in the objective space
-    % reference_point: a point in the objective space that acts as the reference point
+function hyperVolume=hyper2(input_matrix, isMin)
     pareto_front = normalizeMatrix(input_matrix);
+
+    for i = 1:width(isMin)
+        pareto_front(:, i) = pareto_front(:, i) * isMin(i);
+    end
+
     % Number of pareto_front
     n = size(pareto_front, 1);
     % Number of objectives
