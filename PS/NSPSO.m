@@ -7,6 +7,7 @@ benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
 parameters.particleCount = 20; % Number of particles
+parameters.topPercentageOfDom = 10;
 parameters.personalConst = 0.01;
 parameters.socialConst = 0.01;
 parameters.iterationTime = 400; % Maximum number of 'iterations' to run the simulation
@@ -21,6 +22,11 @@ swarmParetoCoords = zeros(parameters.particleCount, op.numberOfObjectives);
 currentPareto = swarm(1, 1:op.numberOfDecisionVar);
 currentParetoValues = benchmark(currentPareto);
 bestPosVal = currentParetoValues;
+
+
+% Converts the percentage into a float number to be multiplied later
+parameters.topPercentageOfDom = parameters.topPercentageOfDom / 100;
+
 
 % Evaluate
 [bestPosVal, personalBest, currentPareto, currentParetoValues, swarmParetoCoords] = evaluate(swarm, parameters, op, currentPareto, currentParetoValues, bestPosVal, personalBest, swarmParetoCoords);
@@ -40,21 +46,21 @@ for i = 2:parameters.iterationTime
     end
     
     swarmRanking = sortrows(swarmRanking, 1);
+    oldPop = swarm;
+    oldPB = personalBest;
 
     disp(i);
     % Calculate new speed
     for ii = 1:parameters.particleCount
 
-        closestPareto = zeros(1,2);
-        closestDist = -1;
-        for iii = 1:height(currentParetoValues)
-            distToPareto = sum(currentParetoValues(iii, :) - swarmParetoCoords(ii, :));
-            if closestDist == -1 || closestDist > distToPareto
-                closestDist = distToPareto;
-                closestPareto = currentPareto(iii, :);
-            end
-        end
-        
+        closestPareto = zeros(1, op.numberOfDecisionVar);
+        sizeOfBest = ceil(height(swarmRanking) * parameters.topPercentageOfDom);
+        randomIndex = floor(rand(1,1) * (sizeOfBest - 1)) + 1;
+
+        % Gets the real index of the swarm from the sorted index
+        randomIndex = swarmRanking(randomIndex, 2);
+        closestPareto(1, :) = swarm(randomIndex, 1:op.numberOfDecisionVar);
+
         oldPos = swarm(ii, 1:op.numberOfDecisionVar);
 
         % Personal Influence
@@ -64,10 +70,10 @@ for i = 2:parameters.iterationTime
         swarm(ii, op.numberOfDecisionVar+1:end) = swarm(ii, op.numberOfDecisionVar+1:end) + parameters.socialConst*rand(1)*(closestPareto - oldPos);
         swarm(ii, 1:op.numberOfDecisionVar) = oldPos + swarm(ii, op.numberOfDecisionVar+1:end);
 
-        oldPos = swarm(ii, 1:op.numberOfDecisionVar);
+        newPos = swarm(ii, 1:op.numberOfDecisionVar);
         swarm(ii, 1:op.numberOfDecisionVar) = max(swarm(ii, 1:op.numberOfDecisionVar), op.bounds(1,1)); % TODO : Fix specific bounds for each value
         swarm(ii, 1:op.numberOfDecisionVar) = min(swarm(ii, 1:op.numberOfDecisionVar), op.bounds(1,2));
-        if oldPos ~= swarm(ii, 1:op.numberOfDecisionVar)
+        if newPos ~= swarm(ii, 1:op.numberOfDecisionVar)
             swarm(ii, op.numberOfDecisionVar+1:end) = -1 * swarm(ii, op.numberOfDecisionVar+1:end);
         end
     end
@@ -77,8 +83,37 @@ for i = 2:parameters.iterationTime
     % Evaluate
     [bestPosVal, personalBest, currentPareto, currentParetoValues, swarmParetoCoords] = evaluate(swarm, parameters, op, currentPareto, currentParetoValues, bestPosVal, personalBest, swarmParetoCoords);
 
+    combinedList = vertcat(personalBest, swarm(:, 1:op.numberOfDecisionVar));
+    nonDomList = zeros(1,op.numberOfDecisionVar);
+    for ii = 1:height(combinedList)
+        pos = combinedList(ii, :);
+        dom = true;
+        for iii = 1:parameters.particleCount
+            pos2 = swarm(iii, 1:op.numberOfDecisionVar);
+            if all(pos2 < pos)
+                dom = false;
+                break;
+            end
+        end
+        if dom
+            nonDomList(end+1, :) = pos(:);
+        end
+    end
+    nonDomList(1, :) = [];
 
-
+    swarm(:, 1:op.numberOfDecisionVar) = zeros(height(swarm), op.numberOfDecisionVar);
+    
+    for ii = 1:parameters.particleCount
+        if(height(nonDomList) == 0)
+            randomIndex = floor(rand(1,1) * height(combinedList - 1)) + 1;
+            swarm(ii, 1:op.numberOfDecisionVar) = combinedList(randomIndex, :);
+            continue;
+        end
+        randomIndex = floor(rand(1,1) * height(nonDomList - 1)) + 1;
+        swarm(ii, 1:op.numberOfDecisionVar) = nonDomList(randomIndex, :);
+        nonDomList(randomIndex, :) = [];
+    end
+    
 
     clf;
     hold on
