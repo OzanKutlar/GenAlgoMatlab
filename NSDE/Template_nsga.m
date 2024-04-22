@@ -5,7 +5,6 @@ op.name = "ZDT1";
 addpath('..\Shared');
 benchmark(zeros(2,2), true);
 
-
 gas.algotihm_name = "NSDE";
 gas.generations = 200;
 gas.n_individuals = 100;

@@ -18,7 +18,7 @@ for i = 1:gas.n_individuals
 
     %% Crossover
     for j = 1:gas.n_variables
-        U(i, j) = max(min(P(i, j) + 1 * (X3(j) - P(i, j)) + F * (X1(j) - X2(j)), 1), 0);
+        U(i, j) = max(min(P(i, j) + 1 * (X3(j) - P(i, j)) + F * (X1(j) - X2(j)), op.bounds(2)), op.bounds(1));
     end
 end
 
