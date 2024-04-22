@@ -6,7 +6,7 @@ function resultArr = benchmark(individual, setup)
     switch upper(op.name)
         case "ZDT1"
             if setup
-                op.numberOfDecisionVar = 30;
+                op.numberOfDecisionVar = 10;
                 op.numberOfObjectives = 2;
                 op.bounds = [0,1];
                 return;
@@ -14,7 +14,7 @@ function resultArr = benchmark(individual, setup)
             resultArr = zdt1(individual);
         case "ZDT11"
             if setup
-                op.numberOfDecisionVar = 2;
+                op.numberOfDecisionVar = 10;
                 op.numberOfObjectives = 2;
                 op.bounds = repmat([0,1], op.numberOfDecisionVar, 1);
                 %op.bounds(2, :) = op.bounds(2, :) * 5;
@@ -23,7 +23,7 @@ function resultArr = benchmark(individual, setup)
             resultArr = zdt1(individual);
         case "ZDT2"
             if setup
-                op.numberOfDecisionVar = 2;
+                op.numberOfDecisionVar = 10;
                 op.numberOfObjectives = 2;
                 op.bounds = [0,1];
                 return;
@@ -31,7 +31,7 @@ function resultArr = benchmark(individual, setup)
             resultArr = zdt2(individual);
         case "ZDT3"
             if setup
-                op.numberOfDecisionVar = 30;
+                op.numberOfDecisionVar = 10;
                 op.numberOfObjectives = 2;
                 op.bounds = [0,1];
                 return;
@@ -39,7 +39,7 @@ function resultArr = benchmark(individual, setup)
             resultArr = zdt3(individual);
         case "ZDT4"
             if setup
-                op.numberOfDecisionVar = 2;
+                op.numberOfDecisionVar = 10;
                 op.numberOfObjectives = 2;
                 op.bounds = [0,1];
                 return;
@@ -47,7 +47,7 @@ function resultArr = benchmark(individual, setup)
             resultArr = zdt4(individual);
         case "ZDT6"
             if setup
-                op.numberOfDecisionVar = 2;
+                op.numberOfDecisionVar = 10;
                 op.numberOfObjectives = 2;
                 op.bounds = [0,1];
                 return;
