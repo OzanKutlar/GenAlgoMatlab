@@ -40,7 +40,7 @@ for t = 1:T
         del = randi(D, 1);              % Generating the random variable delta
 
         for j = 1:D
-            if (rand <= Pc) || del == j % Check for donor vector or target vector
+            if rand <= Pc || del == j % Check for donor vector or target vector
                 U(i, j) = V(j);         % Accept variable from donor vector
             else
                 U(i, j) = P(i, j);      % Accept variable from target vector
