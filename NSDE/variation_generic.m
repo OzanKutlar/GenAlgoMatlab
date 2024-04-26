@@ -1,4 +1,7 @@
 function [U] = variation_generic(P, matPool)
+
+% DE/current-to-rand/1 method
+
 %UNTITLED6 Summary of this function goes here
 global op;  % optimization problem
 global gas; % genetic algorithm settings
