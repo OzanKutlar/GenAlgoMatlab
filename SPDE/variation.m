@@ -63,7 +63,7 @@ function [offspring] = rand_1_bin(pop, matPool)
 
         for j = 1:op.numberOfDecisionVar
             if rand <= Pc || del == j % Check for donor vector or target vector
-                offspring(i, j) = max(min(V(j), op.bounds(2)), op.bounds(1));;         % Accept variable from donor vector
+                offspring(i, j) = max(min(V(j), op.bounds(2)), op.bounds(1));         % Accept variable from donor vector
             else
                 offspring(i, j) = pop(i, j);      % Accept variable from target vector
             end
