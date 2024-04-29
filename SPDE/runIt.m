@@ -18,7 +18,7 @@ function [best_chrom, configurations] = runIt()
     
 
     gas.algotihm_name = "SPDE";
-    gas.generations = 200;
+    gas.generations = 100;
     gas.isMin = [1 1 1]; %vector for determining if the objectives are to minimize or maximize, 1 for minimize, 0 for maximize
     gas.onlyStrictlyDominance = false;
     gas.n_individuals = 100;

@@ -1,6 +1,6 @@
 function [offspring] = variation_generic(pop, matPool)
-    offspring = current_to_rand_1(pop, matPool);
-    % offspring = rand_p_bin(pop, matPool);
+    % offspring = current_to_rand_1(pop, matPool);
+    offspring = rand_1_bin(pop, matPool);
 end
 
 function [offspring] = current_to_rand_1(pop, matPool)
@@ -29,7 +29,7 @@ for i = 1:gas.n_individuals
 end
 end
 
-function [offspring] = rand_p_bin(pop, matPool)
+function [offspring] = rand_1_bin(pop, matPool)
     % DE/rand/1/bin method
 
     global op;  % optimization problem

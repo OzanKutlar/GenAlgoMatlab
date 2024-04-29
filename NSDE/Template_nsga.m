@@ -6,7 +6,7 @@ addpath('..\Shared');
 benchmark(zeros(2,2), true);
 
 gas.algotihm_name = "NSDE";
-gas.generations = 200;
+gas.generations = 100;
 gas.n_individuals = 100;
 gas.n_variables = op.numberOfDecisionVar;
 gas.isMin = [1 1 1];
