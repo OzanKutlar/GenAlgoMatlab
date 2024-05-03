@@ -9,8 +9,11 @@ op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 parameters.particleCount = 500; % Number of particles
 parameters.personalConst = 0.001;
 parameters.socialConst = 0.01;
-parameters.iterationTime = 4000; % Maximum number of 'iterations' to run the simulation
-parameters.elasticity = 0.1; % Maximum number of 'iterations' to run the simulation
+parameters.iterationTime = 500; % Maximum number of 'iterations' to run the simulation
+parameters.elasticity = 0.2; % How much of the original speed should the particle bounce off the wall with?
+parameters.socialDistance = 0.4; % Distance at which particles are moved apart.
+
+
 % Set speed after position
 swarm = zeros(parameters.particleCount, op.numberOfDecisionVar * 2);
 
@@ -63,12 +66,30 @@ end
 
 % Cycle
 for i = 2:parameters.iterationTime
-    disp(i);
+    % disp(i);
+
+
+
+    % Calculate Niche Count
+    nicheCounts = zeros(height(currentPareto), 2);
+    for ii = 1:height(currentPareto)
+        part1 = currentParetoValues(iii, :);
+        rest = swarmParetoCoords;
+        rest = abs(rest - part1);
+        rest = rest .^ 2;
+        rest = sqrt(sum(rest, 2));
+        rest = parameters.socialDistance > rest;
+        nicheCounts(ii, 1) = sum(rest) - 1;
+        nicheCounts(ii, 2) = ii;
+    end
+
+    nicheCounts = sortrows(nicheCounts);
+
     % Calculate new speed
     for ii = 1:parameters.particleCount
         
-        globalBest = round(rand(1, 1) * (height(currentPareto) - 1)) + 1;
-        closestPareto = currentPareto(globalBest, :);
+        globalBest = round(rand(1, 1) * (height(nicheCounts) * 0.3)) + 1;
+        closestPareto = currentPareto(nicheCounts(globalBest, 2), :);
         
         oldPos = swarm(ii, 1:op.numberOfDecisionVar);
 
@@ -99,15 +120,15 @@ for i = 2:parameters.iterationTime
 
 
     % Evaluate
-    for i = 1:parameters.particleCount
-        value = benchmark(swarm(i, 1:op.numberOfDecisionVar));
-        bestPosVal(i, :) = value;
-        personalBest(i, :) = swarm(i, 1:op.numberOfDecisionVar);
+    for ii = 1:parameters.particleCount
+        value = benchmark(swarm(ii, 1:op.numberOfDecisionVar));
+        bestPosVal(ii, :) = value;
+        personalBest(ii, :) = swarm(ii, 1:op.numberOfDecisionVar);
         dominated = false;
         for j = 1:height(currentParetoValues)
             if ~any(value >= currentParetoValues(j, :))
                 currentParetoValues(j, :) = value;
-                currentPareto(j, :) = swarm(i, 1:op.numberOfDecisionVar);
+                currentPareto(j, :) = swarm(ii, 1:op.numberOfDecisionVar);
                 dominated = true;
                 removed = 0;
                 for ii = 1:height(currentParetoValues)
@@ -126,10 +147,10 @@ for i = 2:parameters.iterationTime
             end
         end
         if ~dominated
-                currentPareto(end+1, :) = swarm(i, 1:op.numberOfDecisionVar);
+                currentPareto(end+1, :) = swarm(ii, 1:op.numberOfDecisionVar);
                 currentParetoValues(end+1, :) = value(:);
         end
-        swarmParetoCoords(i, :) = value;
+        swarmParetoCoords(ii, :) = value;
     end
 
     
@@ -153,7 +174,7 @@ for i = 2:parameters.iterationTime
         plot3(sortedPareto(:, 1), sortedPareto(:, 2), sortedPareto(:, 3), "-x")
     end
     %hold off
-    % legend({'Swarm', 'Pareto'});
+    legend({strcat("Swarm Gen : ", num2str(i)), 'Pareto'});
     drawnow
 end
 

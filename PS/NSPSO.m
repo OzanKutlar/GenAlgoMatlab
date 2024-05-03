@@ -1,15 +1,15 @@
 clear
 global parameters;
 global op;
-op.name = "ZDT3";
+op.name = "ZDT1";
 addpath('..\Shared');
 %whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 1000; % Number of particles
-parameters.personalConst = 2;
-parameters.socialConst = 2;
+parameters.particleCount = 300; % Number of particles
+parameters.personalConst = 0.2;
+parameters.socialConst = 0.2;
 parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
 parameters.socialDistance = 1; % Distance at which particles are moved apart.
 
