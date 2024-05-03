@@ -8,10 +8,10 @@ benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
 parameters.particleCount = 200; % Number of particles
-parameters.personalConst = 0.01;
-parameters.socialConst = 0.01;
+parameters.personalConst = 2;
+parameters.socialConst = 2;
 parameters.iterationTime = 400; % Maximum number of 'iterations' to run the simulation
-parameters.socialDistance = 0.1; % Distance at which particles are moved apart.
+parameters.socialDistance = 1; % Distance at which particles are moved apart.
 
 swarm.Pos = zeros(parameters.particleCount, op.numberOfDecisionVar);
 swarm.Vel = zeros(parameters.particleCount, op.numberOfDecisionVar);
@@ -39,9 +39,9 @@ end
 % Enter Main Loop
 swarm.nonDom = zeros(parameters.particleCount + 1, 1);
 
-for i = i:parameters.iterationTime
+for i = 1:parameters.iterationTime
     swarm.nonDom(end, 1) = 0;
-
+    lerp(1, 0.4)
     % Find non dominated examples.
     for ii = 1:parameters.particleCount
         dominated = false;
@@ -81,7 +81,7 @@ for i = i:parameters.iterationTime
 
     % Calculate new speed and Pos
     for ii = 1:parameters.particleCount
-        globalBest = round(rand() * swarm.nonDom(end));
+        globalBest = round(rand() * (swarm.nonDom(end) - 1)) + 1;
         swarm.Vel(ii, :) = swarm.Vel(ii, :) + parameters.personalConst*(swarm.PersonalBestPos(ii,:) - swarm.Pos(ii,:));
         swarm.Vel(ii, :) = swarm.Vel(ii, :) + parameters.socialConst*(swarm.Pos(swarm.nonDom(globalBest), :) - swarm.Pos(ii,:));
         swarm.Pos(ii, :) = swarm.Pos(ii, :) + swarm.Vel(ii, :);
@@ -225,8 +225,8 @@ for i = i:parameters.iterationTime
 
     if op.numberOfObjectives == 2
         %hold on
-        scatter(swarm.Pos(:, 1), swarm.Pos(:, 2), 'filled','red');
-        % scatter(swarm.Val(:, 1), swarm.Val(:, 2), 'filled','red');
+        % scatter(swarm.Pos(:, 1), swarm.Pos(:, 2), 'filled','red');
+        scatter(swarm.Val(:, 1), swarm.Val(:, 2), 'filled','red');
         %scatter(swarm.nextPop.paretoPos(:, 1), swarm.nextPop.paretoPos(:, 2), 'filled','DisplayName',"Particle Swarm");
         %hold off
     end

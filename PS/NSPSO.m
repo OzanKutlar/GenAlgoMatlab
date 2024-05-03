@@ -1,17 +1,17 @@
 clear
 global parameters;
 global op;
-op.name = "ZDT1";
+op.name = "ZDT3";
 addpath('..\Shared');
 %whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 400; % Number of particles
-parameters.personalConst = 0.01;
-parameters.socialConst = 0.01;
-parameters.iterationTime = 400; % Maximum number of 'iterations' to run the simulation
-parameters.socialDistance = 0.001; % Distance at which particles are moved apart.
+parameters.particleCount = 1000; % Number of particles
+parameters.personalConst = 2;
+parameters.socialConst = 2;
+parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
+parameters.socialDistance = 1; % Distance at which particles are moved apart.
 
 swarm.Pos = zeros(parameters.particleCount, op.numberOfDecisionVar);
 swarm.Vel = zeros(parameters.particleCount, op.numberOfDecisionVar);
@@ -41,7 +41,7 @@ swarm.nonDom = zeros(parameters.particleCount + 1, 1);
 
 for i = 1:parameters.iterationTime
     swarm.nonDom(end, 1) = 0;
-
+    parameters.socialDistance = (1 - (i/parameters.iterationTime)) + (0.4 * (i/parameters.iterationTime));
     % Find non dominated examples.
     for ii = 1:parameters.particleCount
         dominated = false;
@@ -88,6 +88,7 @@ for i = 1:parameters.iterationTime
         
         for iii = 1:op.numberOfDecisionVar
             swarm.Pos(ii, iii) = max(min(swarm.Pos(ii, iii), op.bounds(iii, 2)), op.bounds(iii, 1));
+            swarm.Vel(ii, iii) = max(min(swarm.Vel(ii, iii), op.bounds(iii, 2)), op.bounds(iii, 1));
         end
 
         swarm.newPop.Pos(ii, :) = swarm.Pos(ii, :);
@@ -227,6 +228,7 @@ for i = 1:parameters.iterationTime
         %hold on
         % scatter(swarm.Pos(:, 1), swarm.Pos(:, 2), 'filled','red');
         scatter(swarm.Val(:, 1), swarm.Val(:, 2), 'filled','red');
+        legend(strcat("Generation : ", num2str(i)))
         %scatter(swarm.nextPop.paretoPos(:, 1), swarm.nextPop.paretoPos(:, 2), 'filled','DisplayName',"Particle Swarm");
         %hold off
     end
