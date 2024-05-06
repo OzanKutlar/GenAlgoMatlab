@@ -12,15 +12,6 @@ function resultArr = benchmark(individual, setup)
                 return;
             end
             resultArr = zdt1(individual);
-        case "ZDT11"
-            if setup
-                op.numberOfDecisionVar = 10;
-                op.numberOfObjectives = 2;
-                op.bounds = repmat([0,1], op.numberOfDecisionVar, 1);
-                %op.bounds(2, :) = op.bounds(2, :) * 5;
-                return;
-            end
-            resultArr = zdt1(individual);
         case "ZDT2"
             if setup
                 op.numberOfDecisionVar = 10;

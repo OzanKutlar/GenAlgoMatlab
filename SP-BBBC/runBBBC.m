@@ -10,7 +10,7 @@ function [archive] = runBBBC()
     global bbbcs;       % big bang-big crunch settings
 
     global op;          % Optimization problem
-    op.name = "ZDT6";
+    op.name = "KUR";
     benchmark(zeros(2,2), true);
 
     bbbcs.N = 300;  % number of individuals

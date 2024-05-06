@@ -1,17 +1,17 @@
 global parameters;
 global op;
-op.name = "ZDT3";
+op.name = "ZDT2";
 addpath('..\Shared');
 %whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 500; % Number of particles
-parameters.personalConst = 0.001;
-parameters.socialConst = 0.01;
-parameters.iterationTime = 500; % Maximum number of 'iterations' to run the simulation
-parameters.elasticity = 0.2; % How much of the original speed should the particle bounce off the wall with?
-parameters.socialDistance = 0.4; % Distance at which particles are moved apart.
+parameters.particleCount = 1000; % Number of particles
+parameters.personalConst = 0.5;
+parameters.socialConst = 0.5;
+parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
+parameters.elasticity = 0.6; % How much of the original speed should the particle bounce off the wall with?
+parameters.socialDistance = 0.2; % Distance at which particles are moved apart.
 
 
 % Set speed after position
@@ -42,8 +42,9 @@ for i = 1:parameters.particleCount
             dominated = true;
             removed = 0;
             for ii = 1:height(currentParetoValues)
-                if ~any(value >= currentParetoValues(ii - removed, :))
+                if all(value <= currentParetoValues(ii - removed, :)) && any(value < currentParetoValues(ii - removed, :))
                     currentParetoValues(ii - removed, :) = [];
+                    currentPareto(ii - removed, :) = [];
                     removed = removed + 1;
                 end
             end
@@ -73,7 +74,7 @@ for i = 2:parameters.iterationTime
     % Calculate Niche Count
     nicheCounts = zeros(height(currentPareto), 2);
     for ii = 1:height(currentPareto)
-        part1 = currentParetoValues(iii, :);
+        part1 = currentParetoValues(ii, :);
         rest = swarmParetoCoords;
         rest = abs(rest - part1);
         rest = rest .^ 2;
@@ -122,18 +123,21 @@ for i = 2:parameters.iterationTime
     % Evaluate
     for ii = 1:parameters.particleCount
         value = benchmark(swarm(ii, 1:op.numberOfDecisionVar));
-        bestPosVal(ii, :) = value;
-        personalBest(ii, :) = swarm(ii, 1:op.numberOfDecisionVar);
         dominated = false;
         for j = 1:height(currentParetoValues)
+            if(all(value(:) >= currentParetoValues(j, :)))
+                bestPosVal(ii, :) = value;
+                personalBest(ii, :) = swarm(ii, 1:op.numberOfDecisionVar);
+            end
             if ~any(value >= currentParetoValues(j, :))
                 currentParetoValues(j, :) = value;
                 currentPareto(j, :) = swarm(ii, 1:op.numberOfDecisionVar);
                 dominated = true;
                 removed = 0;
-                for ii = 1:height(currentParetoValues)
-                    if ~any(value >= currentParetoValues(ii - removed, :))
-                        currentParetoValues(ii - removed, :) = [];
+                for iii = 1:height(currentParetoValues)
+                    if all(value <= currentParetoValues(iii - removed, :)) && any(value < currentParetoValues(iii - removed, :))
+                        currentParetoValues(iii - removed, :) = [];
+                        currentPareto(iii - removed, :) = [];
                         removed = removed + 1;
                     end
                 end
@@ -162,14 +166,14 @@ for i = 2:parameters.iterationTime
     %figure;
     sortedPareto = sortrows(currentParetoValues);
     if op.numberOfObjectives == 2
-        scatter(bestPosVal(:, 1), bestPosVal(:, 2), 'filled','DisplayName',"Particle Swarm")
+        scatter(swarmParetoCoords(:, 1), swarmParetoCoords(:, 2), 'filled','DisplayName',"Particle Swarm")
         scatter(currentParetoValues(:, 1), currentParetoValues(:, 2), 'filled','DisplayName',"Particle Swarm");
         plot(sortedPareto(:, 1), sortedPareto(:, 2), "-x")
 
         % scatter(swarm(:, 1), swarm(:, 2), 'filled','DisplayName',"Particle Swarm")
     end
     if op.numberOfObjectives == 3
-        scatter3(bestPosVal(:, 1),bestPosVal(:, 2), bestPosVal(:, 3),'filled');
+        scatter3(swarmParetoCoords(:, 1),swarmParetoCoords(:, 2), swarmParetoCoords(:, 3),'filled');
         scatter3(currentParetoValues(:, 1),currentParetoValues(:, 2), currentParetoValues(:, 3),'filled');
         plot3(sortedPareto(:, 1), sortedPareto(:, 2), sortedPareto(:, 3), "-x")
     end

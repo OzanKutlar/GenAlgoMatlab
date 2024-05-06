@@ -3,7 +3,7 @@ global parameters;
 global op;
 op.name = "ZDT1";
 addpath('..\Shared');
-%whitebg("black");
+whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
