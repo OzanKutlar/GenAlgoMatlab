@@ -6,7 +6,7 @@ function resultArr = benchmark(individual, setup)
     switch upper(op.name)
         case "ZDT1"
             if setup
-                op.numberOfDecisionVar = 2;
+                op.numberOfDecisionVar = 30;
                 op.numberOfObjectives = 2;
                 op.bounds = [0,1];
                 return;
@@ -71,6 +71,14 @@ function resultArr = benchmark(individual, setup)
                 return;
             end
             resultArr = df1(individual, op.currentGen);
+        case "DTLZ1"
+            if setup
+                op.numberOfDecisionVar = 10;
+                op.numberOfObjectives = 3;
+                op.bounds = [0,1];
+                return;
+            end
+            resultArr = dtlz1(individual);
         case "DF3"
             if setup
                 op.changeFreq = 1 / 10;

@@ -1,17 +1,20 @@
 global parameters;
 global op;
-op.name = "ZDT2";
+op.name = "ZDT1";
 addpath('..\Shared');
 %whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
 parameters.particleCount = 1000; % Number of particles
-parameters.personalConst = 0.5;
-parameters.socialConst = 0.5;
-parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
+parameters.personalConst = 0; % Should the particle move towards its personal best?
+parameters.socialConst = 2; % Should the particle move towards the pareto front?
+parameters.iterationTime = 200; % Maximum number of 'iterations' to run the simulation
 parameters.elasticity = 0.6; % How much of the original speed should the particle bounce off the wall with?
-parameters.socialDistance = 0.2; % Distance at which particles are moved apart.
+parameters.socialDistance = 0.01; % Distance at which particles are moved apart.
+
+parameters.removeTooClosePareto = false; % Removes closest paretos that are over reduction limit
+parameters.reduceParetoTo = 0.5 * parameters.particleCount; % Start removing pareto locations after this number.
 
 
 % Set speed after position
@@ -75,7 +78,7 @@ for i = 2:parameters.iterationTime
     nicheCounts = zeros(height(currentPareto), 2);
     for ii = 1:height(currentPareto)
         part1 = currentParetoValues(ii, :);
-        rest = swarmParetoCoords;
+        rest = currentParetoValues;
         rest = abs(rest - part1);
         rest = rest .^ 2;
         rest = sqrt(sum(rest, 2));
@@ -85,6 +88,8 @@ for i = 2:parameters.iterationTime
     end
 
     nicheCounts = sortrows(nicheCounts);
+    
+
 
     % Calculate new speed
     for ii = 1:parameters.particleCount
@@ -118,7 +123,19 @@ for i = 2:parameters.iterationTime
         
     end
 
-
+    if(parameters.removeTooClosePareto)
+        if(height(nicheCounts) > parameters.reduceParetoTo)
+            toBeRemoved = nicheCounts(parameters.reduceParetoTo + 1:end, 2);
+            toBeRemoved = sortrows(toBeRemoved);
+            removed = 0;
+            for ii = 1:height(toBeRemoved)
+                currentPareto(toBeRemoved(ii) - removed, :) = [];
+                currentParetoValues(toBeRemoved(ii) - removed, :) = [];
+                nicheCounts(end, :) = [];
+                removed = removed + 1;
+            end
+        end
+    end
 
     % Evaluate
     for ii = 1:parameters.particleCount
@@ -188,8 +205,11 @@ hold on
 %figure;
 sortedPareto = sortrows(currentParetoValues);
 if op.numberOfObjectives == 2
+    % scatter(swarmParetoCoords(:, 1), swarmParetoCoords(:, 2), 'filled','DisplayName',"Particle Swarm")
     scatter(currentParetoValues(:, 1), currentParetoValues(:, 2), 'filled','DisplayName',"Particle Swarm", MarkerFaceColor="red")
+    legend({'Swarm'});
     %plot(sortedPareto(:, 1), sortedPareto(:, 2), "-x")
+    % legend({'Swarm', 'Pareto'});
 end
 if op.numberOfObjectives == 3
     %scatter3(bestPosVal(:, 1),bestPosVal(:, 2), bestPosVal(:, 3),'filled','DisplayName', "Particle Swarm");
@@ -197,4 +217,3 @@ if op.numberOfObjectives == 3
     %plot3(currentParetoValues(:, 1), currentParetoValues(:, 2), currentParetoValues(:, 3), "-x")
 end
 hold off
-legend({'Swarm', 'Pareto'});

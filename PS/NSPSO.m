@@ -7,9 +7,9 @@ whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 300; % Number of particles
-parameters.personalConst = 0.2;
-parameters.socialConst = 0.2;
+parameters.particleCount = 200; % Number of particles
+parameters.personalConst = 2;
+parameters.socialConst = 2;
 parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
 parameters.socialDistance = 1; % Distance at which particles are moved apart.
 
@@ -96,7 +96,7 @@ for i = 1:parameters.iterationTime
         swarm.newPop.PersonalBestPos(ii, :) = swarm.PersonalBestPos(ii, :);
         swarm.newPop.PersonalBestVel(ii, :) = swarm.PersonalBestVel(ii, :);
         swarm.newPop.Pos(parameters.particleCount + ii, :) = swarm.PersonalBestPos(ii, :);
-        swarm.newPop.Vel(parameters.particleCount + ii, :) = swarm.PersonalBestVel(ii, :);
+        swarm.newPop.Vel(parameters.particleCount + ii, :) = zeros(1, op.numberOfDecisionVar);
         swarm.newPop.PersonalBestPos(parameters.particleCount + ii, :) = swarm.PersonalBestPos(ii, :);
         swarm.newPop.PersonalBestVel(parameters.particleCount + ii, :) = swarm.PersonalBestVel(ii, :);
     end
