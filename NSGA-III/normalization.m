@@ -32,7 +32,7 @@ function normalizedMatrix = normalizeMatrix(matrix)
     global gas;         % genetic algorithm settings
     global op; 
     length = op.numberOfObjectives;
-    normalizedMatrix = zeros(length, width(matrix));
+    normalizedMatrix = zeros(height(matrix), width(matrix));
     for i = 1:length
         maxValue = max(matrix(:,i)); % Mean of all elements
         minValue = min(matrix(:,i));   % Standard deviation of all elements
