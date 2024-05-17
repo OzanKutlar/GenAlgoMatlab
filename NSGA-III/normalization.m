@@ -2,7 +2,8 @@ function [fit_array] = normalization(fit_array)
     global gas;         % genetic algorithm settings
     global op; 
     H = factorial(op.numberOfObjectives + gas.n_divisions - 1) / (2 * factorial(gas.n_divisions));
-    uniform_distribution(H, op.numberOfObjectives);
+    reference_directions = uniform_distribution(H, op.numberOfObjectives);
+    fit_array_normalized = normalizedMatrix(fit_array);
 end
 
 function [W,N] = uniform_distribution(N,M)
@@ -25,4 +26,16 @@ function [W,N] = uniform_distribution(N,M)
     end
     W = max(W,1e-6);
     N = size(W,1);
+end
+
+function normalizedMatrix = normalizeMatrix(matrix)
+    global gas;         % genetic algorithm settings
+    global op; 
+    length = op.numberOfObjectives;
+    normalizedMatrix = zeros(length, width(matrix));
+    for i = 1:length
+        maxValue = max(matrix(:,i)); % Mean of all elements
+        minValue = min(matrix(:,i));   % Standard deviation of all elements
+        normalizedMatrix(:,i) = (matrix(:,i) - minValue) / (maxValue - minValue);
+    end
 end
