@@ -2,14 +2,14 @@ global parameters;
 global op;
 op.name = "ZDT1";
 addpath('..\Shared');
-%whitebg("black");
+whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 1000; % Number of particles
-parameters.personalConst = 0; % Should the particle move towards its personal best?
-parameters.socialConst = 2; % Should the particle move towards the pareto front?
-parameters.iterationTime = 200; % Maximum number of 'iterations' to run the simulation
+parameters.particleCount = 10; % Number of particles
+parameters.personalConst = 0.01; % Should the particle move towards its personal best?
+parameters.socialConst = 0.01; % Should the particle move towards the pareto front?
+parameters.iterationTime = 2000; % Maximum number of 'iterations' to run the simulation
 parameters.elasticity = 0.6; % How much of the original speed should the particle bounce off the wall with?
 parameters.socialDistance = 0.01; % Distance at which particles are moved apart.
 

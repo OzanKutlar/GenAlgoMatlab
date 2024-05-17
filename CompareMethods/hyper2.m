@@ -43,7 +43,8 @@ function hyperVolume=hyper2(input_matrix, isMin)
 end
 
 function normalizedMatrix = normalizeMatrix(matrix)
-    length = size(matrix, 2);
+    length = height(matrix);
+    normalizedMatrix = zeros(length, width(matrix));
     for i = 1:length
         maxValue = max(matrix(:,i)); % Mean of all elements
         minValue = min(matrix(:,i));   % Standard deviation of all elements
