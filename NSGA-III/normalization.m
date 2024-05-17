@@ -6,6 +6,7 @@ function [fit_array] = normalization(fit_array)
     fit_array_normalized = normalizedMatrix(fit_array);
 end
 
+% Code from PlatEMO
 function [W,N] = uniform_distribution(N,M)
     H1 = 1;
     while nchoosek(H1+M,M-1) <= N
