@@ -5,8 +5,9 @@ op.name = "ZDT1";
 addpath('..\Shared');
 benchmark(zeros(2,2), true);
 
+gas.p_divisions = 4;
 
-gas.algotihm_name = "NSGA";
+gas.algotihm_name = "NSGA-III";
 gas.generations = 100;
 gas.n_individuals = 100;
 gas.n_variables = op.numberOfDecisionVar;
