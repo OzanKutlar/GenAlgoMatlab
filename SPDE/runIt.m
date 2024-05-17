@@ -1,5 +1,4 @@
 function [best_chrom, configurations] = runIt()
-    
     %---------------------PROBLEM DEFINITION---------------------  
     addpath '..\Shared'
     global op;          % Optimization problem
