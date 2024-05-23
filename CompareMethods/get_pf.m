@@ -8,7 +8,7 @@ function R = get_pf(problem, N)
             R(:,1) = linspace(0,1,N)';
             R(:,2) = 1 - R(:,1).^2;
         case "ZDT3"
-            R(:,1) = linspace(0,1,100)';
+            R(:,1) = linspace(0,1,N)';
             R(:,2) = 1 - R(:,1).^0.5 - R(:,1).*sin(10*pi*R(:,1));
             R(NDSort(R,1)>1,:) = nan;
         case "ZDT4"
