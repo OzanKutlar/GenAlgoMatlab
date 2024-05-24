@@ -17,7 +17,7 @@ function [assosiations, reference_assosiations] = assosiate(normalizedfitArray, 
     end
 end
 
-function distance = calculatePointToLineDistance(reference, point) %#ok<DEFNU>
+function distance = calculatePointToLineDistance(reference, point) 
     % This function calculates the distance between a point and a line in n-dimensional space.
     %
     % Inputs:

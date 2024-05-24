@@ -9,7 +9,7 @@ function [fit_array] = normalize(fit_array)
 
 
     reference_directions = [uniform_distribution(H, op.numberOfObjectives), zeros(H, 1)]; % Creates a matrix with each value and a niching row next to it.
-    fit_array_normalized = normalizedMatrix(fit_array);
+    fit_array_normalized = normalizeMatrix(fit_array);
     
 end
 
@@ -37,7 +37,6 @@ function [W,N] = uniform_distribution(N,M)
 end
 
 function normalizedMatrix = normalizeMatrix(matrix)
-    global gas;         % genetic algorithm settings
     global op; 
     length = op.numberOfObjectives;
     normalizedMatrix = zeros(height(matrix), width(matrix));
