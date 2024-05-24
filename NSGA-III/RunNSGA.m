@@ -24,7 +24,7 @@ pop = initializeRandomPopulation();
 
 fit_array_P = nonDomSortingGeneric(fit_array_P);
 fit_array_P = crowding_distance_generic(fit_array_P);
-
+normalizedFitArray = normalize()
 
 hold on
 for gen=1:1:gas.generations

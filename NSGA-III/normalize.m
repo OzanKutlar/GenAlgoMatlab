@@ -1,9 +1,16 @@
-function [fit_array] = normalization(fit_array)
+function [fit_array] = normalize(fit_array)
     global gas;         % genetic algorithm settings
     global op; 
-    H = factorial(op.numberOfObjectives + gas.n_divisions - 1) / (2 * factorial(gas.n_divisions));
-    reference_directions = uniform_distribution(H, op.numberOfObjectives);
+
+
+    n = op.numberOfObjectives + gas.n_divisions - 1;
+    r = gas.n_divisions;
+    H = factorial(n) / (factorial(r) * factorial(n - r));
+
+
+    reference_directions = [uniform_distribution(H, op.numberOfObjectives), zeros(H, 1)]; % Creates a matrix with each value and a niching row next to it.
     fit_array_normalized = normalizedMatrix(fit_array);
+    
 end
 
 % Code from PlatEMO
@@ -35,8 +42,8 @@ function normalizedMatrix = normalizeMatrix(matrix)
     length = op.numberOfObjectives;
     normalizedMatrix = zeros(height(matrix), width(matrix));
     for i = 1:length
-        maxValue = max(matrix(:,i)); % Mean of all elements
-        minValue = min(matrix(:,i));   % Standard deviation of all elements
+        maxValue = max(matrix(:,i)); % Max of all elements
+        minValue = min(matrix(:,i));   % Min of all elements
         normalizedMatrix(:,i) = (matrix(:,i) - minValue) / (maxValue - minValue);
     end
 end
