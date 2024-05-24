@@ -1,4 +1,4 @@
-function Score = IGD(PopObj,PF)
+function Score = igd(PopObj,PF)
 % <metric> <min>
 % Inverted generational distance
 %------------------------------- Reference --------------------------------
