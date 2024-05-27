@@ -24,7 +24,10 @@ pop = initializeRandomPopulation();
 
 fit_array_P = nonDomSortingGeneric(fit_array_P);
 fit_array_P = crowding_distance_generic(fit_array_P);
-normalizedFitArray = normalize()
+
+[fit_normalized, reference_directions] = normalize(fit_array_P);
+[assosiations, reference_assosiations] = assosiate(fit_normalized, reference_directions);
+fit_array_P = niching(fit_array_P, reference_assosiations, assosiations);
 
 hold on
 for gen=1:1:gas.generations

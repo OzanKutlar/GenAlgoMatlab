@@ -1,12 +1,11 @@
 function [assosiations, reference_assosiations] = assosiate(normalizedfitArray, reference_points)
-    assosiations = zeros(height(normalizedfitArray), 1);
     reference_assosiations = zeros(height(reference_points), 1);
     for i = 1:height(normalizedfitArray)
         point = normalizedfitArray(i, :);
         shortest.index = 1;
-        shortest.dist = calculatePointToLineDistance(reference_points(1), point);
+        shortest.dist = calculatePointToLineDistance(reference_points(1, :), point);
         for j = 2:height(reference_points)
-            dist = calculatePointToLineDistance(reference_points(j), point);
+            dist = calculatePointToLineDistance(reference_points(j, :), point);
             if(shortest.dist > dist)
                 shortest.dist = dist;
                 shortest.index = j;
@@ -31,11 +30,11 @@ function distance = calculatePointToLineDistance(reference, point)
     % - distance: The shortest distance between the point and the line
     
     % Extract the point on the line and the direction vector from the line equation
-    pointOnLine = zeros(width(reference));
+    pointOnLine = zeros(1, width(reference));
     directionVector = reference;
     
     % Ensure the input point and line point have the same dimensions
-    if length(pointOnLine) ~= length(point) || length(directionVector) ~= length(point)
+    if width(pointOnLine) ~= width(point) || width(directionVector) ~= width(point)
         error('All points must have the same number of dimensions');
     end
     
