@@ -27,10 +27,11 @@ Index=gas.n_ObjectiveFunctions+1;
 
 
         fit_array_NGP = nonDomSortingGeneric(fit_array_NGP);
-        fit_array_NGP = crowding_distance_generic(fit_array_NGP);
-    	rank_at_half = fit_array_NGP(gas.n_individuals,rankIndex);
-        fit_array_NGP(fit_array_NGP(:,rankIndex) == rank_at_half,:) = sortrows(fit_array_NGP(fit_array_NGP(:,rankIndex) == rank_at_half,:),distanceIndex,"descend");
-        fit_array_NGP(gas.n_individuals+1:gas.n_individuals*2,:) = [];
+        
+        % fit_array_NGP = crowding_distance_generic(fit_array_NGP);
+    	% rank_at_half = fit_array_NGP(gas.n_individuals,rankIndex);
+        % fit_array_NGP(fit_array_NGP(:,rankIndex) == rank_at_half,:) = sortrows(fit_array_NGP(fit_array_NGP(:,rankIndex) == rank_at_half,:),distanceIndex,"descend");
+        % fit_array_NGP(gas.n_individuals+1:gas.n_individuals*2,:) = [];
 
         nextGenPop_final = zeros(gas.n_individuals,gas.n_variables);
         for i=1:gas.n_individuals
