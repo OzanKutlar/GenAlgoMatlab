@@ -1,15 +1,15 @@
 global gas;         % genetic algorithm settings
 global op; 
 
-op.name = "DTLZ1";  
+op.name = "ZDT1";  
 addpath('..\Shared');
 benchmark(zeros(2,2), true);
 
 gas.p_divisions = 4;
 
 gas.algotihm_name = "NSGA-III";
-gas.generations = 100;
-gas.n_individuals = 100;
+gas.generations = 200;
+gas.n_individuals = 300;
 gas.n_variables = op.numberOfDecisionVar;
 gas.isMin = [1 1 1];
 gas.n_ObjectiveFunctions=op.numberOfObjectives; % number of functions to solve

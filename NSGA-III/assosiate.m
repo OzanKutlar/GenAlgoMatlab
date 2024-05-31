@@ -12,7 +12,7 @@ function [assosiations, reference_assosiations] = assosiate(normalizedfitArray, 
             end
         end
         assosiations(i) = shortest;
-        reference_assosiations(j) = reference_assosiations(j) + 1;
+        reference_assosiations(shortest.index) = reference_assosiations(shortest.index) + 1;
     end
 end
 
