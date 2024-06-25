@@ -3,6 +3,7 @@ function [assosiations, reference_assosiations] = assosiate(normalizedfitArray, 
     for i = 1:height(normalizedfitArray)
         point = normalizedfitArray(i, :);
         shortest.index = 1;
+        shortest.original = i;
         shortest.dist = calculatePointToLineDistance(reference_points(1, :), point);
         for j = 2:height(reference_points)
             dist = calculatePointToLineDistance(reference_points(j, :), point);

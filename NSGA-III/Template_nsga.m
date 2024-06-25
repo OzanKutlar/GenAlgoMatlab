@@ -9,7 +9,7 @@ gas.p_divisions = 4;
 
 gas.algotihm_name = "NSGA-III";
 gas.generations = 200;
-gas.n_individuals = 300;
+gas.n_individuals = 100;
 gas.n_variables = op.numberOfDecisionVar;
 gas.isMin = [1 1 1];
 gas.n_ObjectiveFunctions=op.numberOfObjectives; % number of functions to solve
