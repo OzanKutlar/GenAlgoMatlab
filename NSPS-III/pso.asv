@@ -32,13 +32,42 @@ clear i ii
 for i = 1:parameters.iterationTime
     disp(strcat("Entering Iteration : ", num2str(i)));
     
+    
+
+
     swarm(i).velocity = swarm(i).velocity + parameters.personalConst*(swarm(i).personalBest.position - swarm(i).position);
     swarm(i).velocity = swarm(i).velocity + parameters.socialConst*(bestP.position - swarm(i).position);
+    swarm(i).position = swarm(i).position + swarm(i).velocity;
+    
+    
 
 end
 
 
 
+function newSwarm = getNonDominatedSwarm(swarm)
+    tempSwarm = zeros(width(swarm), 1);
+    tempIndex = 1;
+    pareto = getParetoSpace(swarm);
+    while true
+        removedParticles = zeros(width(swarm), 1);
+        for i = 1:width(swarm)
+            particle = swarm(i).paretoPosition;
+            % @ge asks if any of them are greater or equal
+            isDominated = any(all(bsxfun(@ge, pareto, particle), 1));
+
+            if ~isDominated
+                tempSwarm(tempIndex) = swarm(i);
+                tempIndex = tempIndex + 1;
+                removedParticles(i) = 1;
+            end
+        end
+        newSwarm = [newSwarm, tempSwarm];
+        for i = 1:width(swarm)
+            
+        end
+    end
+end
 
 
 
