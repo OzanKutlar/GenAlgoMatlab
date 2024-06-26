@@ -1,17 +1,19 @@
 clear
 global parameters;
 global op;
-op.name = "ZDT1";
+op.name = "DTLZ1";
 addpath('..\Shared');
 % whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 2000; % Number of particles
+parameters.particleCount = 500; % Number of particles
 parameters.personalConst = 2;
-parameters.socialConst = 2;
+parameters.socialConst = 4;
 parameters.iterationTime = 30000; % Maximum number of 'iterations' to run the simulation
-parameters.socialDistance = 1; % Distance at which particles are moved apart.
+parameters.division = 5; % Amount of divisions per dimension for the reference directions
+
+
 parameters.eliteCount = parameters.particleCount * 0.1; % 10% of the population as elites by default
 
 % Create a structure array to hold the particles
@@ -54,7 +56,7 @@ for i = 1:parameters.iterationTime
     % pareto = getParetoSpace(swarm);
     pareto = getParetoSpace(selectedElites);
 
-    scatter(pareto(:, 1), pareto(:, 2), 'filled');
+    scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 'filled');
 
     clear pareto
     drawnow
@@ -74,6 +76,12 @@ function elites = selectElites(nonDomLayers, elites)
             end
             layersize = layersize + 1;
         end
+        if(layersize + selectedEliteCount >= parameters.eliteCount)
+            if(layersize + selectedEliteCount ~= parameters.eliteCount)
+                elites = doNiching(elites, nonDomLayers(index:index+(layersize - 1)), selectedEliteCount);
+            end
+            break;
+        end
         for iii = index:index+(layersize - 1)
             elites(selectedEliteCount + 1) = nonDomLayers(iii);
             selectedEliteCount = selectedEliteCount + 1;
@@ -86,6 +94,43 @@ function elites = selectElites(nonDomLayers, elites)
         end
     
         index = ii + 1;
+    end
+end
+
+function elites = doNiching(elites, nonDomLayers, eliteCount)
+    global parameters;
+    [normalizedSwarm, reference_directions] = doNormalize(getParetoSpace(nonDomLayers));
+    assosiations = assosiate(normalizedSwarm, reference_directions, nonDomLayers);
+    if(width(assosiations) == 0)
+        disp("Error?");
+    end
+    while true
+        shortest = assosiations(1);
+        shortestIndex = 1;
+        for i = 2:width(assosiations)
+            if(assosiations(i).count <= shortest.count && assosiations(i).count ~= 0)
+                shortest = assosiations(i);
+                shortestIndex = i;
+            end
+        end
+        assosiations(shortestIndex) = [];
+        clear shortestIndex
+        for i = 1:(parameters.eliteCount - eliteCount)
+            if(shortest.count == 1)
+                break;
+            end
+            randomCandidate = round(rand() * (shortest.count - 1)) + 1;
+            if(isempty(shortest.swarm(randomCandidate).position))
+                randomCandidate = round(rand() * (shortest.count - 2)) + 1;
+            end
+            elites(eliteCount + 1) = shortest.swarm(randomCandidate);
+            shortest.swarm(randomCandidate) = [];
+            shortest.count = shortest.count - 1;
+            eliteCount = eliteCount + 1;
+        end
+        if(parameters.eliteCount == eliteCount)
+            break;
+        end
     end
 end
 
