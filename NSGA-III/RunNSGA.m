@@ -27,7 +27,7 @@ fit_array_P = crowding_distance_generic(fit_array_P);
 
 [fit_normalized, reference_directions] = normalize(fit_array_P);
 [assosiations, reference_assosiations] = assosiate(fit_normalized, reference_directions);
-fit_array_P = niching(fit_array_P, reference_assosiations, assosiations);
+fit_array_P = niching(fit_array_P, reference_assosiations, assosiations, gas.n_individuals);
 
 hold on
 for gen=1:1:gas.generations
