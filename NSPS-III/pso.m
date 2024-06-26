@@ -1,3 +1,4 @@
+clear
 global parameters;
 global op;
 op.name = "ZDT1";
@@ -6,11 +7,12 @@ addpath('..\Shared');
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 20; % Number of particles
-parameters.personalConst = 2;
-parameters.socialConst = 2;
-parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
+parameters.particleCount = 200; % Number of particles
+parameters.personalConst = 0.01;
+parameters.socialConst = 0.01;
+parameters.iterationTime = 30000; % Maximum number of 'iterations' to run the simulation
 parameters.socialDistance = 1; % Distance at which particles are moved apart.
+parameters.eliteCount = parameters.particleCount * 0.1; % 10% of the population as elites by default
 
 % Create a structure array to hold the particles
 swarm(parameters.particleCount) = struct('position', [], 'velocity', [], 'personalBest', [], 'paretoPosition', []);
@@ -29,21 +31,86 @@ for i = 1:parameters.particleCount
 end
 clear i ii
 
+selectedElites(parameters.eliteCount + 1) = swarm(1);
+selectedElites(parameters.eliteCount + 1) = [];
 for i = 1:parameters.iterationTime
     disp(strcat("Entering Iteration : ", num2str(i)));
     
     
     nonDomLayers = getNonDominatedSwarm(swarm);
-
-    swarm(i).velocity = swarm(i).velocity + parameters.personalConst*(swarm(i).personalBest.position - swarm(i).position);
-    swarm(i).velocity = swarm(i).velocity + parameters.socialConst*(bestP.position - swarm(i).position);
-    swarm(i).position = swarm(i).position + swarm(i).velocity;
     
+    % Select elites from the non-dominated solutions
+    selectedEliteCount = 0;
+    index = 1;
+    while true
+        layersize = 0;
+        for ii = index:width(nonDomLayers)
+            if(isempty(nonDomLayers(ii).paretoPosition))
+                break;
+            end
+            layersize = layersize + 1;
+        end
+        for iii = index:index+(layersize - 1)
+            selectedElites(selectedEliteCount + 1) = nonDomLayers(iii);
+            selectedEliteCount = selectedEliteCount + 1;
+            if(selectedEliteCount >= parameters.eliteCount) 
+                break;
+            end
+        end
+        if(selectedEliteCount >= parameters.eliteCount) 
+            break;
+        end
+
+        index = ii + 1;
+    end
+    clear ii index layersize iii selectedEliteCount nonDomLayers
+
+
+    swarm = updatePositions(swarm, selectedElites);
+    
+    swarm = evaluate(swarm);
+
+    pareto = getParetoSpace(selectedElites);
+
+    scatter(pareto(:, 1), pareto(:, 2));
+
+    clear pareto
+    drawnow
 
 end
 
+% Input : Particle Swarm, Elites
+% Output : Particle Swarm
+% Exp : Updates the swarm's velocity according to the newly selected elites
+function swarm = updatePositions(swarm, elites)
+    global parameters op;
+    for i = 1:width(swarm)
+        globalBest = round(rand() * (width(elites) - 1)) + 1;
+        bestP = elites(globalBest);
+        swarm(i).velocity = swarm(i).velocity + parameters.personalConst*(swarm(i).personalBest.position - swarm(i).position);
+        swarm(i).velocity = swarm(i).velocity + parameters.socialConst*(bestP.position - swarm(i).position);
+        swarm(i).position = swarm(i).position + swarm(i).velocity;
+
+        for iii = 1:op.numberOfDecisionVar
+            swarm(i).position(iii) = max(min(swarm(i).position(iii), op.bounds(iii, 2)), op.bounds(iii, 1));
+            swarm(i).velocity(iii) = max(min(swarm(i).velocity(iii), op.bounds(iii, 2)), op.bounds(iii, 1));
+        end
+    end
+end
+
+% Input : Particle Swarm
+% Output : Particle Swarm
+% Exp : Evaluates each swarm and updates their paretoPosition
+function swarm = evaluate(swarm)
+    for i = 1:width(swarm)
+        swarm(i).paretoPosition = benchmark(swarm(i).position);
+    end
+end
 
 
+% Input : the particle swarm
+% Output : non dominating layers, each layer has an empty particle in
+% between them. Can be checked using isempty
 function newSwarm = getNonDominatedSwarm(swarm)
     layer = 0;
     pareto = getParetoSpace(swarm);
@@ -79,6 +146,8 @@ function newSwarm = getNonDominatedSwarm(swarm)
     end
 end
 
+% Input : single particle's pareto location, all pareto locations
+% Output : Boolean, is the particle dominated by others?
 function isDominated = checkDom(particle, pareto)
     isDominated = false;
     for i = 1:height(pareto)
@@ -89,7 +158,8 @@ function isDominated = checkDom(particle, pareto)
     end
 end
 
-
+% Input : Particle Swarm
+% Output : All pareto locations in an array
 function pareto = getParetoSpace(swarm)
     pareto = zeros(width(swarm), width(swarm(1).paretoPosition));
     for i = 1:width(swarm)
