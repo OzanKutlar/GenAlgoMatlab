@@ -7,9 +7,9 @@ addpath('..\Shared');
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 200; % Number of particles
-parameters.personalConst = 0.01;
-parameters.socialConst = 0.01;
+parameters.particleCount = 2000; % Number of particles
+parameters.personalConst = 2;
+parameters.socialConst = 2;
 parameters.iterationTime = 30000; % Maximum number of 'iterations' to run the simulation
 parameters.socialDistance = 1; % Distance at which particles are moved apart.
 parameters.eliteCount = parameters.particleCount * 0.1; % 10% of the population as elites by default
@@ -40,6 +40,28 @@ for i = 1:parameters.iterationTime
     nonDomLayers = getNonDominatedSwarm(swarm);
     
     % Select elites from the non-dominated solutions
+    
+    selectedElites = selectElites(nonDomLayers, selectedElites);
+
+    % Update and evaluate
+    swarm = updatePositions(swarm, selectedElites);
+    
+    swarm = evaluate(swarm);
+
+
+    % pareto = getParetoSpace(swarm);
+    pareto = getParetoSpace(selectedElites);
+
+    scatter(pareto(:, 1), pareto(:, 2), 'filled');
+
+    clear pareto
+    drawnow
+
+end
+
+
+function elites = selectElites(nonDomLayers, elites)
+    global parameters;
     selectedEliteCount = 0;
     index = 1;
     while true
@@ -51,7 +73,7 @@ for i = 1:parameters.iterationTime
             layersize = layersize + 1;
         end
         for iii = index:index+(layersize - 1)
-            selectedElites(selectedEliteCount + 1) = nonDomLayers(iii);
+            elites(selectedEliteCount + 1) = nonDomLayers(iii);
             selectedEliteCount = selectedEliteCount + 1;
             if(selectedEliteCount >= parameters.eliteCount) 
                 break;
@@ -60,24 +82,11 @@ for i = 1:parameters.iterationTime
         if(selectedEliteCount >= parameters.eliteCount) 
             break;
         end
-
+    
         index = ii + 1;
     end
-    clear ii index layersize iii selectedEliteCount nonDomLayers
-
-
-    swarm = updatePositions(swarm, selectedElites);
-    
-    swarm = evaluate(swarm);
-
-    pareto = getParetoSpace(selectedElites);
-
-    scatter(pareto(:, 1), pareto(:, 2));
-
-    clear pareto
-    drawnow
-
 end
+
 
 % Input : Particle Swarm, Elites
 % Output : Particle Swarm
