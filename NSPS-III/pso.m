@@ -6,7 +6,7 @@ addpath('..\Shared');
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 200; % Number of particles
+parameters.particleCount = 20; % Number of particles
 parameters.personalConst = 2;
 parameters.socialConst = 2;
 parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
@@ -45,35 +45,49 @@ end
 
 
 function newSwarm = getNonDominatedSwarm(swarm)
-    tempSwarm = repmat(struct('position', [], 'velocity', [], 'personalBest', [], 'paretoPosition', []), width(swarm), 1);
+    layer = 0;
     pareto = getParetoSpace(swarm);
+    originalSize = width(swarm);
+    index = 1;
     while true
-        tempIndex = 1;
+        newSwarm(originalSize + 1 + layer) = swarm(1);
+        newSwarm(originalSize + 1 + layer) = [];
         removed = 0;
         nextSwarm = swarm;
         nextPareto = pareto;
         for i = 1:width(swarm)
             particle = swarm(i).paretoPosition;
             % @ge asks if any of them are greater or equal
-            isDominated = any(all(bsxfun(@ge, pareto, particle), 1));
+            isDominated = checkDom(particle, pareto);
+            
 
             if ~isDominated
-                tempSwarm(tempIndex) = swarm(i);
-                tempIndex = tempIndex + 1;
+                newSwarm(index) = swarm(i);
                 nextSwarm(i - removed) = [];
-                nextPareto(i - removed) = [];
+                nextPareto(i - removed, :) = [];
+                index = index + 1;
                 removed = removed + 1;
             end
         end
-        if(removed == 0) 
+        if(width(nextSwarm) == 0)
             break;
         end
-        newSwarm = [newSwarm, tempSwarm];
         swarm = nextSwarm;
         pareto = nextPareto;
+        layer = layer + 1;
+        index = index + 1;
     end
 end
 
+function isDominated = checkDom(particle, pareto)
+    isDominated = false;
+    for i = 1:height(pareto)
+        if(all(pareto(i, :) <= particle) && any(pareto(i, :) < particle))
+            isDominated = true;
+            break;
+        end
+    end
+end
 
 
 function pareto = getParetoSpace(swarm)

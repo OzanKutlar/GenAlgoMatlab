@@ -33,12 +33,11 @@ for i = 1:parameters.iterationTime
     disp(strcat("Entering Iteration : ", num2str(i)));
     
     
-
+    nonDomLayers = getNonDominatedSwarm(swarm);
 
     swarm(i).velocity = swarm(i).velocity + parameters.personalConst*(swarm(i).personalBest.position - swarm(i).position);
     swarm(i).velocity = swarm(i).velocity + parameters.socialConst*(bestP.position - swarm(i).position);
     swarm(i).position = swarm(i).position + swarm(i).velocity;
-    
     
 
 end
@@ -46,26 +45,36 @@ end
 
 
 function newSwarm = getNonDominatedSwarm(swarm)
-    tempSwarm = zeros(width(swarm), 1);
-    tempIndex = 1;
+    layer = 0;
     pareto = getParetoSpace(swarm);
+    originalSize = 
+    index = 1;
     while true
-        removedParticles = zeros(width(swarm), 1);
+        newSwarm(width(swarm) + 1 + layer) = swarm(1);
+        newSwarm(width(swarm) + 1 + layer) = [];
+        removed = 0;
+        nextSwarm = swarm;
+        nextPareto = pareto;
         for i = 1:width(swarm)
             particle = swarm(i).paretoPosition;
             % @ge asks if any of them are greater or equal
             isDominated = any(all(bsxfun(@ge, pareto, particle), 1));
 
             if ~isDominated
-                tempSwarm(tempIndex) = swarm(i);
-                tempIndex = tempIndex + 1;
-                removedParticles(i) = 1;
+                newSwarm(index) = swarm(i);
+                nextSwarm(i - removed) = [];
+                nextPareto(i - removed, :) = [];
+                index = index + 1;
+                removed = removed + 1;
             end
         end
-        newSwarm = [newSwarm, tempSwarm];
-        for i = 1:width(swarm)
-            
+        if(removed == 0) 
+            break;
         end
+        swarm = nextSwarm;
+        pareto = nextPareto;
+        layer = layer + 1;
+        index = index + 1;
     end
 end
 
