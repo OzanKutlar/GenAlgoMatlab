@@ -1,11 +1,11 @@
-function [newFit] = niching(fit_array, reference_assosiations, assosiations)
+function [newFit] = niching(fit_array, reference_assosiations, assosiations, k)
     global gas;
 
-    newFit = zeros(gas.n_individuals, gas.n_ObjectiveFunctions + 3);
+    newFit = zeros(k, gas.n_ObjectiveFunctions + 3);
     indx = 1;
 
     while true
-        if indx > gas.n_individuals
+        if indx > k
             break;
         end
 
@@ -17,7 +17,7 @@ function [newFit] = niching(fit_array, reference_assosiations, assosiations)
         end
     
         for i = 1:width(assosiations)
-            if reference_assosiations(smallest) == 0 || indx > gas.n_individuals
+            if reference_assosiations(smallest) == 0 || indx > k
                 break;
             end
     
