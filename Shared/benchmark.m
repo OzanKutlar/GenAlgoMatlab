@@ -181,7 +181,7 @@ end
 
 function arr2 = dtlz1(arr)
     global op;
-    g = g4(arr(length(arr) - op.numberOfObjectives - 1:length(arr)), k_value());
+    g = g4(arr((length(arr) - op.numberOfObjectives - 1):length(arr)), k_value());
     x = arr(1:op.numberOfObjectives - 1);
     arr2 = zeros(1, op.numberOfObjectives);
 

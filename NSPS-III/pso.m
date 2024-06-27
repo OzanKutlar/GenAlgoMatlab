@@ -3,10 +3,11 @@
 
 
 
-clear
+clear all;
+clc;
 global parameters;
 global op;
-op.name = "ZDT1";
+op.name = "DTLZ1";
 addpath('..\Shared');
 % whitebg("black");
 benchmark(zeros(2,2), true);
@@ -16,7 +17,7 @@ parameters.particleCount = 200; % Number of particles
 parameters.personalConst = 0.001;
 parameters.socialConst = 0.001;
 parameters.iterationTime = 30000; % Maximum number of 'iterations' to run the simulation
-parameters.division = 5; % Amount of divisions per dimension for the reference directions
+parameters.division = 12; % Amount of divisions per dimension for the reference directions
 
 parameters.elasticity = 0.1; % Bounce back speed
 
@@ -33,7 +34,7 @@ for i = 1:parameters.particleCount
     for ii = 1:op.numberOfDecisionVar
         swarm(i).position(ii) = op.bounds(ii, 1) + (op.bounds(ii, 2)-op.bounds(ii, 1)) .* rand(1, 1);
     end
-    swarm(i).velocity = rand(1, op.numberOfDecisionVar);
+    swarm(i).velocity = rand(1, op.numberOfDecisionVar) * 4;
     swarm(i).paretoPosition = benchmark(swarm(i).position);
     swarm(i).personalBest = swarm(i);
 
@@ -63,8 +64,8 @@ for i = 1:parameters.iterationTime
     % pareto = getParetoSpace(swarm);
     pareto = getParetoSpace(selectedElites);
 
-    scatter(pareto(:, 1), pareto(:, 2), 'filled');
-    % scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 'filled');
+    % scatter(pareto(:, 1), pareto(:, 2), 'filled');
+    scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 'filled');
 
     clear pareto
     drawnow
@@ -107,6 +108,41 @@ end
 
 function elites = doNiching(elites, nonDomLayers, eliteCount)
     global parameters;
+
+    % Edgecase : The first non-dom layer comes to niching
+    if(eliteCount == 0)
+        [normalizedNonDom, reference_directions] = doNormalize(getParetoSpace(nonDomLayers));
+        assosiations = assosiate(normalizedNonDom, reference_directions, nonDomLayers);
+        while true
+            if(eliteCount == parameters.eliteCount)
+                break;
+            end
+
+            shortest = assosiations(1);
+            shortestIndex = 1;
+            for i = 2:width(assosiations)
+                if(assosiations(i).count <= shortest.count && assosiations(i).count ~= 0)
+                    if(assosiations(i).count == shortest.count && round(rand()) == 1)
+                        continue;
+                    end
+                    shortest = assosiations(i);
+                    shortestIndex = i;
+                end
+            end
+
+            assosiations(shortestIndex) = [];
+            for i = 1:shortest.count - 1
+                if(eliteCount == parameters.eliteCount)
+                    break;
+                end
+                elites(eliteCount + 1) = shortest.swarm(i);
+                eliteCount = eliteCount + 1;
+            end
+
+        end
+        return;
+    end
+
     [normalizedSwarm, reference_directions] = doNormalize(getParetoSpace(elites(1:eliteCount)));
     assosiations = assosiate(normalizedSwarm, reference_directions, elites(1:eliteCount));
     [normalizedNonDom, reference_directions] = doNormalize(getParetoSpace(nonDomLayers));
