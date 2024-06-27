@@ -139,15 +139,18 @@ function elites = doNiching(elites, nonDomLayers, eliteCount)
             end
         end
 
-        if(selected.count == 0)
+        if(selected.count <= 1)
             shortest.count = Inf;
             shortest.count = Inf;
             assosiations(shortestIndex) = shortest;
             continue;
         end
 
-        randomCandidate = round(rand() * (selected.count - 1)) + 1;
+        randomCandidate = min(ceil(rand() * (selected.count - 1)) + 1, (selected.count - 1));
         elites(eliteCount + 1) = selected.swarm(randomCandidate);
+        if(isempty(elites(eliteCount + 1).position))
+            disp("ERROR");
+        end
         eliteCount = eliteCount + 1;
 
         shortest.count = shortest.count + 1;
