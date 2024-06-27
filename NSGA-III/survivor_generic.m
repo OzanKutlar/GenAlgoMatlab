@@ -39,10 +39,44 @@ Index=gas.n_ObjectiveFunctions+1;
                     fit_array(indx + 1:indx + height(fit_temp), :) = fit_temp;
                     break;
                 elseif indx + height(fit_temp) > gas.n_individuals
-                    [fit_normalized, reference_directions] = normalize(fit_temp);
-                    [assosiations, reference_assosiations] = assosiate(fit_normalized, reference_directions);
-                    fit_temp = niching(fit_temp, reference_assosiations, assosiations, gas.n_individuals - indx);
-                    fit_array(indx + 1:indx + height(fit_temp), :) = fit_temp;
+                    blacklist = [];
+                    while indx <= gas.n_individuals
+                        [fit_normalized, reference_directions] = normalize(fit_array);
+                        for x = 1:width(blacklist)
+                            reference_directions(blacklist(x), :) = [];
+                        end
+                        [assosiations, reference_assosiations] = assosiate(fit_normalized, reference_directions);
+                        
+                        smallest = 1;
+                        for j = 2:height(reference_assosiations)
+                            if reference_assosiations(j) < reference_assosiations(smallest)
+                                smallest = j;
+                            end
+                        end
+
+                        [fit_normalized_temp, reference_directions_temp] = normalize(fit_temp);
+                        for x = 1:width(blacklist)
+                            reference_directions_temp(blacklist(x), :) = [];
+                        end
+                        [assosiations_temp, reference_assosiations_temp] = assosiate(fit_normalized_temp, reference_directions_temp);
+                        
+                        if reference_assosiations_temp(j) == 0
+                            blacklist(end + 1) = j;
+                        else
+                            if isempty(j) || j == 0
+                                j = 1;
+                            end
+                            [point, fit_temp] = niching(fit_temp, reference_assosiations_temp, assosiations_temp, j);
+                            if indx == 0
+                                fit_array(1, :) = point;
+                                indx = indx + 1;
+                            else
+                                fit_array(indx, :) = point;
+                            end
+                            indx = indx + 1;
+                        end
+                    end
+
                     break;
                 else
                     fit_array(indx + 1:indx + height(fit_temp), :) = fit_temp;

@@ -7,10 +7,13 @@ function [assosiations, reference_assosiations] = assosiate(normalizedfitArray, 
         shortest.dist = calculatePointToLineDistance(reference_points(1, :), point);
         for j = 2:height(reference_points)
             dist = calculatePointToLineDistance(reference_points(j, :), point);
-            if(shortest.dist > dist)
+            if shortest.dist > dist
                 shortest.dist = dist;
                 shortest.index = j;
             end
+        end
+        if isempty(shortest.dist)
+            shortest.dist = 0;
         end
         assosiations(i) = shortest;
         reference_assosiations(shortest.index) = reference_assosiations(shortest.index) + 1;

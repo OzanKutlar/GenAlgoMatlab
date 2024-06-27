@@ -8,7 +8,7 @@ benchmark(zeros(2,2), true);
 gas.p_divisions = 4;
 
 gas.algotihm_name = "NSGA-III";
-gas.generations = 300;
+gas.generations = 100;
 gas.n_individuals = 100;
 gas.n_variables = op.numberOfDecisionVar;
 gas.isMin = [1 1 1];

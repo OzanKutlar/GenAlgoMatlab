@@ -1,33 +1,19 @@
-function [newFit] = niching(fit_array, reference_assosiations, assosiations, k)
+function [point, fit_temp] = niching(fit_temp, reference_assosiations, assosiations, k)
     global gas;
-
-    newFit = zeros(k, gas.n_ObjectiveFunctions + 3);
-    indx = 1;
-
-    while true
-        if indx > k
-            break;
-        end
-
-        smallest = 1;
-        for i = 2:height(reference_assosiations)
-            if (reference_assosiations(i) ~= 0 && reference_assosiations(i) < reference_assosiations(smallest)) || reference_assosiations(smallest) == 0
-                smallest = i;
-            end
-        end
-    
+        smallest = inf;
+        index = 0;
         for i = 1:width(assosiations)
-            if reference_assosiations(smallest) == 0 || indx > k
-                break;
+            if isempty(assosiations(i).dist)
+                assosiations(i).dist = 0;
             end
-    
-            if assosiations(i).index == smallest
-                newFit(indx, :) = fit_array(assosiations(i).original, :);
-                indx = indx + 1;
-                reference_assosiations(smallest) = reference_assosiations(smallest) - 1;
+            if assosiations(i).index == k && assosiations(i).dist < smallest
+                index = assosiations(i).original;
+                smallest = assosiations(i).dist;
             end
         end
-    end
+        if index == 0
+            index = 1;
+        end
+        point = fit_temp(index, :);
+        fit_temp(index, :) = [];
 end
-    
-
