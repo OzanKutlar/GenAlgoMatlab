@@ -1,3 +1,8 @@
+% pareto = getParetoSpace(swarm);
+% return
+
+
+
 clear
 global parameters;
 global op;
@@ -7,11 +12,15 @@ addpath('..\Shared');
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 2000; % Number of particles
-parameters.personalConst = 2;
-parameters.socialConst = 2;
+parameters.particleCount = 200; % Number of particles
+parameters.personalConst = 0.001;
+parameters.socialConst = 0.001;
 parameters.iterationTime = 30000; % Maximum number of 'iterations' to run the simulation
-parameters.socialDistance = 1; % Distance at which particles are moved apart.
+parameters.division = 5; % Amount of divisions per dimension for the reference directions
+
+parameters.elasticity = 0.1; % Bounce back speed
+
+
 parameters.eliteCount = parameters.particleCount * 0.1; % 10% of the population as elites by default
 
 % Create a structure array to hold the particles
@@ -55,6 +64,7 @@ for i = 1:parameters.iterationTime
     pareto = getParetoSpace(selectedElites);
 
     scatter(pareto(:, 1), pareto(:, 2), 'filled');
+    % scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 'filled');
 
     clear pareto
     drawnow
@@ -74,6 +84,12 @@ function elites = selectElites(nonDomLayers, elites)
             end
             layersize = layersize + 1;
         end
+        if(layersize + selectedEliteCount >= parameters.eliteCount)
+            if(layersize + selectedEliteCount ~= parameters.eliteCount)
+                elites = doNiching(elites, nonDomLayers(index:index+(layersize - 1)), selectedEliteCount);
+            end
+            break;
+        end
         for iii = index:index+(layersize - 1)
             elites(selectedEliteCount + 1) = nonDomLayers(iii);
             selectedEliteCount = selectedEliteCount + 1;
@@ -89,6 +105,63 @@ function elites = selectElites(nonDomLayers, elites)
     end
 end
 
+function elites = doNiching(elites, nonDomLayers, eliteCount)
+    global parameters;
+    [normalizedSwarm, reference_directions] = doNormalize(getParetoSpace(elites(1:eliteCount)));
+    assosiations = assosiate(normalizedSwarm, reference_directions, elites(1:eliteCount));
+    [normalizedNonDom, reference_directions] = doNormalize(getParetoSpace(nonDomLayers));
+    assosiationsNonDom = assosiate(normalizedNonDom, reference_directions, nonDomLayers);
+    if(width(assosiations) == 0)
+        disp("Error?");
+    end
+    while true
+        if(parameters.eliteCount == eliteCount)
+            break;
+        end
+        shortest = assosiations(1);
+        shortestIndex = 1;
+        for i = 2:width(assosiations)
+            if(assosiations(i).count <= shortest.count)
+                if(assosiations(i).count == shortest.count && round(rand()) == 1)
+                    continue;
+                end
+                shortest = assosiations(i);
+                shortestIndex = i;
+            end
+        end
+        selected = assosiationsNonDom(shortestIndex);
+
+        if(shortest.count == 0)
+            if(selected.count == 0)
+                shortest.count = Inf;
+                assosiations(shortestIndex) = shortest;
+                continue;
+            end
+        end
+
+        if(selected.count <= 1)
+            shortest.count = Inf;
+            shortest.count = Inf;
+            assosiations(shortestIndex) = shortest;
+            continue;
+        end
+
+        randomCandidate = min(ceil(rand() * (selected.count - 1)) + 1, (selected.count - 1));
+        elites(eliteCount + 1) = selected.swarm(randomCandidate);
+        if(isempty(elites(eliteCount + 1).position))
+            disp("ERROR");
+        end
+        eliteCount = eliteCount + 1;
+
+        shortest.count = shortest.count + 1;
+        selected.count = selected.count - 1;
+        selected.swarm(randomCandidate) = [];
+
+        assosiations(shortestIndex) = shortest;
+        assosiationsNonDom(shortestIndex) = selected;
+    end
+end
+
 
 % Input : Particle Swarm, Elites
 % Output : Particle Swarm
@@ -101,10 +174,14 @@ function swarm = updatePositions(swarm, elites)
         swarm(i).velocity = swarm(i).velocity + parameters.personalConst*(swarm(i).personalBest.position - swarm(i).position);
         swarm(i).velocity = swarm(i).velocity + parameters.socialConst*(bestP.position - swarm(i).position);
         swarm(i).position = swarm(i).position + swarm(i).velocity;
-
+        
         for iii = 1:op.numberOfDecisionVar
             swarm(i).position(iii) = max(min(swarm(i).position(iii), op.bounds(iii, 2)), op.bounds(iii, 1));
-            swarm(i).velocity(iii) = max(min(swarm(i).velocity(iii), op.bounds(iii, 2)), op.bounds(iii, 1));
+            if (swarm(i).position(iii) ~= max(min(swarm(i).position(iii), op.bounds(iii, 2)), op.bounds(iii, 1)))
+                swarm(i).position(iii) = max(min(swarm(i).position(iii), op.bounds(iii, 2)), op.bounds(iii, 1));
+                swarm(i).velocity(iii) = -swarm(i).velocity(iii) * parameters.elasticity;
+            end
+            % swarm(i).velocity(iii) = max(min(swarm(i).velocity(iii), op.bounds(iii, 2)), op.bounds(iii, 1));
         end
     end
 end
@@ -135,7 +212,8 @@ function newSwarm = getNonDominatedSwarm(swarm)
         nextPareto = pareto;
         for i = 1:width(swarm)
             particle = swarm(i).paretoPosition;
-            % @ge asks if any of them are greater or equal
+
+
             isDominated = checkDom(particle, pareto);
             
 
@@ -163,6 +241,7 @@ function isDominated = checkDom(particle, pareto)
     isDominated = false;
     for i = 1:height(pareto)
         if(all(pareto(i, :) <= particle) && any(pareto(i, :) < particle))
+        % if(all(pareto(i, :) < particle))
             isDominated = true;
             break;
         end
@@ -174,6 +253,9 @@ end
 function pareto = getParetoSpace(swarm)
     pareto = zeros(width(swarm), width(swarm(1).paretoPosition));
     for i = 1:width(swarm)
+        if(isempty(swarm(i).paretoPosition))
+            break;
+        end
         pareto(i, :) = swarm(i).paretoPosition;
     end
 end

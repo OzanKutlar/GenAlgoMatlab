@@ -1,21 +1,4 @@
-i = 1;
-hold on;
-while true
-    layersize = 0;
-    for ii = i:width(nonDomLayers)
-        if(isempty(nonDomLayers(ii).paretoPosition))
-            break;
-        end
-        layersize = layersize + 1;
-    end
-    if(layersize == 0) 
-        break;
-    end
-    currentLayer = zeros(layersize, 2);
-    for iii = i:i+(layersize - 1)
-        currentLayer((iii - i) + 1, :) = nonDomLayers(iii).paretoPosition;
-    end
-    scatter(currentLayer(:, 1), currentLayer(:, 2));
-    i = ii + 1;
+pareto = zeros(width(swarm), width(swarm(1).position));
+for i = 1:width(swarm)
+    pareto(i, :) = swarm(i).position;
 end
-hold off
