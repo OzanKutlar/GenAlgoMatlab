@@ -3,7 +3,7 @@ function [pop] = runBBBC()
     global bbbcs;       % big bang-big crunch settings
     addpath '..\Shared'
     global op;          % Optimization problem
-    op.name = "VIENNET";
+    op.name = "ZDT1";
     benchmark(zeros(2,2), true);
 
     bbbcs.N = 300;

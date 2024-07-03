@@ -5,7 +5,7 @@ op.name = "DTLZ1";
 addpath('..\Shared');
 benchmark(zeros(2,2), true);
 
-
+gas.p_divisions = 4;
 gas.algotihm_name = "NSGA-III";
 gas.generations = 100;
 gas.n_individuals = 200;
@@ -14,7 +14,7 @@ gas.isMin = [1 1 1];
 gas.n_ObjectiveFunctions=op.numberOfObjectives; % number of functions to solve
 gas.strongDominance=false;
 gas.selection_method = 'tournament';    % 'tournament', 'proportionate' 
-gas.crossover_method = 'sbx';
+gas.crossover_method = 'blxa';
 gas.crossover_probability = 1;
 gas.mutation_method = 'random';   % 'random', 'modifiedRandom', 'polynomial'
 gas.mutation_probability = 0.2;  % 0.2, 0.4 ,0.6
