@@ -49,7 +49,6 @@ classdef NSBBBC < ALGORITHM
                     bbbcs_pop = Population.decs;
                     bbbcs_pop(:, Problem.D + 1) = FrontNo';
                     bbbcs_pop(:, Problem.D + 2) = CrowdDis';
-
                 else
                     Offspring = Problem.Initialization();
                 end

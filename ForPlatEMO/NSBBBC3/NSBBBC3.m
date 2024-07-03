@@ -25,10 +25,9 @@ classdef NSBBBC3 < ALGORITHM
                     Offspring = bigBangPhase_1(cMass, counter);
                     Offspring = Problem.Evaluation(Offspring);
                 else
-                    Offspring = zeros(Problem.N, Problem.D);
-                    Offspring = Problem.Evaluation(Offspring);
+                    Offspring = Problem.Initialization();
                 end
-                
+
                 bbbcs_pop = Population.decs;
                 [FrontNo, ~] = NDSort(Population.objs,Population.cons,Problem.N);
                 CrowdDis = CrowdingDistance(Population.objs,FrontNo);
