@@ -6,10 +6,10 @@ function [pop] = runBBBC()
     op.name = "ZDT1";
     benchmark(zeros(2,2), true);
 
-    bbbcs.N = 300;
+    bbbcs.N = 100;
     bbbcs.n_cmass = bbbcs.N / 10;
     bbbcs.k = bbbcs.N / bbbcs.n_cmass; % number of individual to generate for every cmass
-    bbbcs.MAX_GENERATIONS = 50;
+    bbbcs.MAX_GENERATIONS = 100;
     bbbcs.n_variables = op.numberOfDecisionVar;
     bbbcs.numberOfObjectives = op.numberOfObjectives;
     bbbcs.isMin = ones(1, op.numberOfObjectives);
