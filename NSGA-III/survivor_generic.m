@@ -26,10 +26,16 @@ Index=gas.n_ObjectiveFunctions+1;
         fit_array_NGP(gas.n_individuals+1:gas.n_individuals*2,:) = fit_array_O;
 
 
-        fit_array_NGP = nonDomSortingGeneric(fit_array_NGP);
-        [fit_normalized, reference_directions] = normalize(fit_array_NGP);
-        [assosiations, reference_assosiations] = assosiate(fit_normalized, reference_directions);
-        fit_array_NGP = niching(fit_array, reference_assosiations, assosiations);
+        [Z,~] = UniformPoint(gas.n_individuals,gas.n_ObjectiveFunctions);
+        Zmin          = min(fit_array_NGP(:, 1:gas.n_ObjectiveFunctions),[],1);
+        fit_array_NGP = EnvironmentalSelection(fit_array_NGP, gas.n_individuals, Z, Zmin);
+
+        nextGenPop_final = zeros(gas.n_individuals,gas.n_variables);
+        for i=1:gas.n_individuals
+            index = fit_array_NGP(i,Index);
+            nextGenPop_final(i,:) = nextGenPop(index,:);
+            fit_array_NGP(i,Index) = i;
+        end
     end
 
 end

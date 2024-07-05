@@ -23,9 +23,9 @@ if rand() <= gas.crossover_probability
 
 
         case 'sbx'
-            eta = 5;
-            o1 = sbxCrossover(p1, p2, eta);
-            o2 = sbxCrossover(p1, p2, eta);
+            eta = 2;
+            o1 = sbxCrossover(p1, p2, eta, repmat(op.bounds(1), 1, op.numberOfDecisionVar), repmat(op.bounds(2), 1, op.numberOfDecisionVar));
+            o2 = sbxCrossover(p1, p2, eta, repmat(op.bounds(1), 1, op.numberOfDecisionVar), repmat(op.bounds(2), 1, op.numberOfDecisionVar));
         otherwise
             error('Unexpected Crossover Method.');
     end
@@ -63,8 +63,46 @@ end
 
 %--------------SBX CROSSOVER--------------
 
-function [o1, o2] = sbxCrossover(p1, p2, eta)
+function [child1, child2] = sbxCrossover(parent1, parent2, eta_c, lower_bound, upper_bound)
 global op;  % optimization problem
 global gas; % genetic algorithm settings
-error('This Crossover Method is not implemented yet.');
+    % Simulated Binary Crossover (SBX)
+    % Inputs:
+    %   parent1, parent2 - Parent solutions
+    %   eta_c - Distribution index for crossover
+    %   lower_bound - Lower bound of the variables
+    %   upper_bound - Upper bound of the variables
+    % Outputs:
+    %   child1, child2 - Child solutions
+    
+    % Ensure parents are row vectors
+    if iscolumn(parent1)
+        parent1 = parent1';
+    end
+    if iscolumn(parent2)
+        parent2 = parent2';
+    end
+    
+    % Initialize children
+    child1 = zeros(size(parent1));
+    child2 = zeros(size(parent2));
+    
+    % Number of decision variables
+    nVar = length(parent1);
+    
+    for i = 1:nVar
+        u = rand();
+        if u <= 0.5
+            beta = (2 * u)^(1 / (eta_c + 1));
+        else
+            beta = (1 / (2 * (1 - u)))^(1 / (eta_c + 1));
+        end
+        
+        child1(i) = 0.5 * ((1 + beta) * parent1(i) + (1 - beta) * parent2(i));
+        child2(i) = 0.5 * ((1 - beta) * parent1(i) + (1 + beta) * parent2(i));
+        
+        % Ensure children are within bounds
+        child1(i) = min(max(child1(i), lower_bound(i)), upper_bound(i));
+        child2(i) = min(max(child2(i), lower_bound(i)), upper_bound(i));
+    end
 end
