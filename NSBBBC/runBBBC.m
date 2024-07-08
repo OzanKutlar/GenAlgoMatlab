@@ -9,7 +9,8 @@ function [pop] = runBBBC()
     bbbcs.N = 100;
     bbbcs.n_cmass = bbbcs.N / 10;
     bbbcs.k = bbbcs.N / bbbcs.n_cmass; % number of individual to generate for every cmass
-    bbbcs.MAX_GENERATIONS = 100;
+    bbbcs.MAX_FE = 100000;
+    bbbcs.currentFE = 0;
     bbbcs.n_variables = op.numberOfDecisionVar;
     bbbcs.numberOfObjectives = op.numberOfObjectives;
     bbbcs.isMin = ones(1, op.numberOfObjectives);
@@ -25,10 +26,15 @@ function [pop] = runBBBC()
     pop = bigBangPhase();
     pop = nonDomSorting(pop);
     pop = crowding_distance_BBBC(pop);
-    for t=1:1:bbbcs.MAX_GENERATIONS
-        op.currentGen = t;
-        if t~=1
-            pop = bigBangPhase_1(cMass,t,pop);
+    isfirst = true;
+    while bbbcs.currentFE <= bbbcs.MAX_FE
+        t = bbbcs.currentFE;
+        if ~isfirst
+            pop = bigBangPhase_1(cMass,t / bbbcs.N ,pop);
+        end
+
+        if isfirst
+            isfirst = false;
         end
         
         tic
@@ -43,10 +49,10 @@ function [pop] = runBBBC()
         toc
         clf
         if op.numberOfObjectives == 2
-            scatter(first_obj,second_obj,'filled','DisplayName',strcat("NSBBBC Generating gen : ", num2str(t)))
+            scatter(first_obj,second_obj,'filled','DisplayName',strcat("NSBBBC function evaluations: ", num2str(t)))
         end
         if op.numberOfObjectives == 3
-            scatter3(first_obj, second_obj, third_obj,'filled','DisplayName', strcat("NSBBBC Generating gen : ", num2str(t)) )
+            scatter3(first_obj, second_obj, third_obj,'filled','DisplayName', strcat("NSBBBC function evaluations: ", num2str(t)) )
         end
         legend
         drawnow
