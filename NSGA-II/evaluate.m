@@ -14,6 +14,7 @@ function [pop, fit_array] = evaluate(pop)
         %objfunc is function that includes all of your objective function
         %that function takes 1 chrom and return their fitness'
         fit_array(i,1:gas.n_ObjectiveFunctions)=objfunc(pop(i,:));
+        gas.currentFE = gas.currentFE + 1;
       
         fit_array(i,gas.n_ObjectiveFunctions+1) = i;
     end

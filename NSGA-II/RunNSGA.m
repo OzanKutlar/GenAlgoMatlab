@@ -27,8 +27,9 @@ fit_array_P = crowding_distance_generic(fit_array_P);
 
 
 hold on
-for gen=1:1:gas.generations
-    op.currentGen = gen;
+while gas.currentFE <= gas.functionevaluations
+    gen = gas.currentFE;
+
     tic
     %--SELECTION
     matPool = Selection_Generic_NSGA(fit_array_P);   % passing to selection only rank fitness and pop-related id
@@ -44,7 +45,7 @@ for gen=1:1:gas.generations
     % delete nonelits
     %--SURVIVOR
     [pop, fit_array_P] = survivor_generic(pop, offspring, fit_array_P, fit_array_O);
-    fprintf('generation: %d \n',gen);
+    fprintf('function evaluations: %d \n',gen);
     fprintf('Best Fitness %.3f ', fit_array_P(1,1));
     fprintf('\n');
     disp(pop(1,:));
@@ -57,10 +58,10 @@ for gen=1:1:gas.generations
     %figure
     clf
     if op.numberOfObjectives == 2
-        scatter(first_obj,second_obj,'filled','DisplayName',strcat("Generating gen : ", num2str(gen)))
+        scatter(first_obj,second_obj,'filled','DisplayName',strcat("function evaluations: ", num2str(gen)))
     end
     if op.numberOfObjectives == 3
-        scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("Generating gen : ", num2str(gen)) )
+        scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("function evaluations: ", num2str(gen)) )
     end
     legend
     
