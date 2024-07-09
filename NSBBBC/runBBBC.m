@@ -55,7 +55,12 @@ function runBBBC()
     pareto.name = op.name;
     pareto.data = pop(:, bbbcs.n_variables + 1:bbbcs.n_variables + bbbcs.numberOfObjectives);
     pareto.N = bbbcs.N;
-    save("result.mat", "pareto");
+    
+    counter = 1;
+    while isfile("result" + counter + ".mat")
+        counter = counter + 1;
+    end
+    save("result" + counter + ".mat", "pareto");
 end
 
 

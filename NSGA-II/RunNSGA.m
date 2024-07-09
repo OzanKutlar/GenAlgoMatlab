@@ -73,7 +73,12 @@ end
 pareto.name = op.name;
 pareto.data = fit_array_P(:, 1:gas.n_ObjectiveFunctions);
 pareto.N = gas.n_individuals;
-save("result.mat", "pareto");
+
+counter = 1;
+while isfile("result" + counter + ".mat")
+    counter = counter + 1;
+end
+save("result" + counter + ".mat", "pareto");
 
 
 
