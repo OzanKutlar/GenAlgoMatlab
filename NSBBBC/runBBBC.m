@@ -51,7 +51,9 @@ function [pop] = runBBBC()
         legend
         drawnow
     end
-           
+
+    pareto.data = pop(:, bbbcs.n_variables + 1:bbbcs.n_variables + bbbcs.numberOfObjectives);
+    save("result.mat", "pareto");
 end
 
 

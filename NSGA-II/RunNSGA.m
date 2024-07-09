@@ -70,5 +70,8 @@ for gen=1:1:gas.generations
     toc
 end
 
+pareto.data = fit_array_P(:, 1:gas.n_ObjectiveFunctions);
+save("result.mat", "pareto");
+
 
 
