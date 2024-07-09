@@ -70,7 +70,9 @@ for gen=1:1:gas.generations
     toc
 end
 
+pareto.name = op.name;
 pareto.data = fit_array_P(:, 1:gas.n_ObjectiveFunctions);
+pareto.N = gas.n_individuals;
 save("result.mat", "pareto");
 
 

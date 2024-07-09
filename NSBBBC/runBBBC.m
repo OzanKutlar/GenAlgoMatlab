@@ -1,4 +1,4 @@
-function [pop] = runBBBC()
+function runBBBC()
     
     global bbbcs;       % big bang-big crunch settings
     addpath '..\Shared'
@@ -43,16 +43,18 @@ function [pop] = runBBBC()
         toc
         clf
         if op.numberOfObjectives == 2
-            scatter(first_obj,second_obj,'filled','DisplayName',strcat("NSBBBC Generating gen : ", num2str(t)))
+            scatter(first_obj,second_obj,'filled','DisplayName',strcat("NSBBBC Generating gen : ", num2str(t)));
         end
         if op.numberOfObjectives == 3
-            scatter3(first_obj, second_obj, third_obj,'filled','DisplayName', strcat("NSBBBC Generating gen : ", num2str(t)) )
+            scatter3(first_obj, second_obj, third_obj,'filled','DisplayName', strcat("NSBBBC Generating gen : ", num2str(t)));
         end
         legend
         drawnow
     end
 
+    pareto.name = op.name;
     pareto.data = pop(:, bbbcs.n_variables + 1:bbbcs.n_variables + bbbcs.numberOfObjectives);
+    pareto.N = bbbcs.N;
     save("result.mat", "pareto");
 end
 
