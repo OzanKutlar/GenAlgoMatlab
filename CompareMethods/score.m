@@ -29,3 +29,17 @@ else
 end
 
 save("results.mat", "ranks1", "ranks2", "p", "h")
+
+font_size = 17;
+% Experiment 1
+data1(:, 1) = ranks1;
+data1(:, 2) = ranks2;
+data_names1 = ["NSBBBC", "NSGA-II"];
+
+fig = figure(); 
+boxplot(data1,data_names1)
+%title('Experiment 1 (Tracking on Wall)');
+%xlabel('Device');
+ylabel('IGD');
+fontsize(fig, font_size, "points");
+%exportgraphics(gcf,'exp1_tracking.pdf','ContentType','vector');
