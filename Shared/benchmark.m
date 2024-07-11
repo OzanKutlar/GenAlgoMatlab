@@ -221,7 +221,7 @@ function arr2 = dtlz1(arr)
     end
 end
 
-function arr2 = dtlz2(obj, arr)
+function arr2 = dtlz2(arr)
     global op;
 
     g = sum((arr(op.numberOfObjectives:end) - 0.5).^2);
@@ -239,7 +239,7 @@ function arr2 = dtlz2(obj, arr)
     end
 end
 
-function arr2 = dtlz3(obj, arr)
+function arr2 = dtlz3(arr)
     global op;
 
     % Calculate the 'g' function for the individual
@@ -260,7 +260,7 @@ function arr2 = dtlz3(obj, arr)
     end
 end
 
-function arr2 = dtlz4(obj, arr)
+function arr2 = dtlz4(arr)
     global op;
 
     % Apply the power transformation to the first M-1 decision variables
