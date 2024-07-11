@@ -204,6 +204,8 @@ function arr2 = zdt6(arr)
 end
 
 function arr2 = dtlz1(arr)
+    global op;
+
     g = 100 * (op.numberOfDecisionVar - op.numberOfObjectives + 1 + sum((arr(op.numberOfObjectives:end) - 0.5).^2 - cos(20 * pi * (arr(op.numberOfObjectives:end) - 0.5))));
 
     arr2 = zeros(1, op.numberOfObjectives);
@@ -220,6 +222,8 @@ function arr2 = dtlz1(arr)
 end
 
 function arr2 = dtlz2(obj, arr)
+    global op;
+
     g = sum((arr(op.numberOfObjectives:end) - 0.5).^2);
 
     arr2 = zeros(1, op.numberOfObjectives);
@@ -236,6 +240,8 @@ function arr2 = dtlz2(obj, arr)
 end
 
 function arr2 = dtlz3(obj, arr)
+    global op;
+
     % Calculate the 'g' function for the individual
     g = 100 * (op.numberOfDecisionVar - op.numberOfObjectives + 1 + sum((arr(op.numberOfObjectives:end) - 0.5).^2 - cos(20 * pi * (arr(op.numberOfObjectives:end) - 0.5))));
     
@@ -255,6 +261,8 @@ function arr2 = dtlz3(obj, arr)
 end
 
 function arr2 = dtlz4(obj, arr)
+    global op;
+
     % Apply the power transformation to the first M-1 decision variables
     arr(1:op.numberOfObjectives-1) = arr(1:op.numberOfObjectives-1).^100;
     
