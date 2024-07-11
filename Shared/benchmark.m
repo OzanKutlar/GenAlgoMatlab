@@ -79,6 +79,30 @@ function resultArr = benchmark(individual, setup)
                 return;
             end
             resultArr = dtlz1(individual);
+        case "DTLZ2"
+            if setup
+                op.numberOfDecisionVar = 10;
+                op.numberOfObjectives = 3;
+                op.bounds = [0,1];
+                return;
+            end
+            resultArr = dtlz2(individual);
+        case "DTLZ3"
+            if setup
+                op.numberOfDecisionVar = 10;
+                op.numberOfObjectives = 3;
+                op.bounds = [0,1];
+                return;
+            end
+            resultArr = dtlz3(individual);
+        case "DTLZ4"
+            if setup
+                op.numberOfDecisionVar = 10;
+                op.numberOfObjectives = 3;
+                op.bounds = [0,1];
+                return;
+            end
+            resultArr = dtlz4(individual);
         case "DF3"
             if setup
                 op.changeFreq = 1 / 10;
@@ -180,18 +204,75 @@ function arr2 = zdt6(arr)
 end
 
 function arr2 = dtlz1(arr)
-    global op;
-    g = g4(arr((length(arr) - op.numberOfObjectives - 1):length(arr)), k_value());
-    x = arr(1:op.numberOfObjectives - 1);
+    g = 100 * (op.numberOfDecisionVar - op.numberOfObjectives + 1 + sum((arr(op.numberOfObjectives:end) - 0.5).^2 - cos(20 * pi * (arr(op.numberOfObjectives:end) - 0.5))));
+
     arr2 = zeros(1, op.numberOfObjectives);
 
     for i = 1:op.numberOfObjectives
-        f = 0.5 * (1 + g);
-        f = f * prod(x(1:length(x) - (i - 1)));
-        if i > 1
-            f = f * (1 - x(length(x) - (i - 2)));
+        if i == 1
+            arr2(i) = 0.5 * (1 + g) * prod(arr(1:op.numberOfObjectives - i));
+        elseif i == op.numberOfObjectives
+            arr2(i) = 0.5 * (1 + g) * (1 - arr(op.numberOfObjectives - 1));
+        else
+            arr2(i) = 0.5 * (1 + g) * prod(arr(1:op.numberOfObjectives - i)) * (1 - arr(op.numberOfObjectives - i));
         end
-        arr2(i) = f;
+    end
+end
+
+function arr2 = dtlz2(obj, arr)
+    g = sum((arr(op.numberOfObjectives:end) - 0.5).^2);
+
+    arr2 = zeros(1, op.numberOfObjectives);
+
+    for i = 1:op.numberOfObjectives
+        if i == 1
+            arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2));
+        elseif i == op.numberOfObjectives
+            arr2(i) = (1 + g) * sin(arr(op.numberOfObjectives - i) * pi / 2);
+        else
+            arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2)) * sin(arr(op.numberOfObjectives - i) * pi / 2);
+        end
+    end
+end
+
+function arr2 = dtlz3(obj, arr)
+    % Calculate the 'g' function for the individual
+    g = 100 * (op.numberOfDecisionVar - op.numberOfObjectives + 1 + sum((arr(op.numberOfObjectives:end) - 0.5).^2 - cos(20 * pi * (arr(op.numberOfObjectives:end) - 0.5))));
+    
+    % Initialize the objective vector
+    arr2 = zeros(1, op.numberOfObjectives);
+    
+    % Calculate the objective functions
+    for i = 1:op.numberOfObjectives
+        if i == 1
+            arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2));
+        elseif i == op.numberOfObjectives
+            arr2(i) = (1 + g) * sin(arr(op.numberOfObjectives - i) * pi / 2);
+        else
+            arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2)) * sin(arr(op.numberOfObjectives - i) * pi / 2);
+        end
+    end
+end
+
+function arr2 = dtlz4(obj, arr)
+    % Apply the power transformation to the first M-1 decision variables
+    arr(1:op.numberOfObjectives-1) = arr(1:op.numberOfObjectives-1).^100;
+    
+    % Calculate the 'g' function for the individual
+    g = sum((arr(op.numberOfObjectives:end) - 0.5).^2);
+    
+    % Initialize the objective vector
+    arr2 = zeros(1, op.numberOfObjectives);
+    
+    % Calculate the objective functions
+    for i = 1:op.numberOfObjectives
+        if i == 1
+            arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2));
+        elseif i == op.numberOfObjectives
+            arr2(i) = (1 + g) * sin(arr(op.numberOfObjectives - i) * pi / 2);
+        else
+            arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2)) * sin(arr(op.numberOfObjectives - i) * pi / 2);
+        end
     end
 end
 
@@ -209,10 +290,6 @@ end
 
 function result = g3(arr)
     result = 1 + 9 * power(sum(arr(2:length(arr))) / (length(arr) - 1), 0.25);
-end
-
-function result = g4(arr, k)
-    result = 100 * (k + sum(power(arr - 0.5, 2) - cos(20 * pi * (arr - 0.5))));
 end
 
 function result = g5(arr)
