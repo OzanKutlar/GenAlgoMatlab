@@ -11,12 +11,13 @@ function [pop, fit_array] = evaluate(pop)
     disp("Evaluating : " + op.name);
     fit_array = zeros(gas.n_individuals,gas.fitArraySize);
 
-    for i=1:gas.n_individuals 
+    for i=1:gas.n_individuals
         % fit_array(i,1) = pop(i,1); % first function x
         % fit_array(i,2) = 1+ pop(i,2) - pop(i,1)^2; % second function 1 + y - x^2
 
         % ADD FUNCTIONS HERE
         temp = benchmark(pop(i, :));
+        gas.currentFE = gas.currentFE + 1;
         for j=1:op.numberOfObjectives
             fit_array(i,j) = temp(j);
         end

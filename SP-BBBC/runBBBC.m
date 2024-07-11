@@ -18,7 +18,8 @@ function [archive] = runBBBC()
     bbbcs.n_variables = op.numberOfDecisionVar;
     bbbcs.numberOfObjectives = op.numberOfObjectives;
     bbbcs.isMin = ones(1, op.numberOfObjectives);
-    bbbcs.MAX_GENERATIONS = 100;
+    bbbcs.MAX_FE = 10000;
+    bbbcs.currentFE = 0;
     bbbcs.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 %     bbbcs.cMass_n = 1;
     bbbcs.strengthIndex = bbbcs.numberOfObjectives + bbbcs.n_variables + 1;
@@ -48,11 +49,11 @@ function [archive] = runBBBC()
         archive(i,bbbcs.solutionIndex) = i; % update the indices
     end
 
-    for t=1:1:bbbcs.MAX_GENERATIONS
-        op.currentGen = t;
+    while bbbcs.currentFE <= bbbcs.MAX_FE
+        t = bbbcs.currentFE;
         tic
         if t~=1
-            archive = bigBangPhase_1(cMass,t,archive);
+            archive = bigBangPhase_1(cMass,t / bbbcs.N,archive);
         end
         
         cMass = bigCrunchPhase(archive,bbbcs.crunchMethod);
@@ -64,10 +65,10 @@ function [archive] = runBBBC()
         toc
         clf
         if op.numberOfObjectives == 2
-            scatter(first_obj,second_obj,'filled','DisplayName',strcat("SP-BBBC Generating gen : ", num2str(t)))
+            scatter(first_obj,second_obj,'filled','DisplayName',strcat("SP-BBBC function evaluations: ", num2str(t)))
         end
         if op.numberOfObjectives == 3
-            scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("SP-BBBC Generating gen : ", num2str(t)) )
+            scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("SP-BBBC function evaluations: ", num2str(t)) )
         end
         legend
         drawnow

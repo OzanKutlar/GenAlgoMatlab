@@ -46,8 +46,7 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
     end
     
     %--ITERATIONS
-    for gen=1:1:gas.generations
-        op.currentGen = gen;
+    while gas.currentFE <= gas.functionevaluations
         tic
         %--SELECTION
         matPool = selection(fit_array_archive);   % passing to selection only rank fitness and pop-related id
@@ -69,10 +68,10 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
         %figure
         clf
         if op.numberOfObjectives == 2
-            scatter(first_obj,second_obj,'filled','DisplayName',strcat("Generating gen : ", num2str(gen)))
+            scatter(first_obj,second_obj,'filled','DisplayName',strcat("Function evaluations : ", num2str(gas.currentFE)))
         end
         if op.numberOfObjectives == 3
-            scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("Generating gen : ", num2str(gen)) )
+            scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("Function evaluations : ", num2str(gas.currentFE)) )
         end
         legend
         
