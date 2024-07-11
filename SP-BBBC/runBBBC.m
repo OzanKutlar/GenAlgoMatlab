@@ -5,7 +5,7 @@
 % OUTPUT: 
 % 'archive' is the best individuals with the attributes of [x1, x2, fitness_1, fitness_2, fitnessInv, strength, raw_fitness, density, fitness, index]
  
-function [archive] = runBBBC()
+function runBBBC()
     addpath '..\Shared'
     global bbbcs;       % big bang-big crunch settings
 
@@ -71,9 +71,17 @@ function [archive] = runBBBC()
         end
         legend
         drawnow
+    end
 
-
-    end       
+    pareto.name = op.name;
+    pareto.data = pop(:, bbbcs.n_variables + 1:bbbcs.n_variables + bbbcs.numberOfObjectives);
+    pareto.N = bbbcs.N;
+    
+    counter = 1;
+    while isfile("result" + counter + ".mat")
+        counter = counter + 1;
+    end
+    save("result" + counter + ".mat", "pareto");
 end
 
 
