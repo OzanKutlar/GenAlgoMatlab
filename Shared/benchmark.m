@@ -203,85 +203,34 @@ function arr2 = zdt6(arr)
     arr2 = [f1, f2];
 end
 
+% DTLZ problems from PlatEMO
 function arr2 = dtlz1(arr)
     global op;
 
-    g = 100 * (op.numberOfDecisionVar - op.numberOfObjectives + 1 + sum((arr(op.numberOfObjectives:end) - 0.5).^2 - cos(20 * pi * (arr(op.numberOfObjectives:end) - 0.5))));
-
-    arr2 = zeros(1, op.numberOfObjectives);
-
-    for i = 1:op.numberOfObjectives
-        if i == 1
-            arr2(i) = 0.5 * (1 + g) * prod(arr(1:op.numberOfObjectives - i));
-        elseif i == op.numberOfObjectives
-            arr2(i) = 0.5 * (1 + g) * (1 - arr(op.numberOfObjectives - 1));
-        else
-            arr2(i) = 0.5 * (1 + g) * prod(arr(1:op.numberOfObjectives - i)) * (1 - arr(op.numberOfObjectives - i));
-        end
-    end
+    g      = 100*(op.numberOfDecisionVar-op.numberOfObjectives+1+sum((arr(:,op.numberOfObjectives:end)-0.5).^2-cos(20.*pi.*(arr(:,op.numberOfObjectives:end)-0.5)),2));
+    arr2 = 0.5*repmat(1+g,1,op.numberOfObjectives).*fliplr(cumprod([ones(size(arr,1),1),arr(:,1:op.numberOfObjectives-1)],2)).*[ones(size(arr,1),1),1-arr(:,op.numberOfObjectives-1:-1:1)];
 end
 
 function arr2 = dtlz2(arr)
     global op;
 
-    g = sum((arr(op.numberOfObjectives:end) - 0.5).^2);
-
-    arr2 = zeros(1, op.numberOfObjectives);
-
-    for i = 1:op.numberOfObjectives
-        if i == 1
-            arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2));
-        elseif i == op.numberOfObjectives
-            arr2(i) = (1 + g) * sin(arr(op.numberOfObjectives - i) * pi / 2);
-        else
-            arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2)) * sin(arr(op.numberOfObjectives - i) * pi / 2);
-        end
-    end
+    g      = sum((arr(:,op.numberOfObjectives:end)-0.5).^2,2);
+    arr2 = repmat(1+g,1,op.numberOfObjectives).*fliplr(cumprod([ones(size(g,1),1),cos(arr(:,1:op.numberOfObjectives-1)*pi/2)],2)).*[ones(size(g,1),1),sin(arr(:,op.numberOfObjectives-1:-1:1)*pi/2)];
 end
 
 function arr2 = dtlz3(arr)
     global op;
 
-    % Calculate the 'g' function for the individual
-    g = 100 * (op.numberOfDecisionVar - op.numberOfObjectives + 1 + sum((arr(op.numberOfObjectives:end) - 0.5).^2 - cos(20 * pi * (arr(op.numberOfObjectives:end) - 0.5))));
-    
-    % Initialize the objective vector
-    arr2 = zeros(1, op.numberOfObjectives);
-    
-    % Calculate the objective functions
-    for i = 1:op.numberOfObjectives
-        if i == 1
-            arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2));
-        elseif i == op.numberOfObjectives
-            arr2(i) = (1 + g) * sin(arr(op.numberOfObjectives - i) * pi / 2);
-        else
-            arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2)) * sin(arr(op.numberOfObjectives - i) * pi / 2);
-        end
-    end
+    g      = 100*(op.numberOfDecisionVar-op.numberOfObjectives+1+sum((arr(:,op.numberOfObjectives:end)-0.5).^2-cos(20.*pi.*(arr(:,op.numberOfObjectives:end)-0.5)),2));
+    arr2 = repmat(1+g,1,op.numberOfObjectives).*fliplr(cumprod([ones(size(arr,1),1),cos(arr(:,1:op.numberOfObjectives-1)*pi/2)],2)).*[ones(size(arr,1),1),sin(arr(:,op.numberOfObjectives-1:-1:1)*pi/2)];
 end
 
 function arr2 = dtlz4(arr)
     global op;
 
-    % Apply the power transformation to the first M-1 decision variables
-    arr(1:op.numberOfObjectives-1) = arr(1:op.numberOfObjectives-1).^100;
-    
-    % Calculate the 'g' function for the individual
-    g = sum((arr(op.numberOfObjectives:end) - 0.5).^2);
-    
-    % Initialize the objective vector
-    arr2 = zeros(1, op.numberOfObjectives);
-    
-    % Calculate the objective functions
-    for i = 1:op.numberOfObjectives
-        if i == 1
-            arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2));
-        elseif i == op.numberOfObjectives
-            arr2(i) = (1 + g) * sin(arr(op.numberOfObjectives - i) * pi / 2);
-        else
-            arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2)) * sin(arr(op.numberOfObjectives - i) * pi / 2);
-        end
-    end
+    arr(:,1:op.numberOfObjectives-1) = arr(:,1:op.numberOfObjectives-1).^100;
+    g      = sum((arr(:,op.numberOfObjectives:end)-0.5).^2,2);
+    arr2 = repmat(1+g,1,op.numberOfObjectives).*fliplr(cumprod([ones(size(g,1),1),cos(arr(:,1:op.numberOfObjectives-1)*pi/2)],2)).*[ones(size(g,1),1),sin(arr(:,op.numberOfObjectives-1:-1:1)*pi/2)];
 end
 
 function result = g1(arr)
