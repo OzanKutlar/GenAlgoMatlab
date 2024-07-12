@@ -15,7 +15,7 @@ while true
     for iii = i:i+(layersize - 1)
         currentLayer((iii - i) + 1, :) = nonDomLayers(iii).paretoPosition;
     end
-    scatter(currentLayer(:, 1), currentLayer(:, 2));
+    scatter(currentLayer(:, 1), currentLayer(:, 2), 'filled');
     i = ii + 1;
 end
 hold off
