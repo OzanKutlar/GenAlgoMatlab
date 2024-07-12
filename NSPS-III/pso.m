@@ -13,7 +13,7 @@ addpath('..\Shared');
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 200; % Number of particles
+parameters.particleCount = 2000; % Number of particles
 parameters.personalConst = 0.001;
 parameters.socialConst = 0.001;
 parameters.iterationTime = 30000; % Maximum number of 'iterations' to run the simulation
