@@ -1,6 +1,11 @@
 file1 = input("algorithm 1: ", "s");
 file2 = input("algorithm 2: ", "s");
 
+algorithm1 = split(file1, "\");
+algorithm2 = split(file2, "\");
+algorithm1 = algorithm1(end);
+algorithm2 = algorithm2(end);
+
 ranks1 = [];
 ranks2 = [];
 
@@ -37,7 +42,7 @@ font_size = 17;
 % Experiment 1
 data1(:, 1) = ranks1;
 data1(:, 2) = ranks2;
-data_names1 = ["NSBBBC", "NSGA-II"];
+data_names1 = [algorithm1, algorithm2];
 
 fig = figure(); 
 boxplot(data1,data_names1)
