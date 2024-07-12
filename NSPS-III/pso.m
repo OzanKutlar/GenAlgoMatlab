@@ -7,19 +7,19 @@ clear all;
 clc;
 global parameters;
 global op;
-op.name = "DTLZ1";
+op.name = "DTLZ2";
 addpath('..\Shared');
 % whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 2000; % Number of particles
+parameters.particleCount = 200; % Number of particles
 parameters.personalConst = 0.001;
-parameters.socialConst = 0.001;
+parameters.socialConst = 0.002;
 parameters.iterationTime = 30000; % Maximum number of 'iterations' to run the simulation
-parameters.division = 12; % Amount of divisions per dimension for the reference directions
+parameters.division = 3; % Amount of divisions per dimension for the reference directions
 
-parameters.elasticity = 0.1; % Bounce back speed
+parameters.elasticity = 0.6; % Bounce back speed
 
 
 parameters.eliteCount = parameters.particleCount * 0.1; % 10% of the population as elites by default
@@ -61,13 +61,16 @@ for i = 1:parameters.iterationTime
     
 
 
-    % pareto = getParetoSpace(swarm);
-    pareto = getParetoSpace(selectedElites);
-
+    pareto = getParetoSpace(swarm);
+    pareto2 = getParetoSpace(selectedElites);
+    pareto = vertcat(pareto, pareto2);
+    mu = zeros(height(pareto), 1);
+    for ii = width(swarm):height(pareto)
+        mu(ii) = 100;
+    end
     % scatter(pareto(:, 1), pareto(:, 2), 'filled');
-    scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 'filled');
-
-    clear pareto
+    scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 40, mu, 'filled');
+    clear pareto pareto2
     drawnow
 
 end

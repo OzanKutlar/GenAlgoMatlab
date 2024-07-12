@@ -232,7 +232,7 @@ function arr2 = dtlz2(arr)
         if i == 1
             arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2));
         elseif i == op.numberOfObjectives
-            arr2(i) = (1 + g) * sin(arr(op.numberOfObjectives - i) * pi / 2);
+            arr2(i) = (1 + g) * sin(arr(op.numberOfObjectives - 1) * pi / 2);
         else
             arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2)) * sin(arr(op.numberOfObjectives - i) * pi / 2);
         end
@@ -253,7 +253,7 @@ function arr2 = dtlz3(arr)
         if i == 1
             arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2));
         elseif i == op.numberOfObjectives
-            arr2(i) = (1 + g) * sin(arr(op.numberOfObjectives - i) * pi / 2);
+            arr2(i) = (1 + g) * sin(arr(op.numberOfObjectives - 1) * pi / 2);
         else
             arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2)) * sin(arr(op.numberOfObjectives - i) * pi / 2);
         end
@@ -277,7 +277,7 @@ function arr2 = dtlz4(arr)
         if i == 1
             arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2));
         elseif i == op.numberOfObjectives
-            arr2(i) = (1 + g) * sin(arr(op.numberOfObjectives - i) * pi / 2);
+            arr2(i) = (1 + g) * sin(arr(op.numberOfObjectives - 1) * pi / 2);
         else
             arr2(i) = (1 + g) * prod(cos(arr(1:op.numberOfObjectives - i) * pi / 2)) * sin(arr(op.numberOfObjectives - i) * pi / 2);
         end
