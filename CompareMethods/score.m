@@ -18,6 +18,9 @@ while isfile(file2 + "\result" + counter + ".mat")
     counter = counter + 1;
 end
 
+disp("average igd for algorithm 1: " + mean(ranks1(:, 1)));
+disp("average igd for algorithm 2: " + mean(ranks2(:, 1)));
+
 [p, h] = ranksum(ranks1, ranks2);
 
 disp("p-value: " + p);
