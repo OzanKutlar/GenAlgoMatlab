@@ -57,10 +57,10 @@ for gen=1:1:gas.generations
     %figure
     clf
     if op.numberOfObjectives == 2
-        scatter(first_obj,second_obj,'filled','DisplayName',strcat("Generating gen : ", num2str(gen)))
+        scatter(first_obj,second_obj,'filled','DisplayName',strcat("Generating gen : ", num2str(gen)));
     end
     if op.numberOfObjectives == 3
-        scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("Generating gen : ", num2str(gen)) )
+        scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("Generating gen : ", num2str(gen)) );
     end
     legend
     

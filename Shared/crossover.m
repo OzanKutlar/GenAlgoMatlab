@@ -23,7 +23,7 @@ if rand() <= gas.crossover_probability
 
 
         case 'sbx'
-            eta = 2;
+            eta = 20;
             o1 = sbxCrossover(p1, p2, eta, repmat(op.bounds(1), 1, op.numberOfDecisionVar), repmat(op.bounds(2), 1, op.numberOfDecisionVar));
             o2 = sbxCrossover(p1, p2, eta, repmat(op.bounds(1), 1, op.numberOfDecisionVar), repmat(op.bounds(2), 1, op.numberOfDecisionVar));
         otherwise
@@ -76,6 +76,7 @@ global gas; % genetic algorithm settings
     %   child1, child2 - Child solutions
     
     % Ensure parents are row vectors
+    eta_c = gas.eta_crossover;
     if iscolumn(parent1)
         parent1 = parent1';
     end
