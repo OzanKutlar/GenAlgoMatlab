@@ -91,15 +91,30 @@ global gas; % genetic algorithm settings
     nVar = length(parent1);
     
     for i = 1:nVar
-        u = rand();
-        if u <= 0.5
-            beta = (2 * u)^(1 / (eta_c + 1));
+        beta  = 0;
+        mu    = rand();
+        if(mu <= 0.5)
+            beta = (2*mu).^(1/(eta_c+1));
         else
-            beta = (1 / (2 * (1 - u)))^(1 / (eta_c + 1));
+            beta  = (2-2*mu).^(-1/(eta_c+1));
         end
-        
-        child1(i) = 0.5 * ((1 + beta) * parent1(i) + (1 - beta) * parent2(i));
-        child2(i) = 0.5 * ((1 - beta) * parent1(i) + (1 + beta) * parent2(i));
+        beta = beta.*(-1).^randi([0,1]);
+
+        if(rand() < 0.5)
+            beta = 1;
+        end
+
+        child1(i) = 0.5 * (parent1(i) + parent2(i)) + beta * (parent1(i)-parent2(i)) * 0.5;
+        child2(i) = 0.5 * (parent1(i) + parent2(i)) - beta * (parent1(i) - parent2(i)) * 0.5;
+
+
+        % xVal = 0.5 * (parent1(i) + parent2(i));
+        % 
+        % child1(i) = xVal - 0.5 * beta * (parent2(i) - parent1(i));
+        % child2(i) = xVal + 0.5 * beta * (parent2(i) - parent1(i));
+
+        % child1(i) = 0.5 * (parent1(i) + parent2(i) - beta*(parent2(i) - parent1(i)));
+        % child2(i) = 0.5 * (parent1(i) + parent2(i) + beta*(parent2(i) - parent1(i)));
         
         % Ensure children are within bounds
         child1(i) = min(max(child1(i), lower_bound(i)), upper_bound(i));

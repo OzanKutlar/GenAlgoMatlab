@@ -73,7 +73,7 @@ function resultArr = benchmark(individual, setup)
             resultArr = df1(individual, op.currentGen);
         case "DTLZ1"
             if setup
-                op.numberOfDecisionVar = 10;
+                op.numberOfDecisionVar = 5;
                 op.numberOfObjectives = 3;
                 op.bounds = [0,1];
                 return;
@@ -81,7 +81,7 @@ function resultArr = benchmark(individual, setup)
             resultArr = dtlz1(individual);
         case "DTLZ2"
             if setup
-                op.numberOfDecisionVar = 10;
+                op.numberOfDecisionVar = 5;
                 op.numberOfObjectives = 3;
                 op.bounds = [0,1];
                 return;
