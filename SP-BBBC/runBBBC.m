@@ -10,7 +10,7 @@ function runBBBC()
     global bbbcs;       % big bang-big crunch settings
 
     global op;          % Optimization problem
-    op.name = "ZDT1";
+    op.name = "viennet";
     benchmark(zeros(2,2), true);
 
     bbbcs.N = 100;  % number of individuals
@@ -74,7 +74,7 @@ function runBBBC()
     end
 
     pareto.name = op.name;
-    pareto.data = pop(:, bbbcs.n_variables + 1:bbbcs.n_variables + bbbcs.numberOfObjectives);
+    pareto.data = archive(:, bbbcs.n_variables + 1:bbbcs.n_variables + bbbcs.numberOfObjectives);
     pareto.N = bbbcs.N;
     
     counter = 1;
