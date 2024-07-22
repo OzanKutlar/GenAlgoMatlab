@@ -1,7 +1,7 @@
 global gas;         % genetic algorithm settings
 global op; 
 
-op.name = "DTLZ3";
+op.name = "DTLZ1";
 addpath('..\Shared');
 benchmark(zeros(2,2), true);
 

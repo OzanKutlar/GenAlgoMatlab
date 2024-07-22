@@ -81,7 +81,7 @@ function resultArr = benchmark(individual, setup)
             resultArr = dtlz1(individual);
         case "DTLZ2"
             if setup
-                op.numberOfDecisionVar = 3;
+                op.numberOfDecisionVar = 10;
                 op.numberOfObjectives = 3;
                 op.bounds = [0,1];
                 return;
@@ -89,7 +89,7 @@ function resultArr = benchmark(individual, setup)
             resultArr = dtlz2(individual);
         case "DTLZ3"
             if setup
-                op.numberOfDecisionVar = 3;
+                op.numberOfDecisionVar = 10;
                 op.numberOfObjectives = 3;
                 op.bounds = [0,1];
                 return;
@@ -97,7 +97,7 @@ function resultArr = benchmark(individual, setup)
             resultArr = dtlz3(individual);
         case "DTLZ4"
             if setup
-                op.numberOfDecisionVar = 3;
+                op.numberOfDecisionVar = 10;
                 op.numberOfObjectives = 3;
                 op.bounds = [0,1];
                 return;
