@@ -3,7 +3,7 @@ function runIt()
     %---------------------PROBLEM DEFINITION---------------------  
     addpath '..\Shared'
     global op;          % Optimization problem
-    op.name = "viennet";
+    op.name = "zdt1";
     benchmark(zeros(2,2), true);
     %---------------------GA SETTINGS---------------------
     global gas;         % genetic algorithm settings

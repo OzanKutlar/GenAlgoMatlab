@@ -58,11 +58,15 @@ for gen=1:1:gas.generations
     clf
     if op.numberOfObjectives == 2
         scatter(first_obj,second_obj,'filled','DisplayName',strcat("Generating gen : ", num2str(gen)));
+        legend
     end
     if op.numberOfObjectives == 3
         scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("Generating gen : ", num2str(gen)) );
+        legend
     end
-    legend
+    if op.numberOfObjectives > 3
+        plot(fit_array_P(:,1:gas.n_ObjectiveFunctions)');
+    end
     
     % Added for continious figure
     drawnow
