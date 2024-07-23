@@ -5,12 +5,11 @@ op.name = "ZDT1";
 addpath('..\Shared');
 benchmark(zeros(2,2), true);
 
-
 gas.algotihm_name = "NSGA-II";
 gas.generations = 100;
 gas.n_individuals = 100;
 gas.n_variables = op.numberOfDecisionVar;
-gas.isMin = [1 1 1];
+gas.isMin = ones(1, op.numberOfObjectives);
 gas.n_ObjectiveFunctions=op.numberOfObjectives; % number of functions to solve
 gas.strongDominance=false;
 gas.selection_method = 'tournament';    % 'tournament', 'proportionate' 

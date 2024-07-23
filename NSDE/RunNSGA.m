@@ -70,5 +70,13 @@ for gen=1:1:gas.generations
     toc
 end
 
+pareto.name = op.name;
+pareto.data = fit_array_P(:, 1:gas.n_ObjectiveFunctions);
+pareto.N = gas.n_individuals;
 
+counter = 1;
+while isfile("result" + counter + ".mat")
+    counter = counter + 1;
+end
+save("result" + counter + ".mat", "pareto");
 
