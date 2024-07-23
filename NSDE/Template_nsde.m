@@ -1,7 +1,7 @@
 global gas;         % genetic algorithm settings
 global op; 
 
-op.name = "ZDT1";  
+op.name = "ZDT3";  
 addpath('..\Shared');
 benchmark(zeros(2,2), true);
 

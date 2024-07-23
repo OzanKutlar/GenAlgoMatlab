@@ -2,7 +2,7 @@ function [best_chrom, configurations] = runIt()
     %---------------------PROBLEM DEFINITION---------------------  
     addpath '..\Shared'
     global op;          % Optimization problem
-    op.name = "zdt1";
+    op.name = "zdt2";
     benchmark(zeros(2,2), true);
     %---------------------GA SETTINGS---------------------
     global gas;         % genetic algorithm settings
