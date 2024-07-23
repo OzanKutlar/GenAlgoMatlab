@@ -52,7 +52,7 @@ ylabel('IGD');
 fontsize(fig, font_size, "points");
 
 
-exportgraphics(gcf, "figure.pdf", 'ContentType', 'vector')
+%exportgraphics(gcf, "figure.pdf", 'ContentType', 'vector')
 
 
 %exportgraphics(gcf,'exp1_tracking.pdf','ContentType','vector');

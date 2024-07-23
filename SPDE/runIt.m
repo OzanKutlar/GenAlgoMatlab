@@ -46,4 +46,14 @@ function [best_chrom, configurations] = runIt()
         tic
         [pop, fit_array] = runGeneticAlgorithm();
         toc
+    
+    pareto.name = op.name;
+    pareto.data = fit_array(:, 1:op.numberOfObjectives);
+    pareto.N = gas.n_individuals;
+    
+    counter = 1;
+    while isfile("result" + counter + ".mat")
+        counter = counter + 1;
+    end
+    save("result" + counter + ".mat", "pareto");
 end
