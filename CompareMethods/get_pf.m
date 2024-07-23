@@ -12,7 +12,7 @@ function R = get_pf(problem, N)
         case "ZDT3"
             R(:,1) = linspace(0,1,N)';
             R(:,2) = 1 - R(:,1).^0.5 - R(:,1).*sin(10*pi*R(:,1));
-            R(NDSort(R,1)>1,:) = nan;
+            R      = R(NDSort(R,1)==1,:);
         case "ZDT4"
             R(:,1) = linspace(0,1,N)';
             R(:,2) = 1 - R(:,1).^0.5;
