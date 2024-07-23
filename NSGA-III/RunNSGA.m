@@ -83,4 +83,3 @@ while isfile("result" + counter + ".mat")
     counter = counter + 1;
 end
 save("result" + counter + ".mat", "pareto");
-
