@@ -1,98 +1,96 @@
+clear;
+clc;
+clf;
+global parameters;
+global op;
+op.name = "ZDT3";
+addpath('..\Shared');
+% whitebg("black");
+benchmark(zeros(2,2), true);
+op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-paretoFront = runAlgo();
+parameters.particleCount = 100; % Number of particles
+parameters.personalConst = 0.001;
+parameters.socialConst = 0.002;
+parameters.iterationTime = 1000; % Maximum number of 'iterations' to run the simulation
+parameters.division = 4; % Amount of divisions per dimension for the reference directions
+parameters.speedLimit = 0.01;
 
-pareto.name = op.name;
-pareto.data = paretoFront;
-pareto.N = parameters.particleCount;
+parameters.elasticity = 0.1; % Bounce back speed
 
-counter = 1;
-while isfile("result" + counter + ".mat")
-    counter = counter + 1;
+
+parameters.eliteCount = parameters.particleCount * 1;
+
+% Create a structure array to hold the particles
+swarm(parameters.particleCount) = struct('position', [], 'velocity', [], 'personalBest', [], 'paretoPosition', []);
+
+% Use a loop to initialize the particles
+for i = 1:parameters.particleCount
+    % Assign random values to the position, velocity, and personalBest
+    for ii = 1:op.numberOfDecisionVar
+        swarm(i).position(ii) = op.bounds(ii, 1) + (op.bounds(ii, 2)-op.bounds(ii, 1)) .* rand(1, 1);
+    end
+    swarm(i).velocity = zeros(1, op.numberOfDecisionVar);
+    swarm(i).paretoPosition = benchmark(swarm(i).position);
+    swarm(i).personalBest = swarm(i);
+
 end
-save("result" + counter + ".mat", "pareto");
+clear i ii
 
-function paretoFront = runAlgo()
-    global parameters;
-    global op;
-    op.name = "ZDT3";
-    addpath('..\Shared');
-    % whitebg("black");
-    benchmark(zeros(2,2), true);
-    op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
-    
-    parameters.particleCount = 100; % Number of particles
-    parameters.personalConst = 0.1;
-    parameters.socialConst = 0.2;
-    parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
-    parameters.division = 4; % Amount of divisions per dimension for the reference directions
-    parameters.speedLimit = 1;
-    
-    parameters.elasticity = 0.1; % Bounce back speed
+selectedElites(parameters.eliteCount + 1) = swarm(1);
+selectedElites(parameters.eliteCount + 1) = [];
+for i = 1:parameters.iterationTime
+    disp(strcat("Entering Iteration : ", num2str(i)));
     
     
-    parameters.eliteCount = parameters.particleCount * 1;
+    thisGenElites = getParetoSwarm(swarm);
     
-    % Create a structure array to hold the particles
-    swarm(parameters.particleCount) = struct('position', [], 'velocity', [], 'personalBest', [], 'paretoPosition', []);
+    selectedElites = selectElites(thisGenElites, selectedElites);
+
+    % Update and evaluate
+    swarm = updatePositions(swarm, selectedElites);
     
-    % Use a loop to initialize the particles
-    for i = 1:parameters.particleCount
-        % Assign random values to the position, velocity, and personalBest
-        for ii = 1:op.numberOfDecisionVar
-            swarm(i).position(ii) = op.bounds(ii, 1) + (op.bounds(ii, 2)-op.bounds(ii, 1)) .* rand(1, 1);
-        end
-        swarm(i).velocity = zeros(1, op.numberOfDecisionVar);
-        swarm(i).paretoPosition = benchmark(swarm(i).position);
-        swarm(i).personalBest = swarm(i);
+    swarm = evaluate(swarm);
     
+    
+
+
+    pareto = getParetoSpace(swarm);
+    pareto2 = getParetoSpace(getParetoSwarm(selectedElites));
+    pareto = vertcat(pareto, pareto2);
+    mu = repmat([1, 1, 1], height(pareto), 1);
+    for ii = width(swarm) + 1:height(pareto)
+        mu(ii, :) = [0, 1, 1];
     end
-    clear i ii
+
+    % pareto = getParetoSpace(selectedElites);
     
-    selectedElites(parameters.eliteCount + 1) = swarm(1);
-    selectedElites(parameters.eliteCount + 1) = [];
-    for i = 1:parameters.iterationTime
-        disp(strcat("Entering Iteration : ", num2str(i)));
-        
-        
-        thisGenElites = getParetoSwarm(swarm);
-        
-        selectedElites = selectElites(thisGenElites, selectedElites);
-    
-        % Update and evaluate
-        swarm = updatePositions(swarm, selectedElites);
-        
-        swarm = evaluate(swarm);
-        
-        
-    
-    
-        pareto = getParetoSpace(swarm);
-        pareto2 = getParetoSpace(getParetoSwarm(selectedElites));
-        pareto = vertcat(pareto, pareto2);
-        mu = repmat([1, 1, 1], height(pareto), 1);
-        for ii = width(swarm) + 1:height(pareto)
-            mu(ii, :) = [0, 1, 1];
-        end
-    
-        % pareto = getParetoSpace(selectedElites);
-        
-        if(width(pareto) == 2)
-            scatter(pareto(:, 1), pareto(:, 2), 40, mu, 'filled');
-        else
-            scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 40, mu, 'filled');
-        end
-        clear pareto pareto2
-        drawnow
-    
-    end
-    
-    paretoFront = getParetoSpace(selectedElites);
-    if(width(paretoFront) == 2)
-        scatter(paretoFront(:, 1), paretoFront(:, 2), 40, 'filled');
+    if(width(pareto) == 2)
+        scatter(pareto(:, 1), pareto(:, 2), 40, mu, 'filled');
     else
-        scatter3(paretoFront(:, 1), paretoFront(:, 2), paretoFront(:, 3), 40, 'filled');
+        scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 40, mu, 'filled');
     end
+    clear pareto pareto2
+    drawnow
+
 end
+
+paretoFront = getParetoSpace(selectedElites);
+if(width(paretoFront) == 2)
+    scatter(paretoFront(:, 1), paretoFront(:, 2), 40, 'filled');
+else
+    scatter3(paretoFront(:, 1), paretoFront(:, 2), paretoFront(:, 3), 40, 'filled');
+end
+
+% pareto.name = op.name;
+% pareto.data = paretoFront;
+% pareto.N = parameters.particleCount;
+% 
+% counter = 1;
+% while isfile("result" + counter + ".mat")
+%     counter = counter + 1;
+% end
+% save("result" + counter + ".mat", "pareto");
 
 
 

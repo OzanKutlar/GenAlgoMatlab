@@ -1,6 +1,6 @@
 global parameters;
 global op;
-op.name = "ZDT3";
+op.name = "ZDT4";
 addpath('..\Shared');
 % whitebg("black");
 benchmark(zeros(2,2), true);
@@ -9,7 +9,7 @@ op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 parameters.particleCount = 100; % Number of particles
 parameters.personalConst = 0.1;
 parameters.socialConst = 0.2;
-parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
+parameters.iterationTime = 200; % Maximum number of 'iterations' to run the simulation
 parameters.division = 3; % Amount of divisions per dimension for the reference directions
 
 parameters.elasticity = 0; % Bounce back speed

@@ -47,7 +47,12 @@ data_names1 = [algorithm1, algorithm2];
 fig = figure(); 
 boxplot(data1,data_names1)
 %title('Experiment 1 (Tracking on Wall)');
-%xlabel('Device');
+% xlabel('Device');
 ylabel('IGD');
 fontsize(fig, font_size, "points");
+
+
+exportgraphics(gcf, "figure.pdf", 'ContentType', 'vector')
+
+
 %exportgraphics(gcf,'exp1_tracking.pdf','ContentType','vector');

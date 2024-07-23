@@ -1,18 +1,17 @@
-clear
 global parameters;
 global op;
-op.name = "ZDT1";
+op.name = "ZDT3";
 addpath('..\Shared');
 % whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 2000; % Number of particles
-parameters.personalConst = 2;
-parameters.socialConst = 2;
-parameters.iterationTime = 30000; % Maximum number of 'iterations' to run the simulation
+parameters.particleCount = 100; % Number of particles
+parameters.personalConst = 0.1;
+parameters.socialConst = 0.2;
+parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
 parameters.socialDistance = 1; % Distance at which particles are moved apart.
-parameters.eliteCount = parameters.particleCount * 0.1; % 10% of the population as elites by default
+parameters.eliteCount = parameters.particleCount * 0.5; % 10% of the population as elites by default
 
 % Create a structure array to hold the particles
 swarm(parameters.particleCount) = struct('position', [], 'velocity', [], 'personalBest', [], 'paretoPosition', []);
@@ -24,7 +23,7 @@ for i = 1:parameters.particleCount
     for ii = 1:op.numberOfDecisionVar
         swarm(i).position(ii) = op.bounds(ii, 1) + (op.bounds(ii, 2)-op.bounds(ii, 1)) .* rand(1, 1);
     end
-    swarm(i).velocity = rand(1, op.numberOfDecisionVar);
+    swarm(i).velocity = zeros(1, op.numberOfDecisionVar);
     swarm(i).paretoPosition = benchmark(swarm(i).position);
     swarm(i).personalBest = swarm(i);
 
@@ -50,16 +49,41 @@ for i = 1:parameters.iterationTime
 
     
 
+    pareto = getParetoSpace(swarm);
+    pareto2 = getParetoSpace(selectedElites);
+    pareto = vertcat(pareto, pareto2);
+    mu = repmat([1, 1, 1], height(pareto), 1);
+    for ii = width(swarm) + 1:height(pareto)
+        mu(ii, :) = [0, 1, 1];
+    end
 
-    % pareto = getParetoSpace(swarm);
-    pareto = getParetoSpace(selectedElites);
-
-    scatter(pareto(:, 1), pareto(:, 2), 'filled');
-
-    clear pareto
+    % pareto = getParetoSpace(selectedElites);
+    
+    if(width(pareto) == 2)
+        scatter(pareto(:, 1), pareto(:, 2), 40, mu, 'filled');
+    else
+        scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 40, mu, 'filled');
+    end
+    clear pareto pareto2
     drawnow
 
 end
+
+pareto = getParetoSpace(selectedElites);
+scatter(pareto(:, 1), pareto(:, 2), 'filled');
+clear pareto
+
+paretoFront = getParetoSpace(selectedElites);
+
+pareto.name = op.name;
+pareto.data = paretoFront;
+pareto.N = parameters.eliteCount;
+
+counter = 1;
+while isfile("result" + counter + ".mat")
+    counter = counter + 1;
+end
+save("result" + counter + ".mat", "pareto");
 
 
 function elites = selectElites(nonDomLayers, elites)
@@ -96,15 +120,31 @@ end
 function swarm = updatePositions(swarm, elites)
     global parameters op;
     for i = 1:width(swarm)
+        isElite = false;
+        for ii = 1:width(elites)
+            if(all(swarm(i).position == elites(ii).position) && all(swarm(i).velocity == elites(ii).velocity))
+                isElite = true;
+                break;
+            end
+        end
+
+        if(isElite)
+            continue;
+        end
+
         globalBest = round(rand() * (width(elites) - 1)) + 1;
         bestP = elites(globalBest);
         swarm(i).velocity = swarm(i).velocity + parameters.personalConst*(swarm(i).personalBest.position - swarm(i).position);
         swarm(i).velocity = swarm(i).velocity + parameters.socialConst*(bestP.position - swarm(i).position);
         swarm(i).position = swarm(i).position + swarm(i).velocity;
-
+        
         for iii = 1:op.numberOfDecisionVar
             swarm(i).position(iii) = max(min(swarm(i).position(iii), op.bounds(iii, 2)), op.bounds(iii, 1));
-            swarm(i).velocity(iii) = max(min(swarm(i).velocity(iii), op.bounds(iii, 2)), op.bounds(iii, 1));
+            if (swarm(i).position(iii) ~= max(min(swarm(i).position(iii), op.bounds(iii, 2)), op.bounds(iii, 1)))
+                swarm(i).position(iii) = max(min(swarm(i).position(iii), op.bounds(iii, 2)), op.bounds(iii, 1));
+                swarm(i).velocity(iii) = -swarm(i).velocity(iii) * parameters.elasticity;
+            end
+            % swarm(i).velocity(iii) = max(min(swarm(i).velocity(iii), op.bounds(iii, 2)), op.bounds(iii, 1));
         end
     end
 end
@@ -113,10 +153,35 @@ end
 % Output : Particle Swarm
 % Exp : Evaluates each swarm and updates their paretoPosition
 function swarm = evaluate(swarm)
+    global op
+    if(startsWith(op.name, "DTLZ"))
+        swarm = evaluateWholeAtOnce(swarm);
+        return;
+    end
     for i = 1:width(swarm)
+        oldPos = swarm(i).paretoPosition;
         swarm(i).paretoPosition = benchmark(swarm(i).position);
+        if(any(oldPos(:) < swarm(i).paretoPosition(:)))
+            swarm(i).personalBest = swarm(i);
+        end
     end
 end
+
+function swarm = evaluateWholeAtOnce(swarm)
+    oldPareto = getParetoSpace(swarm);
+    position = zeros(width(swarm), width(swarm(1).position));
+    for i = 1:width(swarm)
+        position(i, :) = swarm(i).position;
+    end
+    result = benchmark(position);
+    for i = 1:width(swarm)
+        swarm(i).paretoPosition = result(i, :);
+        if(any(oldPareto(i, :) > swarm(i).paretoPosition(:)))
+            swarm(i).personalBest = swarm(i);
+        end
+    end
+end
+
 
 
 % Input : the particle swarm
