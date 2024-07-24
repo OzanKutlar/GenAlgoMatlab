@@ -3,23 +3,24 @@ clc;
 clf;
 global parameters;
 global op;
-op.name = "ZDT3";
+op.name = "VIENNET";
 addpath('..\Shared');
 % whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 100; % Number of particles
-parameters.personalConst = 0.001;
-parameters.socialConst = 0.002;
-parameters.iterationTime = 1000; % Maximum number of 'iterations' to run the simulation
+parameters.particleCount = 300; % Number of particles
+parameters.personalConst = 0.1;
+parameters.socialConst = 0.2;
+parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
 parameters.division = 4; % Amount of divisions per dimension for the reference directions
-parameters.speedLimit = 0.01;
+parameters.speedLimit = 1;
 
-parameters.elasticity = 0.1; % Bounce back speed
+parameters.elasticity = 0; % Bounce back speed
 
 
-parameters.eliteCount = parameters.particleCount * 1;
+% parameters.eliteCount = parameters.particleCount * 1;
+parameters.eliteCount = 150;
 
 % Create a structure array to hold the particles
 swarm(parameters.particleCount) = struct('position', [], 'velocity', [], 'personalBest', [], 'paretoPosition', []);
@@ -39,8 +40,13 @@ clear i ii
 
 selectedElites(parameters.eliteCount + 1) = swarm(1);
 selectedElites(parameters.eliteCount + 1) = [];
+speed = 10.^linspace(3, -5, parameters.iterationTime);
+speed2 = 10.^linspace(1, -7, parameters.iterationTime);
 for i = 1:parameters.iterationTime
     disp(strcat("Entering Iteration : ", num2str(i)));
+    parameters.personalConst = 0.1 * speed2(i);
+    parameters.socialConst = 0.2 * speed2(i);
+    parameters.speedLimit = speed(i);
     
     
     thisGenElites = getParetoSwarm(swarm);
@@ -58,7 +64,7 @@ for i = 1:parameters.iterationTime
     pareto = getParetoSpace(swarm);
     pareto2 = getParetoSpace(getParetoSwarm(selectedElites));
     pareto = vertcat(pareto, pareto2);
-    mu = repmat([1, 1, 1], height(pareto), 1);
+    mu = repmat([1, 0, 1], height(pareto), 1);
     for ii = width(swarm) + 1:height(pareto)
         mu(ii, :) = [0, 1, 1];
     end

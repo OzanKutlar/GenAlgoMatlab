@@ -1,12 +1,12 @@
 global parameters;
 global op;
-op.name = "ZDT3";
+op.name = "DTLZ1";
 addpath('..\Shared');
 % whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 100; % Number of particles
+parameters.particleCount = 500; % Number of particles
 parameters.personalConst = 0.1;
 parameters.socialConst = 0.2;
 parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
