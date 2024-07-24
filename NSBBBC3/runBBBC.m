@@ -3,13 +3,13 @@ function runBBBC()
     global bbbcs;       % big bang-big crunch settings
     addpath '..\Shared'
     global op;          % Optimization problem
-    op.name = "ZDT1";
+    op.name = "DTLZ1";
     benchmark(zeros(2,2), true);
 
     bbbcs.N = 100;
     bbbcs.n_cmass = bbbcs.N / 10;
     bbbcs.k = bbbcs.N / bbbcs.n_cmass; % number of individual to generate for every cmass
-    bbbcs.MAX_GENERATIONS = 100;
+    bbbcs.MAX_GENERATIONS = 1000;
     bbbcs.n_variables = op.numberOfDecisionVar;
     bbbcs.numberOfObjectives = op.numberOfObjectives;
     bbbcs.isMin = ones(1, op.numberOfObjectives);
@@ -25,10 +25,11 @@ function runBBBC()
     pop = bigBangPhase();
     pop = nonDomSorting(pop);
     pop = crowding_distance_BBBC(pop);
+    speed = 1.5.^linspace(1, 50, bbbcs.MAX_GENERATIONS);
     for t=1:1:bbbcs.MAX_GENERATIONS
         op.currentGen = t;
         if t~=1
-            pop = bigBangPhase_1(cMass, t * 1, pop);
+            pop = bigBangPhase_1(cMass, speed(t), pop);
         end
         
         tic
