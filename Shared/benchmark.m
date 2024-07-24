@@ -74,7 +74,7 @@ function resultArr = benchmark(individual, setup)
         case "DTLZ1"
             if setup
                 op.numberOfDecisionVar = 5;
-                op.numberOfObjectives = 5;
+                op.numberOfObjectives = 3;
                 op.bounds = [0,1];
                 return;
             end
