@@ -5,10 +5,10 @@ temp_pop = zeros(1,bbbcs.solutionIndex);
     for i=1:1:size(cMass,1)
         for j=1:1:bbbcs.k
             for l=1:1:bbbcs.n_variables
-            r1 = -1 + 2*rand();
-            temp_pop((i-1)* bbbcs.k +j,l) = cMass(i,l) + ((bbbcs.bounds(l,2) - bbbcs.bounds(l,1))*r1)/t;
-
-            temp_pop((i-1)* bbbcs.k +j,l) = max(min(temp_pop((i-1)* bbbcs.k +j,l), bbbcs.bounds(l,2)), bbbcs.bounds(l,1));
+                r1 = -1 + 2*rand();
+                temp_pop((i-1)* bbbcs.k +j,l) = cMass(i,l) + ((bbbcs.bounds(l,2) - bbbcs.bounds(l,1))*r1) * t;
+        
+                temp_pop((i-1)* bbbcs.k +j,l) = max(min(temp_pop((i-1)* bbbcs.k +j,l), bbbcs.bounds(l,2)), bbbcs.bounds(l,1));
             end
         end
     end
@@ -22,7 +22,7 @@ temp_pop = zeros(1,bbbcs.solutionIndex);
             end
         end
     end
-    pop = [pop, temp_pop];
+    pop = vertcat(pop, temp_pop);
     pop = nonDomSorting(pop);
     % pop = crowding_distance_BBBC(pop);
     % rank_at_half = pop(bbbcs.N,bbbcs.rankIndex);

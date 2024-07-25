@@ -3,13 +3,15 @@ function runBBBC()
     global bbbcs;       % big bang-big crunch settings
     addpath '..\Shared'
     global op;          % Optimization problem
-    op.name = "DTLZ1";
+    op.name = "DTLZ2";
     benchmark(zeros(2,2), true);
+    global parameters
+    parameters.division = 8;
 
-    bbbcs.N = 1000;
-    bbbcs.n_cmass = bbbcs.N / 10;
+    bbbcs.N = 90;
+    bbbcs.n_cmass = 45;
     bbbcs.k = bbbcs.N / bbbcs.n_cmass; % number of individual to generate for every cmass
-    bbbcs.MAX_GENERATIONS = 100;
+    bbbcs.MAX_GENERATIONS = 400;
     bbbcs.n_variables = op.numberOfDecisionVar;
     bbbcs.numberOfObjectives = op.numberOfObjectives;
     bbbcs.isMin = ones(1, op.numberOfObjectives);
@@ -24,15 +26,15 @@ function runBBBC()
     pop = zeros(bbbcs.N,bbbcs.solutionIndex);    %   [x1, x2, fitness, fitness2, Rank, Crowding distance]
     pop = bigBangPhase();
     pop = nonDomSorting(pop);
-    pop = crowding_distance_BBBC(pop);
-    speed = (2.^linspace(1, 7, bbbcs.MAX_GENERATIONS));
+    % pop = crowding_distance_BBBC(pop);
+    speed = (linspace(100, 1, bbbcs.MAX_GENERATIONS))./10;
     for t=1:1:bbbcs.MAX_GENERATIONS
+        tic
         op.currentGen = t;
         if t~=1
-            pop = bigBangPhase_1(cMass, speed(t), pop);
+            pop = bigBangPhase_1(cMass,0.1,pop);
         end
-        
-        tic
+       
 %         if pop(1,3) <= 1e-5
 %             break
 %         end
@@ -44,10 +46,10 @@ function runBBBC()
         toc
         clf
         if op.numberOfObjectives == 2
-            scatter(first_obj,second_obj,'filled','DisplayName',strcat("NSBBBC Generating gen : ", num2str(t)));
+            scatter(first_obj,second_obj,'filled','DisplayName',strcat("RP-NS-BBBC Generating gen : ", num2str(t)));
         end
         if op.numberOfObjectives == 3
-            scatter3(first_obj, second_obj, third_obj,'filled','DisplayName', strcat("NSBBBC Generating gen : ", num2str(t)));
+            scatter3(first_obj, second_obj, third_obj,'filled','DisplayName', strcat("RP-NS-BBBC Generating gen : ", num2str(t)));
         end
         legend
         drawnow

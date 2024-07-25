@@ -1,11 +1,11 @@
 global gas;         % genetic algorithm settings
 global op; 
 
-op.name = "DTLZ2";
+op.name = "DTLZ1";
 addpath('..\Shared');
 benchmark(zeros(2,2), true);
 
-gas.p_divisions = 4;
+gas.p_divisions = 8;
 gas.algotihm_name = "NSGA-III";
 gas.generations = 200;
 gas.n_individuals = 92;

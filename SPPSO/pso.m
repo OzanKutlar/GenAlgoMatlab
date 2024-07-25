@@ -3,16 +3,16 @@ clc;
 clf;
 global parameters;
 global op;
-op.name = "VIENNET";
+op.name = "DTLZ1";
 addpath('..\Shared');
 % whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 300; % Number of particles
-parameters.personalConst = 0.1;
-parameters.socialConst = 0.2;
-parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
+parameters.particleCount = 1500; % Number of particles
+parameters.personalConst = 0.001;
+parameters.socialConst = 0.002;
+parameters.iterationTime = 1000; % Maximum number of 'iterations' to run the simulation
 parameters.division = 4; % Amount of divisions per dimension for the reference directions
 parameters.speedLimit = 1;
 
@@ -20,7 +20,7 @@ parameters.elasticity = 0; % Bounce back speed
 
 
 % parameters.eliteCount = parameters.particleCount * 1;
-parameters.eliteCount = 150;
+parameters.eliteCount = 15;
 
 % Create a structure array to hold the particles
 swarm(parameters.particleCount) = struct('position', [], 'velocity', [], 'personalBest', [], 'paretoPosition', []);
@@ -40,13 +40,13 @@ clear i ii
 
 selectedElites(parameters.eliteCount + 1) = swarm(1);
 selectedElites(parameters.eliteCount + 1) = [];
-speed = 10.^linspace(3, -5, parameters.iterationTime);
-speed2 = 10.^linspace(1, -7, parameters.iterationTime);
+% speed = 10.^linspace(3, -5, parameters.iterationTime);
+% speed2 = 10.^linspace(1, -7, parameters.iterationTime);
 for i = 1:parameters.iterationTime
     disp(strcat("Entering Iteration : ", num2str(i)));
-    parameters.personalConst = 0.1 * speed2(i);
-    parameters.socialConst = 0.2 * speed2(i);
-    parameters.speedLimit = speed(i);
+    % parameters.personalConst = 0.1 * speed2(i);
+    % parameters.socialConst = 0.2 * speed2(i);
+    % parameters.speedLimit = speed(i);
     
     
     thisGenElites = getParetoSwarm(swarm);
@@ -61,15 +61,15 @@ for i = 1:parameters.iterationTime
     
 
 
-    pareto = getParetoSpace(swarm);
-    pareto2 = getParetoSpace(getParetoSwarm(selectedElites));
-    pareto = vertcat(pareto, pareto2);
+    % pareto = getParetoSpace(swarm);
+    % pareto2 = getParetoSpace(getParetoSwarm(selectedElites));
+    % pareto = vertcat(pareto, pareto2);
+    pareto = getParetoSpace(selectedElites);
     mu = repmat([1, 0, 1], height(pareto), 1);
     for ii = width(swarm) + 1:height(pareto)
         mu(ii, :) = [0, 1, 1];
     end
 
-    % pareto = getParetoSpace(selectedElites);
     
     if(width(pareto) == 2)
         scatter(pareto(:, 1), pareto(:, 2), 40, mu, 'filled');
@@ -134,9 +134,21 @@ function elites = selectElites(swarm, elites)
                     longestIndex = i;
                 end
             end
-            randomCandidate = min(ceil(rand() * (longestCount - 1)) + 1, (longestCount - 1));
-            toBeRemoved((eliteCount - parameters.eliteCount)) = assosiations(longestIndex).swarm(randomCandidate);
-            assosiations(longestIndex).swarm(randomCandidate) = [];
+
+            furthest = assosiations(longestIndex).swarm(1);
+            furthestIndex = 1;
+            for i = 2:longestCount
+                if(assosiations(longestIndex).swarm(i).dist >= furthest.dist)
+                    if(assosiations(longestIndex).swarm(i).dist == furthest.dist && round(rand()) == 1)
+                        continue;
+                    end
+                    furthest = assosiations(longestIndex).swarm(i);
+                    furthestIndex = i;
+                end
+            end
+
+            toBeRemoved((eliteCount - parameters.eliteCount)) = assosiations(longestIndex).swarm(furthestIndex).position;
+            assosiations(longestIndex).swarm(furthestIndex) = [];
             assosiations(longestIndex).count = assosiations(longestIndex).count - 1;
             eliteCount = eliteCount - 1;
         end
