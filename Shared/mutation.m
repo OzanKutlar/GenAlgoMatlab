@@ -48,21 +48,36 @@ function [chrom] = polynomialMutation(chrom)
     % error('This Mutation Method is not implemented yet.');
     
     eta_m = gas.eta_mutation;
-    
-    Lower = op.bounds(1);
-    Upper = op.bounds(2);
-    Site  = rand() < gas.mutation_probability/width(chrom);
-    mu    = rand();
-    temp  = Site & mu<=0.5;
-    
-    chrom = min(max(chrom, op.bounds(1)), op.bounds(2));
-    if(temp)
-        chrom = chrom+(Upper-Lower).*((2.*mu+(1-2.*mu).*(1-(chrom-Lower)./(Upper-Lower)).^(eta_m+1)).^(1/(eta_m+1))-1);
+
+    lower = op.bounds(1);
+    upper = op.bounds(2);
+
+    for i = 1:op.numberOfDecisionVar
+        u = rand();
+
+        if u <= 0.5
+            L = (2*u)^(1/eta_m)-1;
+            chrom(i) = chrom(i)+L*(chrom(i)-lower); 
+        else
+            R = 1-(2*(1-u))^(1/(1+eta_m));
+            chrom(i) = chrom(i)+R*(upper-chrom(i)); 
+        end
     end
-    temp = Site & mu>0.5;
-    if(temp)
-        chrom = chrom+(Upper-Lower).*(1-(2.*(1-mu) + 2 .* (mu-0.5) .* (1-(Upper-chrom)./(Upper-Lower)).^(eta_m+1)).^(1/(eta_m+1)));
-    end
+    
+    % Lower = op.bounds(1);
+    % Upper = op.bounds(2);
+    % Site  = rand() < gas.mutation_probability/width(chrom);
+    % mu    = rand();
+    % temp  = Site & mu<=0.5;
+    % 
+    % chrom = min(max(chrom, op.bounds(1)), op.bounds(2));
+    % if(temp)
+    %     chrom = chrom+(Upper-Lower).*((2.*mu+(1-2.*mu).*(1-(chrom-Lower)./(Upper-Lower)).^(eta_m+1)).^(1/(eta_m+1))-1);
+    % end
+    % temp = Site & mu>0.5;
+    % if(temp)
+    %     chrom = chrom+(Upper-Lower).*(1-(2.*(1-mu) + 2 .* (mu-0.5) .* (1-(Upper-chrom)./(Upper-Lower)).^(eta_m+1)).^(1/(eta_m+1)));
+    % end
 
     % mu = rand(size(chrom));
     % chrom(mu < 0.5) = (2 * mu(mu < 0.5)).^(1 / (eta_c + 1)) - 1;
