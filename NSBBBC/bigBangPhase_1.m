@@ -1,6 +1,6 @@
 function [pop] = bigBangPhase_1(cMass,t,pop)
-global bbbcs;
-temp_pop = zeros(1,bbbcs.solutionIndex);
+    global bbbcs;
+    temp_pop = zeros(1,bbbcs.solutionIndex);
     global bbbcs;
     for i=1:1:size(cMass,1)
         for j=1:1:bbbcs.k

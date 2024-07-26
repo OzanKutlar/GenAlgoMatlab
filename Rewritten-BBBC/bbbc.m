@@ -2,7 +2,7 @@ function bbbc()
     global bbbcs;       % big bang-big crunch settings
     addpath '..\Shared'
     global op;          % Optimization problem
-    op.name = "zdt3";
+    op.name = "zdt1";
     benchmark(zeros(2,2), true);
     global parameters
     parameters.division = 8;
@@ -21,15 +21,15 @@ function bbbc()
     
     pop(bbbcs.N) = struct('position', [], 'paretoPosition', []);
     pop = initUniverse(pop);
-    speed = 10.^-(min(linspace(0, 4, bbbcs.MAX_GENERATIONS), 1.65));
+    speed = 10.^-(min(linspace(0, 4, bbbcs.MAX_GENERATIONS), 1.25));
 
     for i = 1:bbbcs.MAX_GENERATIONS
         tic
         nonDominated = getNonDominatedPop(pop);
         
-        cMass = selectCentralMass(nonDominated);
+        [cMass, reference_directions] = selectCentralMass(nonDominated);
 
-        displayFigure(cMass, pop, speed, i);
+        displayFigure(cMass, pop, speed, i, reference_directions);
         
         pop = explode(cMass, speed(i));
 
@@ -45,13 +45,16 @@ function bbbc()
     end
 end
 
-function displayFigure(elites, all, speedCurve, generation)
+function displayFigure(elites, all, speedCurve, generation, reference_points)
     pareto = getParetoSpace(all);
     pareto2 = getParetoSpace(elites);
-    pareto = vertcat(pareto, pareto2);
+    pareto = vertcat(pareto, pareto2, reference_points);
     mu = repmat([0, 0, 0], height(pareto), 1);
     for ii = width(all) + 1:height(pareto)
         mu(ii, :) = [0, 1, 1];
+    end
+    for ii = width(all) + width(elites) + 1:height(pareto)
+        mu(ii, :) = [1, 0, 0];
     end
     
     % pareto = getParetoSpace(selectedElites);
@@ -63,7 +66,7 @@ function displayFigure(elites, all, speedCurve, generation)
     end
     subplot(2, 1, 2)
     plot(speedCurve);
-    xline(generation);
+    xline(generation, '-', 'Current Generation');
     drawnow
 end
 
@@ -147,7 +150,7 @@ function pop = evaluateWholeAtOnce(pop)
 end
 
 
-function cMass = selectCentralMass(nonDom)
+function [cMass, reference_directions] = selectCentralMass(nonDom)
     global bbbcs
     selectedElites = 0;
     cMass(bbbcs.n_cmass + 1) = nonDom(1);
