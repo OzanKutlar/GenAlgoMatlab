@@ -23,9 +23,8 @@ if rand() <= gas.crossover_probability
 
 
         case 'sbx'
-            eta = 20;
-            o1 = sbxCrossover(p1, p2, eta, repmat(op.bounds(1), 1, op.numberOfDecisionVar), repmat(op.bounds(2), 1, op.numberOfDecisionVar));
-            o2 = sbxCrossover(p1, p2, eta, repmat(op.bounds(1), 1, op.numberOfDecisionVar), repmat(op.bounds(2), 1, op.numberOfDecisionVar));
+            o1 = sbxCrossover(p1, p2, repmat(op.bounds(1), 1, op.numberOfDecisionVar), repmat(op.bounds(2), 1, op.numberOfDecisionVar));
+            o2 = sbxCrossover(p1, p2, repmat(op.bounds(1), 1, op.numberOfDecisionVar), repmat(op.bounds(2), 1, op.numberOfDecisionVar));
         otherwise
             error('Unexpected Crossover Method.');
     end
@@ -63,7 +62,7 @@ end
 
 %--------------SBX CROSSOVER--------------
 
-function [child1, child2] = sbxCrossover(parent1, parent2, eta_c, lower_bound, upper_bound)
+function [child1, child2] = sbxCrossover(parent1, parent2, lower_bound, upper_bound)
 global op;  % optimization problem
 global gas; % genetic algorithm settings
     % Simulated Binary Crossover (SBX)
@@ -87,10 +86,10 @@ global gas; % genetic algorithm settings
     % Initialize children
     child1 = zeros(size(parent1));
     child2 = zeros(size(parent2));
-    
+
     % Number of decision variables
     nVar = length(parent1);
-    
+
     for i = 1:nVar
         beta  = 0;
         mu    = rand();
@@ -116,7 +115,7 @@ global gas; % genetic algorithm settings
 
         % child1(i) = 0.5 * (parent1(i) + parent2(i) - beta*(parent2(i) - parent1(i)));
         % child2(i) = 0.5 * (parent1(i) + parent2(i) + beta*(parent2(i) - parent1(i)));
-        
+
         % Ensure children are within bounds
         child1(i) = min(max(child1(i), lower_bound(i)), upper_bound(i));
         child2(i) = min(max(child2(i), lower_bound(i)), upper_bound(i));
