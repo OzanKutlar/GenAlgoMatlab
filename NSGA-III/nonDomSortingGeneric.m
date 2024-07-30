@@ -12,7 +12,7 @@ tempIndex = gas.n_ObjectiveFunctions+3;
 temp_fit_array = sortrows(fit_array, 1);
 rank = 1;
 added = 1;
-while ~isempty(temp_fit_array)
+while ~isempty(temp_fit_array) % N (LogN)  * non-dominated layer sayısı
     temp_fit_array(:, tempIndex) = 1:height(temp_fit_array);
     nonDomLayer = recursiveNDS(temp_fit_array(:, :), 1:index - 1);
     nonDomLayer(:, rankIndex) = rank;
@@ -41,19 +41,27 @@ function result = recursiveNDS(pop, useIndex)
     right = recursiveNDS(pop(halfwayPoint + 1:hPop, :), useIndex);
     
     removed = [0, 0];
-    for i = 1:height(left)
-        removed(2) = 0;
-        for j = 1:height(right)
-            if(all(left(i - removed(1), useIndex) <= right(j - removed(2), useIndex)))
-                if(any(left(i - removed(1), useIndex) <= right(j - removed(2), useIndex)))
-                    right(j - removed(2), :) = [];
-                    removed(2) = removed(2) + 1;
+    if(~isempty(left) && ~isempty(right))
+        for i = 1:height(left)
+            removed(2) = 0;
+            for j = 1:height(right)
+                if(i - removed(1) == 0 || j - removed(2) == 0)
+                    break;
                 end
-            elseif all(left(i - removed(1), useIndex) >= right(j - removed(2), useIndex))
-                if(any(left(i - removed(1), useIndex) > right(j - removed(2), useIndex)))
-                    left(i - removed(1), :) = [];
-                    removed(1) = removed(1) + 1;
+                if(all(left(i - removed(1), useIndex) <= right(j - removed(2), useIndex)))
+                    if(any(left(i - removed(1), useIndex) < right(j - removed(2), useIndex)))
+                        right(j - removed(2), :) = [];
+                        removed(2) = removed(2) + 1;
+                    end
+                elseif all(left(i - removed(1), useIndex) >= right(j - removed(2), useIndex))
+                    if(any(left(i - removed(1), useIndex) > right(j - removed(2), useIndex)))
+                        left(i - removed(1), :) = [];
+                        removed(1) = removed(1) + 1;
+                    end
                 end
+            end
+            if(i - removed(1) == 0 || j - removed(2) == 0)
+                break;
             end
         end
     end

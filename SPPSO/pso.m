@@ -3,27 +3,27 @@ clc;
 clf;
 global parameters;
 global op;
-op.name = "DTLZ1";
+op.name = "dtlz1";
 addpath('..\Shared');
-% whitebg("black");
+whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 1500; % Number of particles
-parameters.personalConst = 0.001;
-parameters.socialConst = 0.002;
-parameters.iterationTime = 1000; % Maximum number of 'iterations' to run the simulation
+parameters.particleCount = 300; % Number of particles
+parameters.personalConst = 0.1;
+parameters.socialConst = 0.2;
+parameters.iterationTime = 300; % Maximum number of 'iterations' to run the simulation
 parameters.division = 4; % Amount of divisions per dimension for the reference directions
-parameters.speedLimit = 1;
+parameters.speedLimit = abs(op.bounds(1, 2) - op.bounds(1, 1));
 
 parameters.elasticity = 0; % Bounce back speed
 
 
-% parameters.eliteCount = parameters.particleCount * 1;
-parameters.eliteCount = 15;
+parameters.eliteCount = parameters.particleCount * 1;
+% parameters.eliteCount = 15;
 
 % Create a structure array to hold the particles
-swarm(parameters.particleCount) = struct('position', [], 'velocity', [], 'personalBest', [], 'paretoPosition', []);
+swarm(parameters.particleCount) = struct('position', [], 'velocity', [], 'personalBest', [], 'paretoPosition', [], 'target', []);
 
 % Use a loop to initialize the particles
 for i = 1:parameters.particleCount
@@ -31,7 +31,7 @@ for i = 1:parameters.particleCount
     for ii = 1:op.numberOfDecisionVar
         swarm(i).position(ii) = op.bounds(ii, 1) + (op.bounds(ii, 2)-op.bounds(ii, 1)) .* rand(1, 1);
     end
-    swarm(i).velocity = zeros(1, op.numberOfDecisionVar);
+    swarm(i).velocity = (rand(1, op.numberOfDecisionVar) * 2) - 1;
     swarm(i).paretoPosition = benchmark(swarm(i).position);
     swarm(i).personalBest = swarm(i);
 
@@ -40,8 +40,10 @@ clear i ii
 
 selectedElites(parameters.eliteCount + 1) = swarm(1);
 selectedElites(parameters.eliteCount + 1) = [];
-% speed = 10.^linspace(3, -5, parameters.iterationTime);
-% speed2 = 10.^linspace(1, -7, parameters.iterationTime);
+speed = 10.^-(min(linspace(0, 6, parameters.iterationTime), 1));
+speed2 = 10.^-(min(linspace(0, 4, parameters.iterationTime), 2));
+speed = speed(1:parameters.iterationTime);
+speed2 = speed2(1:parameters.iterationTime);
 for i = 1:parameters.iterationTime
     disp(strcat("Entering Iteration : ", num2str(i)));
     % parameters.personalConst = 0.1 * speed2(i);
@@ -59,25 +61,7 @@ for i = 1:parameters.iterationTime
     swarm = evaluate(swarm);
     
     
-
-
-    % pareto = getParetoSpace(swarm);
-    % pareto2 = getParetoSpace(getParetoSwarm(selectedElites));
-    % pareto = vertcat(pareto, pareto2);
-    pareto = getParetoSpace(selectedElites);
-    mu = repmat([1, 0, 1], height(pareto), 1);
-    for ii = width(swarm) + 1:height(pareto)
-        mu(ii, :) = [0, 1, 1];
-    end
-
-    
-    if(width(pareto) == 2)
-        scatter(pareto(:, 1), pareto(:, 2), 40, mu, 'filled');
-    else
-        scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 40, mu, 'filled');
-    end
-    clear pareto pareto2
-    drawnow
+    displayFigure(selectedElites, swarm, horzcat(speed', speed2'), i);
 
 end
 
@@ -99,7 +83,33 @@ end
 % save("result" + counter + ".mat", "pareto");
 
 
+function displayFigure(elites, all, speedCurve, generation)
+    pareto = getParetoSpace(all);
+    pareto2 = getParetoSpace(elites);
+    pareto = vertcat(pareto, pareto2);
+    mu = repmat([1, 1, 1], height(pareto), 1);
+    for ii = width(all) + 1:height(pareto)
+        mu(ii, :) = [1, 0, 0];
+    end
+    
+    % pareto = getParetoSpace(selectedElites);
+    subplot(2, 1, 1)
+    if(width(pareto) == 2)
+        scatter(pareto(:, 1), pareto(:, 2), 40, mu, 'filled');
+    else
+        scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 40, mu, 'filled');
+    end
+    subplot(2, 1, 2)
 
+    if(width(pareto2) == 2)
+        scatter(pareto2(:, 1), pareto2(:, 2), 'filled');
+    else
+        scatter3(pareto2(:, 1), pareto2(:, 2), pareto2(:, 3), 'filled');
+    end
+    % plot(speedCurve);
+    % xline(generation, '-r', 'Current Generation');
+    drawnow
+end
 
 
 function elites = selectElites(swarm, elites)
@@ -134,18 +144,20 @@ function elites = selectElites(swarm, elites)
                     longestIndex = i;
                 end
             end
+            
+            furthestIndex = round(rand() * (longestCount - 2)) + 1;
 
-            furthest = assosiations(longestIndex).swarm(1);
-            furthestIndex = 1;
-            for i = 2:longestCount
-                if(assosiations(longestIndex).swarm(i).dist >= furthest.dist)
-                    if(assosiations(longestIndex).swarm(i).dist == furthest.dist && round(rand()) == 1)
-                        continue;
-                    end
-                    furthest = assosiations(longestIndex).swarm(i);
-                    furthestIndex = i;
-                end
-            end
+            % furthest = assosiations(longestIndex).swarm(1);
+            % furthestIndex = 1;
+            % for i = 2:longestCount
+            %     if(assosiations(longestIndex).swarm(i).dist <= furthest.dist)
+            %         if(assosiations(longestIndex).swarm(i).dist == furthest.dist && round(rand()) == 1)
+            %             continue;
+            %         end
+            %         furthest = assosiations(longestIndex).swarm(i);
+            %         furthestIndex = i;
+            %     end
+            % end
 
             toBeRemoved((eliteCount - parameters.eliteCount)) = assosiations(longestIndex).swarm(furthestIndex).position;
             assosiations(longestIndex).swarm(furthestIndex) = [];
@@ -171,76 +183,28 @@ function elites = selectElites(swarm, elites)
    
 end
 
-function elites = doNiching(elites, swarm, eliteCount)
-    global parameters;
-
-    [normalizedSwarm, reference_directions] = doNormalize(getParetoSpace(elites(1:eliteCount)));
-    assosiations = assosiate(normalizedSwarm, reference_directions, elites(1:eliteCount));
-    [normalizedNonDom, reference_directions] = doNormalize(swarm);
-    assosiationsNonDom = assosiate(normalizedNonDom, reference_directions, swarm);
-    if(width(assosiations) == 0)
-        disp("Error?");
-    end
-    while true
-        if(parameters.eliteCount == eliteCount)
-            break;
-        end
-        shortest = assosiations(1);
-        shortestIndex = 1;
-        for i = 2:width(assosiations)
-            if(assosiations(i).count <= shortest.count)
-                if(assosiations(i).count == shortest.count && round(rand()) == 1)
-                    continue;
-                end
-                shortest = assosiations(i);
-                shortestIndex = i;
-            end
-        end
-        selected = assosiationsNonDom(shortestIndex);
-
-        if(shortest.count == 0)
-            if(selected.count == 0)
-                shortest.count = Inf;
-                assosiations(shortestIndex) = shortest;
-                continue;
-            end
-        end
-
-        if(selected.count <= 1)
-            shortest.count = Inf;
-            shortest.count = Inf;
-            assosiations(shortestIndex) = shortest;
-            continue;
-        end
-
-        randomCandidate = min(ceil(rand() * (selected.count - 1)) + 1, (selected.count - 1));
-        elites(eliteCount + 1) = selected.swarm(randomCandidate);
-        if(isempty(elites(eliteCount + 1).position))
-            disp("ERROR");
-        end
-        eliteCount = eliteCount + 1;
-
-        shortest.count = shortest.count + 1;
-        selected.count = selected.count - 1;
-        selected.swarm(randomCandidate) = [];
-
-        assosiations(shortestIndex) = shortest;
-        assosiationsNonDom(shortestIndex) = selected;
-    end
-end
-
 
 % Input : Particle Swarm, Elites
 % Output : Particle Swarm
 % Exp : Updates the swarm's velocity according to the newly selected elites
 function swarm = updatePositions(swarm, elites)
     global parameters op;
+    swarm(1:width(elites)) = elites;
     for i = 1:width(swarm)
+        if(isempty(swarm(i).target))
+            globalBest = round(rand() * (width(elites) - 1)) + 1;
+            swarm(i).target = elites(globalBest);
+        end
+        if(abs(sum(swarm(i).position - swarm(i).target.position)) <= 0.01)
+            swarm(i).target = [];
+            globalBest = round(rand() * (width(elites) - 1)) + 1;
+            swarm(i).target = elites(globalBest);
+        end
 
-        globalBest = round(rand() * (width(elites) - 1)) + 1;
-        bestP = elites(globalBest);
-        swarm(i).velocity = swarm(i).velocity + parameters.personalConst*(swarm(i).personalBest.position - swarm(i).position);
-        swarm(i).velocity = swarm(i).velocity + parameters.socialConst*(bestP.position - swarm(i).position);
+        bestP = swarm(i).target;
+        
+        swarm(i).velocity = swarm(i).velocity + rand()*parameters.personalConst*(swarm(i).personalBest.position - swarm(i).position);
+        swarm(i).velocity = swarm(i).velocity + rand()*parameters.socialConst*(bestP.position - swarm(i).position);
         swarm(i).velocity(:) = max(min(swarm(i).velocity(:), parameters.speedLimit), -parameters.speedLimit);
         swarm(i).position = swarm(i).position + swarm(i).velocity;
         for iii = 1:op.numberOfDecisionVar
