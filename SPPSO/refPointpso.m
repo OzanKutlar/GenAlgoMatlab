@@ -126,44 +126,13 @@ function elites = selectElites(swarm, elites)
         [normalizedSwarm, reference_directions] = doNormalize(getParetoSpace(elites(1:eliteCount)));
         assosiations = assosiate(normalizedSwarm, reference_directions, elites(1:eliteCount));
 
+        for i = 1:width(assosiations)
+            assosiations(i) = calculateFitnesses(assosiations(i));
+        end
+
         toBeRemoved((eliteCount - parameters.eliteCount) + 1) = swarm(1);
         toBeRemoved((eliteCount - parameters.eliteCount) + 1) = [];
-        while true
-            if(parameters.eliteCount == eliteCount)
-                break;
-            end
-
-            longestCount = assosiations(1).count;
-            longestIndex = 1;
-            for i = 2:width(assosiations)
-                if(assosiations(i).count >= longestCount)
-                    if(assosiations(i).count == longestCount && round(rand()) == 1)
-                        continue;
-                    end
-                    longestCount = assosiations(i).count;
-                    longestIndex = i;
-                end
-            end
-            
-            furthestIndex = round(rand() * (longestCount - 2)) + 1;
-
-            % furthest = assosiations(longestIndex).swarm(1);
-            % furthestIndex = 1;
-            % for i = 2:longestCount
-            %     if(assosiations(longestIndex).swarm(i).dist <= furthest.dist)
-            %         if(assosiations(longestIndex).swarm(i).dist == furthest.dist && round(rand()) == 1)
-            %             continue;
-            %         end
-            %         furthest = assosiations(longestIndex).swarm(i);
-            %         furthestIndex = i;
-            %     end
-            % end
-
-            toBeRemoved((eliteCount - parameters.eliteCount)) = assosiations(longestIndex).swarm(furthestIndex).position;
-            assosiations(longestIndex).swarm(furthestIndex) = [];
-            assosiations(longestIndex).count = assosiations(longestIndex).count - 1;
-            eliteCount = eliteCount - 1;
-        end
+        
         clear longestCount longestIndex i randomCandidate
         removed = 0;
         for i = 1:width(elites)
@@ -183,6 +152,33 @@ function elites = selectElites(swarm, elites)
    
 end
 
+function ref_direction = calculateFitnesses(ref_direction)
+    maxDist = ref_direction.maxDist;
+    swarm = ref_direction.swarm;
+
+    for i = 1:ref_direction.count - 1
+        swarm(i).fitness = dominatesHowMany(swarm(i), swarm(1:ref_direction.count - 1));
+    end
+
+    for i = 1:ref_direction.count - 1
+        for j = 1:ref_direction.count - 1
+            if i == j
+                continue;
+            end
+
+        end
+    end
+    
+end
+
+function num = dominatesHowMany(particle, pareto)
+    num = 0;
+    for i = 1:width(pareto)
+        if(all(particle.position.paretoPosition <= pareto(i).position.paretoPosition) && any(particle.position.paretoPosition < pareto(i).position.paretoPosition))
+            num = num + 1;
+        end
+    end
+end
 
 % Input : Particle Swarm, Elites
 % Output : Particle Swarm

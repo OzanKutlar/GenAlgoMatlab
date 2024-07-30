@@ -1,6 +1,17 @@
 function assosiations = assosiate(normalizedfitArray, reference_points, swarm)
-    assosiations(height(reference_points) + 1) = struct('count', [], 'swarm', []);
+    assosiations(height(reference_points) + 1) = struct('count', [], 'swarm', [], 'maxDist', []);
     assosiations(height(reference_points) + 1) = [];
+    longestDist = 0;
+    for i = 1:height(reference_points)
+        for j = i + 1:height(reference_points)
+            dist = norm(abs(reference_points(i, :) - reference_points(j, :)));
+            if(longestDist < dist)
+                longestDist = dist;
+            end
+        end
+    end
+    clear dist
+
     for i = 1:height(normalizedfitArray)
         point = normalizedfitArray(i, :);
         shortest.index = 1;
@@ -15,11 +26,13 @@ function assosiations = assosiate(normalizedfitArray, reference_points, swarm)
         end
         if(isempty(assosiations(shortest.index).count))
             assosiations(shortest.index).count = 1;
-            assosiations(shortest.index).swarm(width(swarm) + 1) = struct('position', [], 'dist', []);
+            assosiations(shortest.index).maxDist = longestDist;
+            assosiations(shortest.index).swarm(width(swarm) + 1) = struct('position', [], 'dist', [], 'fitness', []);
             assosiations(shortest.index).swarm(width(swarm) + 1) = [];
         end
         assosiations(shortest.index).swarm(assosiations(shortest.index).count).position = swarm(i);
         assosiations(shortest.index).swarm(assosiations(shortest.index).count).dist = shortest.dist;
+        assosiations(shortest.index).swarm(assosiations(shortest.index).count).fitness = 0;
         assosiations(shortest.index).count = assosiations(shortest.index).count + 1;
     end
     for i = 1:width(assosiations)

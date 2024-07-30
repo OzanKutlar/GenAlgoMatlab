@@ -3,7 +3,7 @@ clc;
 clf;
 global parameters;
 global op;
-op.name = "dtlz1";
+op.name = "zdt1";
 addpath('..\Shared');
 whitebg("black");
 benchmark(zeros(2,2), true);
