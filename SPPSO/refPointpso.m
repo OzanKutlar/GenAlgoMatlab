@@ -3,7 +3,7 @@ clc;
 clf;
 global parameters;
 global op;
-op.name = "dtlz1";
+op.name = "zdt1";
 addpath('..\Shared');
 whitebg("black");
 benchmark(zeros(2,2), true);
@@ -65,12 +65,7 @@ for i = 1:parameters.iterationTime
 
 end
 
-paretoFront = getParetoSpace(selectedElites);
-if(width(paretoFront) == 2)
-    scatter(paretoFront(:, 1), paretoFront(:, 2), 40, 'filled');
-else
-    scatter3(paretoFront(:, 1), paretoFront(:, 2), paretoFront(:, 3), 40, 'filled');
-end
+return;
 
 % pareto.name = op.name;
 % pareto.data = paretoFront;

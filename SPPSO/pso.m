@@ -5,7 +5,7 @@ global parameters;
 global op;
 op.name = "zdt1";
 addpath('..\Shared');
-whitebg("black");
+% whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
@@ -87,7 +87,7 @@ function displayFigure(elites, all, speedCurve, generation)
     pareto = getParetoSpace(all);
     pareto2 = getParetoSpace(elites);
     pareto = vertcat(pareto, pareto2);
-    mu = repmat([1, 1, 1], height(pareto), 1);
+    mu = repmat([0, 0, 0], height(pareto), 1);
     for ii = width(all) + 1:height(pareto)
         mu(ii, :) = [1, 0, 0];
     end
