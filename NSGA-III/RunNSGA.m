@@ -25,6 +25,7 @@ pop = initializeRandomPopulation();
 fit_array_P = nonDomSortingGeneric(fit_array_P);
 fit_array_P = crowding_distance_generic(fit_array_P);
 
+igd_arr = zeros(1, gas.generations);
 
 hold on
 for gen=1:1:gas.generations
@@ -50,6 +51,7 @@ for gen=1:1:gas.generations
     disp(pop(1,:));
     fprintf('\n');
 
+    igd_arr(1, gen) = igd(fit_array_P(:, 1:gas.n_ObjectiveFunctions), get_pf(op.name, gas.n_individuals));
     
     first_obj = fit_array_P(:,1);
     second_obj= fit_array_P(:,2);
@@ -73,6 +75,8 @@ for gen=1:1:gas.generations
     %hold off
     toc
 end
+
+plot(igd_arr);
 
 pareto.name = op.name;
 pareto.data = fit_array_P(:, 1:gas.n_ObjectiveFunctions);

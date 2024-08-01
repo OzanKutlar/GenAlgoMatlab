@@ -1,14 +1,15 @@
 global gas;         % genetic algorithm settings
 global op; 
 
-op.name = "zdt1";
+op.name = "dtlz1";
 addpath('..\Shared');
+addpath('..\CompareMethods');
 benchmark(zeros(2,2), true);
 
 gas.p_divisions = 8;
 gas.algotihm_name = "NSGA-III";
-gas.generations = 100;
-gas.n_individuals = 1200;
+gas.generations = 400;
+gas.n_individuals = 92;
 gas.n_variables = op.numberOfDecisionVar;
 gas.isMin = ones(1, op.numberOfObjectives);
 gas.eta_crossover = 30;
