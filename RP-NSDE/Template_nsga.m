@@ -6,8 +6,8 @@ addpath('..\Shared');
 benchmark(zeros(2,2), true);
 
 gas.algotihm_name = "RP-NSDE";
-gas.generations = 200;
-gas.n_individuals = 100;
+gas.generations = 400;
+gas.n_individuals = 91;
 gas.n_variables = op.numberOfDecisionVar;
 gas.isMin = [1 1 1];
 gas.n_ObjectiveFunctions=op.numberOfObjectives; % number of functions to solve
