@@ -30,11 +30,9 @@ hold on
 for gen=1:1:gas.generations
     op.currentGen = gen;
     tic
-    %--SELECTION
-    matPool = Selection_Generic_NSGA(fit_array_P);   % passing to selection only rank fitness and pop-related id
 
     %--VARIATION
-    offspring = variation_generic(pop, matPool);
+    offspring = variation_generic(pop);
 
     %--EVALUATION
     [offspring, fit_array_O] = evaluate(offspring);

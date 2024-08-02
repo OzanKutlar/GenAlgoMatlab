@@ -1,9 +1,9 @@
-function [offspring] = variation_generic(pop, matPool)
-    % offspring = current_to_rand_1(pop, matPool);
-    offspring = rand_1_bin(pop, matPool);
+function [offspring] = variation_generic(pop)
+    % offspring = current_to_rand_1(pop);
+    offspring = rand_1_bin(pop);
 end
 
-function [offspring] = current_to_rand_1(pop, matPool)
+function [offspring] = current_to_rand_1(pop)
 % DE/current-to-rand/1 method
 
 global op;  % optimization problem
@@ -29,7 +29,7 @@ for i = 1:gas.n_individuals
 end
 end
 
-function [offspring] = rand_1_bin(pop, matPool)
+function [offspring] = rand_1_bin(pop)
     % DE/rand/1/bin method
 
     global op;  % optimization problem
@@ -38,8 +38,8 @@ function [offspring] = rand_1_bin(pop, matPool)
     % declare a static array of chromosomes filled with zeros
     offspring = zeros(gas.n_individuals, op.numberOfDecisionVar);
 
-    F = 0.85;
-    Pc = 0.8;
+    F = gas.scaling_factor;
+    Pc = gas.crossover_probability;
 
     for i = 1:gas.n_individuals
         %% Mutation

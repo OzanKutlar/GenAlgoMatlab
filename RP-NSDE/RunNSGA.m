@@ -25,16 +25,15 @@ pop = initializeRandomPopulation();
 fit_array_P = nonDomSortingGeneric(fit_array_P);
 fit_array_P = crowding_distance_generic(fit_array_P);
 
+igd_arr = zeros(1, gas.generations);
 
 hold on
 for gen=1:1:gas.generations
     op.currentGen = gen;
     tic
-    %--SELECTION
-    matPool = Selection_Generic_NSGA(fit_array_P);   % passing to selection only rank fitness and pop-related id
 
     %--VARIATION
-    offspring = variation_generic(pop, matPool);
+    offspring = variation_generic(pop);
 
     %--EVALUATION
     [offspring, fit_array_O] = evaluate(offspring);
@@ -50,7 +49,8 @@ for gen=1:1:gas.generations
     disp(pop(1,:));
     fprintf('\n');
 
-    
+    igd_arr(1, gen) = igd(fit_array_P(:, 1:gas.n_ObjectiveFunctions), get_pf(op.name, gas.n_individuals));
+
     first_obj = fit_array_P(:,1);
     second_obj= fit_array_P(:,2);
     third_obj= fit_array_P(:,3);
@@ -58,17 +58,23 @@ for gen=1:1:gas.generations
     clf
     if op.numberOfObjectives == 2
         scatter(first_obj,second_obj,'filled','DisplayName',strcat("Generating gen : ", num2str(gen)));
+        legend
     end
     if op.numberOfObjectives == 3
-        scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("Generating gen : ", num2str(gen)) );
+        scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("Generating gen : ", num2str(gen)));
+        legend
     end
-    legend
+    if op.numberOfObjectives > 3
+        plot(fit_array_P(:,1:gas.n_ObjectiveFunctions)');
+    end
     
     % Added for continious figure
     drawnow
     %hold off
     toc
 end
+
+plot(igd_arr);
 
 pareto.name = op.name;
 pareto.data = fit_array_P(:, 1:gas.n_ObjectiveFunctions);
