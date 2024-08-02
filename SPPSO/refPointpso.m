@@ -3,13 +3,13 @@ clc;
 clf;
 global parameters;
 global op;
-op.name = "zdt1";
+op.name = "viennet";
 addpath('..\Shared');
 whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 300; % Number of particles
+parameters.particleCount = 90; % Number of particles
 parameters.personalConst = 0.1;
 parameters.socialConst = 0.2;
 parameters.iterationTime = 300; % Maximum number of 'iterations' to run the simulation
@@ -19,11 +19,11 @@ parameters.speedLimit = abs(op.bounds(1, 2) - op.bounds(1, 1));
 parameters.elasticity = 0; % Bounce back speed
 
 
-parameters.eliteCount = parameters.particleCount * 1;
+parameters.eliteCount = parameters.particleCount * 0.5;
 % parameters.eliteCount = 15;
 
 % Create a structure array to hold the particles
-swarm(parameters.particleCount) = struct('position', [], 'velocity', [], 'personalBest', [], 'paretoPosition', [], 'target', []);
+swarm(parameters.particleCount) = struct('position', [], 'velocity', [], 'personalBest', [], 'paretoPosition', [], 'globalStrength', []);
 
 % Use a loop to initialize the particles
 for i = 1:parameters.particleCount
@@ -51,9 +51,9 @@ for i = 1:parameters.iterationTime
     % parameters.speedLimit = speed(i);
     
     
-    thisGenElites = getParetoSwarm(swarm);
+    % thisGenElites = getParetoSwarm(swarm);
     
-    selectedElites = selectElites(thisGenElites, selectedElites);
+    selectedElites = selectElites(swarm, selectedElites);
 
     % Update and evaluate
     swarm = updatePositions(swarm, selectedElites);
@@ -111,68 +111,165 @@ function elites = selectElites(swarm, elites)
     global parameters;
     
     newElites = horzcat(swarm, elites);
-    elites = getParetoSwarm(newElites);
-    eliteCount = width(elites);
+    if(isempty(elites(1).position))
+        newElites = swarm;
+    end
+    % elites = getParetoSwarm(newElites);
+    eliteCount = 0;
 
-    if(eliteCount > parameters.eliteCount)
-        
-        % Reverse niching?
-        % Remove elements from the most assosiated ones...
-        [normalizedSwarm, reference_directions] = doNormalize(getParetoSpace(elites(1:eliteCount)));
-        assosiations = assosiate(normalizedSwarm, reference_directions, elites(1:eliteCount));
+    newElites = calculateGlobalStrength(newElites);
 
-        for i = 1:width(assosiations)
-            assosiations(i) = calculateFitnesses(assosiations(i));
+    [normalizedSwarm, reference_directions] = doNormalize(getParetoSpace(newElites));
+    assosiations = assosiate(normalizedSwarm, reference_directions, newElites);
+
+    longestAngle = 0;
+    for i = 1:width(assosiations)
+        ang1 = reference_directions(i, :);
+        for j = i:width(assosiations)
+            ang2 = reference_directions(j, :);
+            angleBet = calculateAngleBetweenTwoLines(ang1, ang2);
+            if(angleBet > longestAngle)
+                longestAngle = angleBet;
+            end
         end
+    end
 
-        toBeRemoved((eliteCount - parameters.eliteCount) + 1) = swarm(1);
-        toBeRemoved((eliteCount - parameters.eliteCount) + 1) = [];
-        
-        clear longestCount longestIndex i randomCandidate
-        removed = 0;
-        for i = 1:width(elites)
-            if(width(toBeRemoved) == 0)
-                break;
-            end
-            for ii = 1:width(toBeRemoved)
-                if(all(elites(i - removed).position(:) == toBeRemoved(ii).position(:)))
-                    elites(i - removed) = [];
-                    removed = removed + 1;
-                    toBeRemoved(ii) = [];
-                    break;
+    clear ang1 ang2 angleBet i j 
+
+
+    for i = 1:width(assosiations)
+        assosiations(i) = calculateFitnesses(assosiations(i), reference_directions(i, :), longestAngle);
+    end
+
+    fitnessAll(width(assosiations) + 1) = struct('array', []);
+    fitnessAll(width(assosiations) + 1) = [];
+
+    empty = zeros(size(assosiations));
+    for i = 1:width(assosiations)
+        if(isempty(assosiations(i).swarm))
+            empty(i) = 1;
+            continue;
+        end
+        fitnessIndex = vertcat(assosiations(i).swarm(1:assosiations(i).count - 1).fitness);
+        number = (1:height(fitnessIndex))';
+        fitnessIndex = horzcat(fitnessIndex, number);
+        fitnessIndex = sortrows(fitnessIndex, 1);
+        fitnessAll(i).array = horzcat(fitnessIndex);
+    end
+
+
+    toBeAdded = ones(size(assosiations)) * floor((parameters.eliteCount - eliteCount) / width(assosiations) - sum(empty));
+    while(eliteCount < parameters.eliteCount)
+        % toBeAdded(empty == 0) = ones(1, width(assosiations) - sum(empty)) * floor(sum(toBeAdded) / (width(assosiations) - sum(empty)));
+        if(parameters.eliteCount - eliteCount < (width(assosiations) - sum(empty)))
+            temp((width(assosiations) - sum(empty)) + 1) = struct('pos', [], 'fit', []);
+            temp((width(assosiations) - sum(empty)) + 1) = [];
+            added = 0;
+            for i = 1:width(assosiations)
+                if(empty(i) == 1 || assosiations(i).count <= 1)
+                    continue;
                 end
+                swarm = horzcat(assosiations(i).swarm(:).position);
+                added = added + 1;
+                temp(added).pos = swarm(fitnessAll(i).array(1, 2));
+                temp(added).fit = fitnessAll(i).array(1, 1);
             end
+            removed = (width(assosiations) - sum(empty)) - (parameters.eliteCount - eliteCount);
+            while(removed ~= 0)
+                fattest = 0;
+                fattestIn = 0;
+                for i = 1:added
+                    if(temp(i).fit >= fattest)
+                        if(temp(i).fit == fattest && rand() > 0.5)
+                            continue;
+                        end
+                        fattest = temp(i).fit;
+                        fattestIn = i;
+                    end
+                end
+                temp(fattestIn) = [];
+                added = added - 1;
+                removed = removed - 1;
+            end
+            elites(eliteCount + 1:parameters.eliteCount) = horzcat(temp(:).pos);
+            break;
+        end
+        toBeAdded(empty == 0) = ones(1, width(assosiations) - sum(empty)) * floor((parameters.eliteCount - eliteCount) / (width(assosiations) - sum(empty)));
+        toBeAdded(empty == 1) = 0;
+        for i = 1:width(assosiations)
+            if(empty(i) == 1 || assosiations(i).count <= 1)
+                empty(i) = 1;
+                continue;
+            end
+            addedFromHere = min(toBeAdded(i), assosiations(i).count - 1);
+            if(addedFromHere == assosiations(i).count - 1)
+                empty(i) = 1;
+            end
+            swarm = horzcat(assosiations(i).swarm(:).position);
+            elites(eliteCount + 1:eliteCount + addedFromHere) = swarm(fitnessAll(i).array(1:addedFromHere, 2));
+            fitnessAll(i).array(1:addedFromHere, :) = [];
+            assosiations(i).count = assosiations(i).count - addedFromHere;
+            eliteCount = eliteCount + addedFromHere;
+            toBeAdded(i) = toBeAdded(i) - addedFromHere;
         end
     end
    
 end
 
-function ref_direction = calculateFitnesses(ref_direction)
-    maxDist = ref_direction.maxDist;
+function ref_direction = calculateFitnesses(ref_direction, ref_point, maxRef_pointAngle)
     swarm = ref_direction.swarm;
 
+    strength = zeros(size(swarm(1:ref_direction.count - 1)));
     for i = 1:ref_direction.count - 1
-        swarm(i).fitness = dominatesHowMany(swarm(i), swarm(1:ref_direction.count - 1));
+        [swarm(i).fitness, strength] = dominatesHowMany(swarm(i).position, horzcat(swarm(1:ref_direction.count - 1).position), strength);
     end
 
     for i = 1:ref_direction.count - 1
-        for j = 1:ref_direction.count - 1
-            if i == j
-                continue;
-            end
-
-        end
+        angleOfPart = calculateAngleBetweenTwoLines(swarm(i).position.paretoPosition, ref_point);
+        strength(i) = strength(i) + (angleOfPart / (angleOfPart / maxRef_pointAngle));
     end
-    
+
+    for i = 1:ref_direction.count - 1
+        ref_direction.swarm(i).fitness = strength(i) + ref_direction.swarm(i).position.globalStrength;
+    end
+
 end
 
-function num = dominatesHowMany(particle, pareto)
+function angle = calculateAngleBetweenTwoLines(line1, line2)
+    v1_norm = line1 / norm(line1);
+    v2_norm = line2 / norm(line2);
+    
+    dot_product = dot(v1_norm, v2_norm);
+    
+    dot_product = max(min(dot_product, 1.0), -1.0);
+    
+    angle = acos(dot_product);
+end
+
+function swarm = calculateGlobalStrength(swarm)
+    strMat = zeros(size(swarm));
+    for i = 1:width(swarm)
+        [num, strMat] = dominatesHowMany(swarm(i), swarm, strMat);
+    end
+    for i = 1:width(swarm)
+        swarm(i).globalStrength = strMat(i);
+    end
+end
+
+% Input : particle to check, all the particles to check against, and a
+% strenght matrix for preprocessing
+% Output : number of points the particle dominates, and the strenght
+% matrix updated accordingly
+function [num, strengthMat] = dominatesHowMany(particle, pareto, strengthMat)
     num = 0;
+    dominates = zeros(1, width(pareto));
     for i = 1:width(pareto)
-        if(all(particle.position.paretoPosition <= pareto(i).position.paretoPosition) && any(particle.position.paretoPosition < pareto(i).position.paretoPosition))
+        if(all(particle.paretoPosition <= pareto(i).paretoPosition) && any(particle.paretoPosition < pareto(i).paretoPosition))
             num = num + 1;
+            dominates(i) = 1;
         end
     end
+    strengthMat(dominates == 1) = strengthMat(dominates == 1) + num;
 end
 
 % Input : Particle Swarm, Elites
@@ -182,17 +279,18 @@ function swarm = updatePositions(swarm, elites)
     global parameters op;
     swarm(1:width(elites)) = elites;
     for i = 1:width(swarm)
-        if(isempty(swarm(i).target))
-            globalBest = round(rand() * (width(elites) - 1)) + 1;
-            swarm(i).target = elites(globalBest);
-        end
-        if(abs(sum(swarm(i).position - swarm(i).target.position)) <= 0.01)
-            swarm(i).target = [];
-            globalBest = round(rand() * (width(elites) - 1)) + 1;
-            swarm(i).target = elites(globalBest);
-        end
+        % if(isempty(swarm(i).target))
+        %     globalBest = round(rand() * (width(elites) - 1)) + 1;
+        %     swarm(i).target = elites(globalBest);
+        % end
+        % if(abs(sum(swarm(i).position - swarm(i).target.position)) <= 0.01)
+        %     swarm(i).target = [];
+        %     globalBest = round(rand() * (width(elites) - 1)) + 1;
+        %     swarm(i).target = elites(globalBest);
+        % end
 
-        bestP = swarm(i).target;
+        globalBest = round(rand() * (width(elites) - 1)) + 1;
+        bestP = elites(globalBest);
         
         swarm(i).velocity = swarm(i).velocity + rand()*parameters.personalConst*(swarm(i).personalBest.position - swarm(i).position);
         swarm(i).velocity = swarm(i).velocity + rand()*parameters.socialConst*(bestP.position - swarm(i).position);
