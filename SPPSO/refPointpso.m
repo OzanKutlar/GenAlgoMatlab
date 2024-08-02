@@ -3,7 +3,7 @@ clc;
 clf;
 global parameters;
 global op;
-op.name = "viennet";
+op.name = "dtlz1";
 addpath('..\Shared');
 whitebg("black");
 benchmark(zeros(2,2), true);
