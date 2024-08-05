@@ -1,13 +1,13 @@
 global gas;         % genetic algorithm settings
 global op; 
 
-op.name = "DTLZ1";  
+op.name = "DTLZ1";
 addpath('..\Shared');
 addpath('..\CompareMethods');
 benchmark(zeros(2,2), true);
 
 gas.algotihm_name = "RP-NSDE";
-gas.generations = 400;
+gas.maxFE = 20000;
 gas.n_individuals = 92;
 gas.n_variables = op.numberOfDecisionVar;
 gas.isMin = ones(1, op.numberOfObjectives);

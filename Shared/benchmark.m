@@ -3,6 +3,9 @@ function resultArr = benchmark(individual, setup)
     if(nargin == 1) 
         setup = false; 
     end
+    if setup
+        op.currentFE = 0;
+    end
     switch upper(op.name)
         case "ZDT1"
             if setup
