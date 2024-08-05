@@ -5,6 +5,8 @@ function resultArr = benchmark(individual, setup)
     end
     if setup
         op.currentFE = 0;
+    else
+        op.currentFE = op.currentFE + height(individual);
     end
     switch upper(op.name)
         case "ZDT1"

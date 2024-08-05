@@ -16,14 +16,12 @@ function [pop, fit_array] = evaluate(pop)
         for i = 1:gas.n_individuals
             fit_array(i,gas.n_ObjectiveFunctions+1) = i;
         end
-        op.currentFE = op.currentFE + gas.n_individuals;
     else
         for i=1:gas.n_individuals 
             %objfunc is function that includes all of your objective function
             %that function takes 1 chrom and return their fitness'
             fit_array(i,1:gas.n_ObjectiveFunctions)=objfunc(pop(i,:));
             fit_array(i,gas.n_ObjectiveFunctions+1) = i;
-            op.currentFE = op.currentFE + 1;
         end
     end
 end
