@@ -56,6 +56,7 @@ for gen=1:1:gas.generations
     third_obj= fit_array_P(:,3);
     %figure
     clf
+    subplot(2,1,1);
     if op.numberOfObjectives == 2
         scatter(first_obj,second_obj,'filled','DisplayName',strcat("Generating gen : ", num2str(gen)));
         legend
@@ -67,15 +68,16 @@ for gen=1:1:gas.generations
     if op.numberOfObjectives > 3
         plot(fit_array_P(:,1:gas.n_ObjectiveFunctions)');
     end
-    
+    subplot(2,1,2);
+    plot(igd_arr);
+    xlabel('Generations');
+    ylabel('IGD');
+    xline(gen, '-r', strcat('Current IGD : ', num2str(igd_arr(gen))));
     % Added for continious figure
     drawnow
     %hold off
     toc
 end
-
-figure
-plot(igd_arr);
 
 pareto.name = op.name;
 pareto.data = fit_array_P(:, 1:gas.n_ObjectiveFunctions);
