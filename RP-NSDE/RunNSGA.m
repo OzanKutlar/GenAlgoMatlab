@@ -74,6 +74,7 @@ for gen=1:1:gas.generations
     toc
 end
 
+figure
 plot(igd_arr);
 
 pareto.name = op.name;
