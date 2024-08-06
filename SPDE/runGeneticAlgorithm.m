@@ -46,9 +46,11 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
     end
     
     %--ITERATIONS
-    for gen=1:1:gas.generations
-        op.currentGen = gen;
-        tic
+    gen = 0;
+    igd_arr = [];
+    while op.currentFE < gas.maxFE
+        gen = gen + 1;
+
         %--SELECTION
         matPool = selection(fit_array_archive);   % passing to selection only rank fitness and pop-related id
           
@@ -59,27 +61,40 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
          
         %--SURVIVOR 
         [pop_archive, fit_array_archive] = survivor(pop_archive, offspring, fit_array_archive, fit_array_O);
-        toc
+
         % Visualize population
         % Change This If there is more than 2 objective
         first_obj = fit_array_archive(:,1);
         second_obj= fit_array_archive(:,2);
         third_obj= fit_array_archive(:,3);
+
+        igd_arr(1, end + 1) = igd(fit_array_archive(:, 1:gas.n_ObjectiveFunctions), get_pf(op.name, gas.n_individuals));
+        fprintf('Current FE: %d/%d \n',op.currentFE, gas.maxFE);
         
         %figure
         clf
+        subplot(2,1,1);
         if op.numberOfObjectives == 2
-            scatter(first_obj,second_obj,'filled','DisplayName',strcat("Generating gen : ", num2str(gen)))
+            scatter(first_obj,second_obj,'filled','DisplayName',strcat("Function evaluations: ", num2str(op.currentFE)));
         end
         if op.numberOfObjectives == 3
-            scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("Generating gen : ", num2str(gen)) )
+            scatter3(first_obj,second_obj, third_obj,'filled','DisplayName', strcat("Function evaluations: ", num2str(op.currentFE)));
         end
         legend
+
+        subplot(2,1,2);
+        plot(igd_arr);
+        xlabel('Generations');
+        ylabel('IGD');
+        xline(width(igd_arr), '-r', strcat('Current IGD : ', num2str(igd_arr(end))));
+        axis padded
         
         % Added for continious figure
         drawnow
         %hold off
 
     end  % place a breakpoint here as you run the algorithm to pause, and check how the individuals are evolving by plotting the best one with 'drawProblem2D(decodeIndividual(pop(:,:,1)))'
-
+    
+    disp("Finished!");
+fprintf('Convergence Score: %d \n', sum(igd_arr));
 end

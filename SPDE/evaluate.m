@@ -8,7 +8,7 @@
 function [pop, fit_array] = evaluate(pop)
     global gas; % genetic algorithm settings
     global op; % Optimization problem
-    disp("Evaluating : " + op.name);
+    % disp("Evaluating : " + op.name);
     fit_array = zeros(gas.n_individuals,gas.fitArraySize);
 
     for i=1:gas.n_individuals 

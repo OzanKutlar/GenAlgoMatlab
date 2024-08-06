@@ -70,6 +70,7 @@ function runBBBC()
     end
 
     disp("Finished!");
+fprintf('Convergence Score: %d \n', sum(igd_arr));
 
     pareto.name = op.name;
     pareto.data = pop(:, bbbcs.n_variables + 1:bbbcs.n_variables + bbbcs.numberOfObjectives);

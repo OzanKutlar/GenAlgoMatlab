@@ -50,7 +50,7 @@ while op.currentFE < gas.maxFE
     % disp(pop(1,:));
     % fprintf('\n');
 
-    igd_arr(1, end + 1) = igd(fit_array_P(:, 1:gas.n_ObjectiveFunctions), get_pf(op.name, gas.n_individuals));
+    igd_arr(1, end + 1) = igd(fit_array_P(:, 1:op.numberOfObjectives), get_pf(op.name, gas.n_individuals));
 
     first_obj = fit_array_P(:,1);
     second_obj= fit_array_P(:,2);
@@ -80,6 +80,7 @@ while op.currentFE < gas.maxFE
 end
 
 disp("Finished!");
+fprintf('Convergence Score: %d\n', sum(igd_arr));
 
 pareto.name = op.name;
 pareto.data = fit_array_P(:, 1:gas.n_ObjectiveFunctions);

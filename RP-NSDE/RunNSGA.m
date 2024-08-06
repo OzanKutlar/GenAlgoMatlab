@@ -42,11 +42,7 @@ while op.currentFE < gas.maxFE
     % delete nonelits
     %--SURVIVOR
     [pop, fit_array_P] = survivor_generic(pop, offspring, fit_array_P, fit_array_O);
-    fprintf('Current FE: %d \n',op.currentFE);
-    % fprintf('Best Fitness %.3f ', fit_array_P(1,1));
-    fprintf('\n');
-    % disp(pop(1,:));
-    fprintf('\n');
+    fprintf('Current FE: %d/%d \n',op.currentFE, gas.maxFE);
 
     igd_arr(1, end + 1) = igd(fit_array_P(:, 1:gas.n_ObjectiveFunctions), get_pf(op.name, gas.n_individuals));
 
@@ -80,6 +76,7 @@ while op.currentFE < gas.maxFE
 end
 
 disp("Finished!");
+fprintf('Convergence Score: %d \n', sum(igd_arr));
 
 pareto.name = op.name;
 pareto.data = fit_array_P(:, 1:gas.n_ObjectiveFunctions);

@@ -2,7 +2,7 @@ function [best_chrom, configurations] = runIt()
     %---------------------PROBLEM DEFINITION---------------------  
     addpath '..\Shared'
     global op;          % Optimization problem
-    op.name = "zdt2";
+    op.name = "zdt1";
     benchmark(zeros(2,2), true);
     %---------------------GA SETTINGS---------------------
     global gas;         % genetic algorithm settings
@@ -17,7 +17,7 @@ function [best_chrom, configurations] = runIt()
     
 
     gas.algotihm_name = "SPDE";
-    gas.generations = 100;
+    gas.maxFE = 10000;
     gas.isMin = [1 1 1]; %vector for determining if the objectives are to minimize or maximize, 1 for minimize, 0 for maximize
     gas.onlyStrictlyDominance = false;
     gas.n_individuals = 100;
