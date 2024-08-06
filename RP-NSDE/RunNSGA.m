@@ -29,7 +29,7 @@ igd_arr = [];
 
 hold on
 while op.currentFE < gas.maxFE
-    tic
+    % tic
 
     %--VARIATION
     offspring = variation_generic(pop);
@@ -43,9 +43,9 @@ while op.currentFE < gas.maxFE
     %--SURVIVOR
     [pop, fit_array_P] = survivor_generic(pop, offspring, fit_array_P, fit_array_O);
     fprintf('Current FE: %d \n',op.currentFE);
-    fprintf('Best Fitness %.3f ', fit_array_P(1,1));
+    % fprintf('Best Fitness %.3f ', fit_array_P(1,1));
     fprintf('\n');
-    disp(pop(1,:));
+    % disp(pop(1,:));
     fprintf('\n');
 
     igd_arr(1, end + 1) = igd(fit_array_P(:, 1:gas.n_ObjectiveFunctions), get_pf(op.name, gas.n_individuals));
@@ -68,7 +68,7 @@ while op.currentFE < gas.maxFE
         plot(fit_array_P(:,1:gas.n_ObjectiveFunctions)');
     end
     subplot(2,1,2);
-    plot(igd_arr, '--');
+    plot(igd_arr);
     xlabel('Generations');
     ylabel('IGD');
     xline(width(igd_arr), '-r', strcat('Current IGD : ', num2str(igd_arr(end))));
@@ -76,8 +76,10 @@ while op.currentFE < gas.maxFE
     % Added for continious figure
     drawnow
     %hold off
-    toc
+    % toc
 end
+
+disp("Finished!");
 
 pareto.name = op.name;
 pareto.data = fit_array_P(:, 1:gas.n_ObjectiveFunctions);

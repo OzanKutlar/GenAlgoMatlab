@@ -70,7 +70,7 @@ while op.currentFE < gas.maxFE
         plot(fit_array_P(:,1:gas.n_ObjectiveFunctions)');
     end
     subplot(2,1,2);
-    plot(igd_arr, '--');
+    plot(igd_arr);
     xlabel('Generations');
     ylabel('IGD');
     xline(width(igd_arr), '-r', strcat('Current IGD : ', num2str(igd_arr(end))));

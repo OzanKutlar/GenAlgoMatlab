@@ -5,14 +5,15 @@ global parameters;
 global op;
 op.name = "dtlz1";
 addpath('..\Shared');
-whitebg("black");
+addpath('..\CompareMethods');
+% whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 90; % Number of particles
-parameters.personalConst = 0.1;
-parameters.socialConst = 0.2;
-parameters.iterationTime = 300; % Maximum number of 'iterations' to run the simulation
+parameters.particleCount = 1000; % Number of particles
+parameters.personalConst = 1;
+parameters.socialConst = 2;
+parameters.maxFE = 50000; % Maximum number of function evaluations to be used.
 parameters.division = 4; % Amount of divisions per dimension for the reference directions
 parameters.speedLimit = abs(op.bounds(1, 2) - op.bounds(1, 1));
 
@@ -40,12 +41,13 @@ clear i ii
 
 selectedElites(parameters.eliteCount + 1) = swarm(1);
 selectedElites(parameters.eliteCount + 1) = [];
-speed = 10.^-(min(linspace(0, 6, parameters.iterationTime), 1));
-speed2 = 10.^-(min(linspace(0, 4, parameters.iterationTime), 2));
-speed = speed(1:parameters.iterationTime);
-speed2 = speed2(1:parameters.iterationTime);
-for i = 1:parameters.iterationTime
-    disp(strcat("Entering Iteration : ", num2str(i)));
+% speed = 10.^-(min(linspace(0, 6, parameters.iterationTime), 1));
+% speed2 = 10.^-(min(linspace(0, 4, parameters.iterationTime), 2));
+% speed = speed(1:parameters.iterationTime);
+% speed2 = speed2(1:parameters.iterationTime);
+
+igd_arr = [];
+while op.currentFE < parameters.maxFE
     % parameters.personalConst = 0.1 * speed2(i);
     % parameters.socialConst = 0.2 * speed2(i);
     % parameters.speedLimit = speed(i);
@@ -59,11 +61,16 @@ for i = 1:parameters.iterationTime
     swarm = updatePositions(swarm, selectedElites);
     
     swarm = evaluate(swarm);
+
+    igd_arr(1, end + 1) = igd(getParetoSpace(selectedElites), get_pf(op.name, parameters.particleCount));
+    fprintf('Function Eval : %d/%d \n',op.currentFE, parameters.maxFE);
     
     
-    displayFigure(selectedElites, swarm, horzcat(speed', speed2'), i);
+    displayFigure(selectedElites, swarm, igd_arr);
 
 end
+
+disp("Finished!")
 
 return;
 
@@ -78,11 +85,11 @@ return;
 % save("result" + counter + ".mat", "pareto");
 
 
-function displayFigure(elites, all, speedCurve, generation)
+function displayFigure(elites, all, igd_arr)
     pareto = getParetoSpace(all);
     pareto2 = getParetoSpace(elites);
     pareto = vertcat(pareto, pareto2);
-    mu = repmat([1, 1, 1], height(pareto), 1);
+    mu = repmat([0, 0, 0], height(pareto), 1);
     for ii = width(all) + 1:height(pareto)
         mu(ii, :) = [1, 0, 0];
     end
@@ -95,14 +102,12 @@ function displayFigure(elites, all, speedCurve, generation)
         scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 40, mu, 'filled');
     end
     subplot(2, 1, 2)
+    plot(igd_arr);
+    xlabel('Generations');
+    ylabel('IGD');
+    xline(width(igd_arr), '-r', strcat('Current IGD : ', num2str(igd_arr(end))));
+    axis padded
 
-    if(width(pareto2) == 2)
-        scatter(pareto2(:, 1), pareto2(:, 2), 'filled');
-    else
-        scatter3(pareto2(:, 1), pareto2(:, 2), pareto2(:, 3), 'filled');
-    end
-    % plot(speedCurve);
-    % xline(generation, '-r', 'Current Generation');
     drawnow
 end
 

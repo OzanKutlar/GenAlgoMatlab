@@ -6,8 +6,8 @@ addpath('..\Shared');
 benchmark(zeros(2,2), true);
 
 gas.algotihm_name = "NSGA-II";
-gas.generations = 100;
-gas.n_individuals = 1200;
+gas.maxFE = 100000;
+gas.n_individuals = 100;
 gas.n_variables = op.numberOfDecisionVar;
 gas.isMin = ones(1, op.numberOfObjectives);
 gas.n_ObjectiveFunctions=op.numberOfObjectives; % number of functions to solve

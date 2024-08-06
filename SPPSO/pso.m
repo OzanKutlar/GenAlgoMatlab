@@ -71,6 +71,7 @@ while op.currentFE < parameters.maxFE
 
 end
 
+disp("Finished!")
 % paretoFront = getParetoSpace(selectedElites);
 % if(width(paretoFront) == 2)
 %     scatter(paretoFront(:, 1), paretoFront(:, 2), 40, 'filled');
@@ -106,7 +107,7 @@ function displayFigure(elites, all, igd_arr)
         scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 40, mu, 'filled');
     end
     subplot(2, 1, 2)
-    plot(igd_arr, '--');
+    plot(igd_arr);
     xlabel('Generations');
     ylabel('IGD');
     xline(width(igd_arr), '-r', strcat('Current IGD : ', num2str(igd_arr(end))));
