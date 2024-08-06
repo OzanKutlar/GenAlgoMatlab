@@ -7,7 +7,7 @@ addpath('..\CompareMethods');
 benchmark(zeros(2,2), true);
 
 gas.algotihm_name = "NSDE";
-gas.generations = 100;
+gas.maxFE = 10000;
 gas.n_individuals = 100;
 gas.n_variables = op.numberOfDecisionVar;
 gas.isMin = ones(1, op.numberOfObjectives);
