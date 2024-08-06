@@ -1,15 +1,16 @@
+clear all
 global parameters;
 global op;
-op.name = "DTLZ1";
+op.name = "zdt1";
 addpath('..\Shared');
 % whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 500; % Number of particles
-parameters.personalConst = 0.1;
-parameters.socialConst = 0.2;
-parameters.iterationTime = 100; % Maximum number of 'iterations' to run the simulation
+parameters.particleCount = 1000; % Number of particles
+parameters.personalConst = 1;
+parameters.socialConst = 2;
+parameters.maxFE = 50000; % Maximum number of function evaluations to be used.
 parameters.socialDistance = 1; % Distance at which particles are moved apart.
 parameters.eliteCount = parameters.particleCount * 0.5; % 10% of the population as elites by default
 
@@ -32,9 +33,9 @@ clear i ii
 
 selectedElites(parameters.eliteCount + 1) = swarm(1);
 selectedElites(parameters.eliteCount + 1) = [];
-for i = 1:parameters.iterationTime
-    disp(strcat("Entering Iteration : ", num2str(i)));
-    
+
+igd_arr = [];
+while op.currentFE < parameters.maxFE
     
     nonDomLayers = getNonDominatedSwarm(swarm);
     
@@ -47,28 +48,17 @@ for i = 1:parameters.iterationTime
     
     swarm = evaluate(swarm);
 
-    
+    igd_arr(1, end + 1) = igd(getParetoSpace(selectedElites), get_pf(op.name, parameters.particleCount));
+    fprintf('Function Eval : %d/%d \n',op.currentFE, parameters.maxFE);
 
-    pareto = getParetoSpace(swarm);
-    pareto2 = getParetoSpace(selectedElites);
-    pareto = vertcat(pareto, pareto2);
-    mu = repmat([1, 1, 1], height(pareto), 1);
-    for ii = width(swarm) + 1:height(pareto)
-        mu(ii, :) = [0, 1, 1];
-    end
-
-    % pareto = getParetoSpace(selectedElites);
-    
-    if(width(pareto) == 2)
-        scatter(pareto(:, 1), pareto(:, 2), 40, mu, 'filled');
-    else
-        scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 40, mu, 'filled');
-    end
-    clear pareto pareto2
-    drawnow
+    displayFigure(selectedElites, swarm, igd_arr)
 
 end
 
+disp("Finished!")
+fprintf('Convergence Score: %d \n', sum(igd_arr));
+
+return;
 pareto = getParetoSpace(selectedElites);
 scatter(pareto(:, 1), pareto(:, 2), 'filled');
 clear pareto
@@ -85,6 +75,31 @@ while isfile("result" + counter + ".mat")
 end
 save("result" + counter + ".mat", "pareto");
 
+function displayFigure(elites, all, igd_arr)
+    pareto = getParetoSpace(all);
+    pareto2 = getParetoSpace(elites);
+    pareto = vertcat(pareto, pareto2);
+    mu = repmat([0, 0, 0], height(pareto), 1);
+    for ii = width(all) + 1:height(pareto)
+        mu(ii, :) = [1, 0, 0];
+    end
+    
+    % pareto = getParetoSpace(selectedElites);
+    subplot(2, 1, 1)
+    if(width(pareto) == 2)
+        scatter(pareto(:, 1), pareto(:, 2), 40, mu, 'filled');
+    else
+        scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 40, mu, 'filled');
+    end
+    subplot(2, 1, 2)
+    plot(igd_arr);
+    xlabel('Generations');
+    ylabel('IGD');
+    xline(width(igd_arr), '-r', strcat('Current IGD : ', num2str(igd_arr(end))));
+    axis padded
+
+    drawnow
+end
 
 function elites = selectElites(nonDomLayers, elites)
     global parameters;

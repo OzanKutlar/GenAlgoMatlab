@@ -7,10 +7,10 @@ function bbbc()
     global parameters
     parameters.division = 8;
     
-    bbbcs.N = 600;
-    bbbcs.n_cmass = 45;
+    bbbcs.N = 1000;
+    bbbcs.n_cmass = 100;
     bbbcs.k = bbbcs.N / bbbcs.n_cmass; % number of individual to generate for every cmass
-    bbbcs.MAX_GENERATIONS = 100;
+    bbbcs.maxFE = 50000;
     bbbcs.n_variables = op.numberOfDecisionVar;
     bbbcs.numberOfObjectives = op.numberOfObjectives;
     bbbcs.isMin = ones(1, op.numberOfObjectives);
@@ -21,31 +21,31 @@ function bbbc()
     
     pop(bbbcs.N) = struct('position', [], 'paretoPosition', []);
     pop = initUniverse(pop);
-    speed = 10.^-(min(linspace(0, 4, bbbcs.MAX_GENERATIONS), 1.25));
-
-    for i = 1:bbbcs.MAX_GENERATIONS
-        tic
+    % speed = 10.^-(min(linspace(0, 4, bbbcs.MAX_GENERATIONS), 1.25));
+    
+    igd_arr = [];
+    gen = 0;
+    
+    while op.currentFE < bbbcs.maxFE
+        gen = gen + 1;
         nonDominated = getNonDominatedPop(pop);
         
         [cMass, reference_directions] = selectCentralMass(nonDominated);
-
-        displayFigure(cMass, pop, speed, i, reference_directions);
         
-        pop = explode(cMass, speed(i));
+        pop = explode(cMass, 1/gen);
 
         pop = evaluate(pop);
-        toc
+
+        igd_arr(1, end + 1) = igd(getParetoSpace(cMass), get_pf(op.name, bbbcs.N));
+        fprintf('Function Eval : %d/%d \n',op.currentFE, bbbcs.maxFE);
+        displayFigure(cMass, pop, igd_arr, reference_directions);
     end
     
-    pareto = getParetoSpace(cMass);
-    if(width(pareto) == 2)
-        scatter(pareto(:, 1), pareto(:, 2), 40, 'filled');
-    else
-        scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 40, 'filled');
-    end
+    disp("Finished!")
+    fprintf('Convergence Score: %d \n', sum(igd_arr));
 end
 
-function displayFigure(elites, all, speedCurve, generation, reference_points)
+function displayFigure(elites, all, igd_arr, reference_points)
     pareto = getParetoSpace(all);
     pareto2 = getParetoSpace(elites);
     pareto = vertcat(pareto, pareto2, reference_points);
@@ -65,8 +65,11 @@ function displayFigure(elites, all, speedCurve, generation, reference_points)
         scatter3(pareto(:, 1), pareto(:, 2), pareto(:, 3), 40, mu, 'filled');
     end
     subplot(2, 1, 2)
-    plot(speedCurve);
-    xline(generation, '-', 'Current Generation');
+    plot(igd_arr);
+    xlabel('Generations');
+    ylabel('IGD');
+    xline(width(igd_arr), '-r', strcat('Current IGD : ', num2str(igd_arr(end))));
+    axis padded
     drawnow
 end
 

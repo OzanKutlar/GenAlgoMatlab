@@ -3,7 +3,7 @@ clc;
 clf;
 global parameters;
 global op;
-op.name = "dtlz1";
+op.name = "zdt1";
 addpath('..\Shared');
 addpath('..\CompareMethods');
 % whitebg("black");
@@ -13,8 +13,8 @@ op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 parameters.particleCount = 1000; % Number of particles
 parameters.personalConst = 0.1;
 parameters.socialConst = 0.2;
-parameters.maxFE = 100000; % Maximum number of function evaluations to be used.
-parameters.division = 4; % Amount of divisions per dimension for the reference directions
+parameters.maxFE = 50000; % Maximum number of function evaluations to be used.
+parameters.division = 8; % Amount of divisions per dimension for the reference directions
 parameters.speedLimit = abs(op.bounds(1, 2) - op.bounds(1, 1));
 
 parameters.elasticity = 0; % Bounce back speed
@@ -72,6 +72,7 @@ while op.currentFE < parameters.maxFE
 end
 
 disp("Finished!")
+fprintf('Convergence Score: %d \n', sum(igd_arr));
 % paretoFront = getParetoSpace(selectedElites);
 % if(width(paretoFront) == 2)
 %     scatter(paretoFront(:, 1), paretoFront(:, 2), 40, 'filled');

@@ -96,7 +96,6 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
     end  % place a breakpoint here as you run the algorithm to pause, and check how the individuals are evolving by plotting the best one with 'drawProblem2D(decodeIndividual(pop(:,:,1)))
 
     disp("Finished!");
-fprintf('Convergence Score: %d \n', sum(igd_arr));
     fprintf('Convergence Score: %d \n', sum(igd_arr));
 
 end
