@@ -35,7 +35,6 @@ for i = 1:parameters.particleCount
     swarm(i).velocity = (rand(1, op.numberOfDecisionVar) * 2) - 1;
     swarm(i).paretoPosition = benchmark(swarm(i).position);
     swarm(i).personalBest = swarm(i);
-
 end
 clear i ii
 
@@ -65,9 +64,7 @@ while op.currentFE < parameters.maxFE
     igd_arr(1, end + 1) = igd(getParetoSpace(selectedElites), get_pf(op.name, parameters.particleCount));
     fprintf('Function Eval : %d/%d \n',op.currentFE, parameters.maxFE);
     
-    
     displayFigure(selectedElites, swarm, igd_arr);
-
 end
 
 disp("Finished!")

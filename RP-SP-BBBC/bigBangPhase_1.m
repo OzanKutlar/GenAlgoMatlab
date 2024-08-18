@@ -25,10 +25,20 @@ function [pop] = bigBangPhase_1(cMass,t,pop)
     if(startsWith(op.name, "DTLZ"))
         pop(:, bbbcs.n_variables + 1:bbbcs.n_variables + bbbcs.numberOfObjectives) = benchmark(pop(:, 1:bbbcs.n_variables));
     else
-        for centerIndex=1:1:size(cMass,1)
-            for j=1:1:bbbcs.k
-                pop((centerIndex-1)* bbbcs.k +j,bbbcs.n_variables+1:bbbcs.n_variables + bbbcs.numberOfObjectives) = evaluateIndividual(pop((centerIndex-1)* bbbcs.k +j,1:bbbcs.n_variables));
+        index = height(cMass) + 1;
+        centerIndex = 0;
+        lengthIndex = bbbcs.k;
+        while index <= height(pop)
+            if centerIndex == 0
+                centerIndex = height(cMass);
             end
+            pop(index, bbbcs.n_variables+1:bbbcs.n_variables + bbbcs.numberOfObjectives) = evaluateIndividual(pop(index,1:bbbcs.n_variables));
+            lengthIndex = lengthIndex - 1;
+            if lengthIndex == 0
+                centerIndex = centerIndex - 1;
+                lengthIndex = bbbcs.k;
+            end
+            index = index + 1;
         end
     end
 end

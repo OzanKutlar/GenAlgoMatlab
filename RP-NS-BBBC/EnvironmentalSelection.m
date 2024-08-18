@@ -9,18 +9,20 @@ function Population = EnvironmentalSelection(Population,N,Z,Zmin)
 % for evolutionary multi-objective optimization [educational forum], IEEE
 % Computational Intelligence Magazine, 2017, 12(4): 73-87".
 %--------------------------------------------------------------------------
-global gas;
+    global bbbcs;
+    ObjectiveIndex = bbbcs.n_variables + 1:bbbcs.n_variables + bbbcs.numberOfObjectives;
     if isempty(Zmin)
         Zmin = ones(1,size(Z,2));
     end
 
     %% Non-dominated sorting
-    [FrontNo,MaxFNo] = NDSort(Population(:, 1:gas.n_ObjectiveFunctions),N);
+    [FrontNo,MaxFNo] = NDSort(Population(:, ObjectiveIndex),N);
     Next = FrontNo < MaxFNo;
     
     %% Select the solutions in the last front
+    
     Last   = find(FrontNo==MaxFNo);
-    Choose = LastSelection(Population(Next, 1:gas.n_ObjectiveFunctions),Population(Last, 1:gas.n_ObjectiveFunctions),N-sum(Next),Z,Zmin);
+    Choose = LastSelection(Population(Next, ObjectiveIndex),Population(Last, ObjectiveIndex),N-sum(Next),Z,Zmin);
     Next(Last(Choose)) = true;
     % Population for next generation
     Population = Population(Next, :);
@@ -40,7 +42,7 @@ function Choose = LastSelection(PopObj1,PopObj2,K,Z,Zmin)
     Extreme = zeros(1,M);
     w       = zeros(M)+1e-6+eye(M);
     for i = 1 : M
-        [~,Extreme(i)] = min(max(PopObj./repmat(w(i,:),N,1),[],2));
+        Extreme(i) = find(max(PopObj(:, i)) == PopObj(:, i), 1);
     end
     % Calculate the intercepts of the hyperplane constructed by the extreme
     % points and the axes

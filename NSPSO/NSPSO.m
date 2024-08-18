@@ -1,17 +1,17 @@
 clear all
 global parameters;
 global op;
-op.name = "zdt1";
+op.name = "Dtlz1";
 addpath('..\Shared');
 % whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 1000; % Number of particles
-parameters.personalConst = 1;
-parameters.socialConst = 2;
-parameters.maxFE = 50000; % Maximum number of function evaluations to be used.
-parameters.socialDistance = 1; % Distance at which particles are moved apart.
+parameters.particleCount = 100; % Number of particles
+parameters.personalConst = linspace(0.25, 0.75, parameters.particleCount);
+parameters.socialConst = 1 - parameters.personalConst;
+parameters.maxFE = Inf; % Maximum number of function evaluations to be used.
+parameters.socialDistance = Inf; % Distance at which particles are moved apart.
 parameters.eliteCount = parameters.particleCount * 0.5; % 10% of the population as elites by default
 
 % Create a structure array to hold the particles
@@ -149,8 +149,9 @@ function swarm = updatePositions(swarm, elites)
 
         globalBest = round(rand() * (width(elites) - 1)) + 1;
         bestP = elites(globalBest);
-        swarm(i).velocity = swarm(i).velocity + parameters.personalConst*(swarm(i).personalBest.position - swarm(i).position);
-        swarm(i).velocity = swarm(i).velocity + parameters.socialConst*(bestP.position - swarm(i).position);
+        rando = rand();
+        swarm(i).velocity = swarm(i).velocity + rando*parameters.personalConst(i)*(swarm(i).personalBest.position - swarm(i).position);
+        swarm(i).velocity = swarm(i).velocity + (1-rando)*parameters.socialConst(i)*(bestP.position - swarm(i).position);
         swarm(i).position = swarm(i).position + swarm(i).velocity;
         
         for iii = 1:op.numberOfDecisionVar
