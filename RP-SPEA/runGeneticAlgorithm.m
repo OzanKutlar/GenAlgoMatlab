@@ -59,9 +59,14 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
         offspring = variation(pop_archive, matPool); % only performed on the archive to have individuals in size of population
         %--EVALUATION
         [offspring, fit_array_O] = evaluate(offspring); % evaluation of offspring
+
+        allPopulation = vertcat(horzcat(offspring, fit_array_O), horzcat(pop_archive, fit_array_archive));
          
         %--SURVIVOR 
-        [pop_archive, fit_array_archive] = survivor(pop_archive, offspring, fit_array_archive, fit_array_O);
+        newArchive = select(allPopulation);
+
+        pop_archive = newArchive(:, 1:op.numberOfDecisionVar);
+        fit_array_archive = newArchive(:, op.numberOfDecisionVar + 1:end);
 
         % Visualize population
         % Change This If there is more than 2 objective
@@ -98,4 +103,16 @@ function [pop_archive, fit_array_archive] = runGeneticAlgorithm()
     disp("Finished!");
     fprintf('Convergence Score: %d \n', sum(igd_arr));
 
+end
+
+function archive = select(pop)
+    global gas op;
+    [W, ~] = UniformPoint(gas.n_archive, op.numberOfObjectives);
+    cosine = 1 - pdist2(W,W,'cosine');
+    cosine(logical(eye(length(cosine)))) = 0;
+    theta  = max(min(acos(cosine),[],2));
+    QObj       = ObjectiveNormalization(pop);
+    [Ei,Angle] = Associate(QObj,W);
+    FV         = FitnessAssignment(Ei,QObj,Angle,theta);
+    archive = EnvironmentalSelection(pop,Ei,FV);
 end

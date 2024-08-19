@@ -4,7 +4,7 @@ function runIt()
     addpath '..\Shared'
     addpath '..\CompareMethods'
     global op;          % Optimization problem
-    op.name = "zdt1";
+    op.name = "dtlz1";
     benchmark(zeros(2,2), true);
     %---------------------GA SETTINGS---------------------
     global gas;         % genetic algorithm settings
@@ -22,7 +22,7 @@ function runIt()
     gas.maxFE = 50000;
     gas.isMin = [1 1 1]; %vector for determining if the objectives are to minimize or maximize, 1 for minimize, 0 for maximize
     gas.onlyStrictlyDominance = false;
-    gas.n_individuals = 100;
+    gas.n_individuals = 1000;
     gas.n_archive = gas.n_individuals;
     gas.selection_method = 'tournament';    % 'tournament', 'proportionate'
     gas.crossover_method = 'blxa';  % 'blxa'
