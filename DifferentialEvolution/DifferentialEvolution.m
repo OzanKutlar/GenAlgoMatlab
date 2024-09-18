@@ -1,15 +1,14 @@
 clc
 clear
-hold on
 
 %% Problem settings
-lb = [0 0 0 0 0];   % Lower bound
-ub = [1 1 1 1 1];   % Upper bound
-prob = @zdt1;       % Fitness function
-objectives = 2;     % Objective count
+lb = [-100 -100 -100 -100 -100];   % Lower bound
+ub = [100 100 100 100 100];   % Upper bound
+prob = @sphere;       % Fitness function
+objectives = 1;     % Objective count
 
 %% Parameters for Differential Evolution
-Np = 500;   % Population size
+Np = 100;   % Population size
 T = 100;    % Number of iterations
 Pc = 0.8;   % Crossover probability
 F = 0.85;   % Scaling factor
@@ -23,6 +22,10 @@ P = repmat(lb, Np, 1) + repmat((ub - lb), Np, 1) .* rand(Np, D); % Initial popul
 
 for p = 1:Np
     f(p, :) = prob(P(p,:)); % Fitness of the initial population
+end
+
+if objectives ~= 1
+    hold on
 end
 
 %% Iteration loop
@@ -61,11 +64,21 @@ for t = 1:T
         end
     end
     
-    clf;
     if objectives == 2
+        clf
         scatter(f(:, 1), f(:, 2), "filled");
+        drawnow
     elseif objectives == 3
+        clf
         scatter3(f(:, 1), f(:, 2), f(:, 3), "filled");
+        drawnow
     end
-    drawnow
+end
+
+if objectives == 1
+    [bestfitness, ind] = min(f);
+    bestsol = P(ind, :);
+
+    disp(bestfitness);
+    disp(bestsol);
 end
