@@ -1,5 +1,9 @@
-clc
+function [bestfitness, bestsol] = DifferentialEvolution()
 clear
+clc
+
+bestfitness = NaN;
+bestsol = NaN;
 
 %% Problem settings
 lb = [-100 -100 -100 -100 -100];   % Lower bound
@@ -81,4 +85,5 @@ if objectives == 1
 
     disp(bestfitness);
     disp(bestsol);
+end
 end
