@@ -7,70 +7,62 @@ import time
 host = "127.0.0.1"
 port = 3753
 
-# Data array that holds the responses
+
 data_array = []
 
 
 
-# Variable to track which data element to send next
+
 data_index = 0
 
-# ANSI escape codes for colors
+
 RED = "\033[31m"
 GREEN = "\033[32m"
 RESET = "\033[0m"
 
-# Function to display elements based on their index and value
+
 def display_colored_array(data_array, data_index):
-    # Clear previous output
-    print("\033[2J\033[H", end="")  # Clear the terminal and move the cursor to the top
+    print("\033[2J\033[H", end="")
 
     for index, value in enumerate(data_array):
         if index < data_index:
-            # Print the index in red if value < index
             print(f"{GREEN}{index + 1}{RESET}", end=" ")
         else:
-            # Print the index in green otherwise
             print(f"{RED}{index + 1}{RESET}", end=" ")
 
-    # Show the data_index in the output
+    
     print(f"\n\n")
     # print(f"\n\nCurrent data index: {data_index}")
 
-# Create a request handler
+
 class MyRequestHandler(BaseHTTPRequestHandler):
     global data_index
     
     def do_GET(self):
         global data_index
 
-        # Prepare the next data to be sent from the array
         if data_index < len(data_array):
             response_data = data_array[data_index]
             data_index += 1
             display_colored_array(data_array, data_index)
         else:
             data_index += 1
-            response_data = {"message": "All data is done"}
-            print(f'All data is sent. Extra connections : ', (data_index - len(data_array)))
+            response_data = {"message": "No more data left."}
+            print(f'Data Distribution is finished. Extra connections : ', (data_index - len(data_array)))
 
             # data_index = 0
             # response_data = data_array[data_index]
         
-        # Convert data to JSON
         response_json = json.dumps(response_data)
-        
-        # Send response status code
         self.send_response(200)
-        
-        # Specify response headers (JSON content)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
-        
-        # Write the response data to the client
         self.wfile.write(response_json.encode('utf-8'))
 
 
+
+# ChatGPT generated this. When an input object with arrays for parameters is given in,
+# It generates all combinations of those parameters as seperate objects.
 def generate_combinations(input_obj):
     # Get the keys and values from the input object
     keys = list(input_obj.keys())
@@ -99,7 +91,6 @@ def generate_combinations(input_obj):
     # List to store all combinations
     result = []
 
-    # Start the recursive combination generation
     combine(0, {})
     
     return result
@@ -110,7 +101,6 @@ def generate_combinations(input_obj):
 
 
 
-# Set up the HTTP server
 def run_server():
     server_address = (host, port)
     httpd = HTTPServer(server_address, MyRequestHandler)
@@ -118,16 +108,15 @@ def run_server():
     httpd.serve_forever()
 
 
-# Example usage
-input_obj = {
+all_params = {
     "func": ["F11", "F12", "F13"],
-    "pop": [50, 100, 500, 1000],
+    "pop": [50, [100, 200], 500, 1000],
     "number": [1.52523, 5.27321, 9.17464, 10.2748]
 }
 
 
 if __name__ == "__main__":
     os.system("cls")
-    data_array = generate_combinations(input_obj)
+    data_array = generate_combinations(all_params)
     display_colored_array(data_array, data_index)
     run_server()

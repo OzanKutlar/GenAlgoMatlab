@@ -1,18 +1,34 @@
-% MATLAB Code to Send GET Request and Extract 'id' and 'test'
-
-% Define the IP address and port
 ip = '127.0.0.1';
 port = '3753';
 url = sprintf('http://%s:%s', ip, port);
 
-% Send a GET request to the server
-data = webread(url);
+minDelay = 1;
+maxDelay = 10;
 
-if(isfield(data, 'message'))
+
+delay = round(minDelay + (maxDelay - minDelay) * rand());
+fprintf('Delaying for %d seconds\n', delay);
+% pause(delay); % Pause for the random duration to not DDOS the server.
+
+data = webread(url);
+if isfield(data, 'message')
     disp(data.message);
+    !error.png
     return
 end
-fprintf('ID: %d\n', data.id);
-fprintf('Function: %s\n', data.func);
-fprintf('Population Size: %s\n', data.pop);
-fprintf('Number: %s\n', data.number);
+
+
+fprintf('Recieved Data : \n\tID: %d\n', data.id);
+fprintf('\tFunction: %s\n', data.func);
+fprintf('\tPopulation Size: %s\n', strjoin(string(data.pop), " | "));
+fprintf('\tNumber: %s\n', data.number);
+
+index = 0;
+for func = 1:height(data.func)
+    for pop = 1:height(data.pop)
+        for num = 1:height(data.number)
+            index = index + 1;
+            fprintf('Running attempt %d\n', index);
+        end
+    end
+end
