@@ -96,7 +96,7 @@ global gas; % genetic algorithm settings
         if(mu <= 0.5)
             beta = (2*mu).^(1/(eta_c+1));
         else
-            beta  = (2-2*mu).^(-1/(eta_c+1));
+            beta  = (2-(2*mu)).^(-1/(eta_c+1));
         end
         beta = beta.*(-1).^randi([0,1]);
 

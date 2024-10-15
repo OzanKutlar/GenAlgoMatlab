@@ -9,7 +9,7 @@ benchmark(zeros(2,2), true);
 gas.p_divisions = 8;
 gas.algotihm_name = "NSGA-III";
 gas.maxFE = 20000;
-gas.n_individuals = 92;
+gas.n_individuals = 100;
 gas.n_variables = op.numberOfDecisionVar;
 gas.isMin = ones(1, op.numberOfObjectives);
 gas.eta_crossover = 30;

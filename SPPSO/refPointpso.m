@@ -3,14 +3,14 @@ clc;
 clf;
 global parameters;
 global op;
-op.name = "dtlz1";
+op.name = "zdt1";
 addpath('..\Shared');
 addpath('..\CompareMethods');
 % whitebg("black");
 benchmark(zeros(2,2), true);
 op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 
-parameters.particleCount = 1000; % Number of particles
+parameters.particleCount = 100; % Number of particles
 parameters.personalConst = 1;
 parameters.socialConst = 2;
 parameters.maxFE = 50000; % Maximum number of function evaluations to be used.
