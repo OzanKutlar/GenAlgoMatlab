@@ -2,6 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import os
 import time
+import sys
 
 # Server settings
 host = "127.0.0.1"
@@ -97,7 +98,12 @@ def generate_combinations(input_obj):
 
 
 
-
+def display_object_attributes(arr):
+    for obj in arr:
+        print()
+        for attribute, value in obj.items():
+            print(f"  {attribute}: {value}")
+        print()  # For spacing between objects
 
 
 
@@ -109,14 +115,19 @@ def run_server():
 
 
 all_params = {
-    "func": ["F11", "F12", "F13"],
-    "pop": [50, [100, 200], 500, 1000],
-    "number": [1.52523, 5.27321, 9.17464, 10.2748]
+    "func": [[20, 15], [19, 14], [18, 13], [17, 12], [16, 11]],
+    "number": [3, 5.63, 10.57, 19.83, 37.22, 45.78, 54.33, 62.89, 71.44, 80],
+    "pop": [[50, 100, 500], 1000]
 }
 
 
 if __name__ == "__main__":
     os.system("cls")
+    if len(sys.argv) > 1:
+        data_index = int(sys.argv[1])
+    else:
+        data_index = 0
     data_array = generate_combinations(all_params)
     display_colored_array(data_array, data_index)
+    # display_object_attributes(data_array)
     run_server()
