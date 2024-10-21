@@ -5,20 +5,27 @@
 % OUTPUT: 
 % 'archive' is the best individuals with the attributes of [x1, x2, fitness_1, fitness_2, fitnessInv, strength, raw_fitness, density, fitness, index]
  
-function runBBBC()
+function runBBBC(problem, fe, individuals)
     addpath '..\Shared'
     global bbbcs;       % big bang-big crunch settings
 
     global op;          % Optimization problem
-    op.name = "zdt1";
+    switch nargin
+        case 0
+            op.name = "zdt1";
+            bbbcs.maxFE = 20000;
+            bbbcs.N = 100;
+        case 3
+            op.name = problem;
+            bbbcs.maxFE = fe;
+            bbbcs.N = individuals;
+    end
     benchmark(zeros(2,2), true);
 
-    bbbcs.N = 100;  % number of individuals
     bbbcs.k = 2; % number of individual to generate for every cmass
     bbbcs.n_variables = op.numberOfDecisionVar;
     bbbcs.numberOfObjectives = op.numberOfObjectives;
     bbbcs.isMin = ones(1, op.numberOfObjectives);
-    bbbcs.MAX_GENERATIONS = 100;
     bbbcs.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
 %     bbbcs.cMass_n = 1;
     bbbcs.strengthIndex = bbbcs.numberOfObjectives + bbbcs.n_variables + 1;
@@ -48,7 +55,9 @@ function runBBBC()
         archive(i,bbbcs.solutionIndex) = i; % update the indices
     end
 
-    for t=1:1:bbbcs.MAX_GENERATIONS
+    t = 0;
+    while op.currentFE < bbbcs.maxFE
+        t = t + 1;
         op.currentGen = t;
         tic
         if t~=1

@@ -1,16 +1,25 @@
-function runBBBC()
+function runBBBC(problem, fe, individuals)
     
     global bbbcs;       % big bang-big crunch settings
     addpath '..\Shared'
     addpath('..\CompareMethods');
     global op;          % Optimization problem
-    op.name = "zdt3";
+
+    switch nargin
+        case 0
+            op.name = "zdt1";
+            bbbcs.maxFE = 20000;
+            bbbcs.N = 100;
+        case 3
+            op.name = problem;
+            bbbcs.maxFE = fe;
+            bbbcs.N = individuals;
+    end
+
     benchmark(zeros(2,2), true);
 
-    bbbcs.N = 100;
     bbbcs.n_cmass = bbbcs.N / 10;
     bbbcs.k = bbbcs.N / bbbcs.n_cmass; % number of individual to generate for every cmass
-    bbbcs.maxFE = 10000;
     bbbcs.n_variables = op.numberOfDecisionVar;
     bbbcs.numberOfObjectives = op.numberOfObjectives;
     bbbcs.isMin = ones(1, op.numberOfObjectives);

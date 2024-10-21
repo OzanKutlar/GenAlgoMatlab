@@ -1,11 +1,20 @@
-function [best_chrom, configurations] = runIt()
+function [best_chrom, configurations] = runIt(problem, fe, individuals)
     %---------------------PROBLEM DEFINITION---------------------  
     addpath '..\Shared'
     global op;          % Optimization problem
-    op.name = "zdt1";
+    global gas;         % genetic algorithm settings
+    switch nargin
+        case 0
+            op.name = "zdt1";
+            gas.maxFE = 20000;
+            gas.n_individuals = 100;
+        case 3
+            op.name = problem;
+            gas.maxFE = fe;
+            gas.n_individuals = individuals;
+    end
     benchmark(zeros(2,2), true);
     %---------------------GA SETTINGS---------------------
-    global gas;         % genetic algorithm settings
     
     %  IF THERE IS DIFFERENT BOUNDS FOR DECISION VARIABLES, op.bounds
     %  should be changed in benchmark.m, and also
@@ -17,10 +26,8 @@ function [best_chrom, configurations] = runIt()
     
 
     gas.algotihm_name = "SPDE";
-    gas.maxFE = 10000;
-    gas.isMin = [1 1 1]; %vector for determining if the objectives are to minimize or maximize, 1 for minimize, 0 for maximize
+    gas.isMin = ones(1, op.numberOfObjectives); %vector for determining if the objectives are to minimize or maximize, 1 for minimize, 0 for maximize
     gas.onlyStrictlyDominance = false;
-    gas.n_individuals = 100;
     gas.n_archive = gas.n_individuals;
     gas.selection_method = 'tournament';    % 'tournament', 'proportionate'
     gas.crossover_method = 'blxa';  % 'blxa'
