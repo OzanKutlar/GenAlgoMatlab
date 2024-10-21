@@ -7,7 +7,7 @@ function runIt(problem, fe, individuals)
     global gas;         % genetic algorithm settings
     switch nargin
         case 0
-            op.name = "zdt1";
+            op.name = "dtlz1";
             gas.maxFE = 20000;
             gas.n_individuals = 100;
         case 3
