@@ -1,5 +1,5 @@
-function data = reciever(ip, port, maxDelay)
-    url = sprintf('http://%s:%s', ip, port);
+function data = reciever(ip, maxDelay)
+    url = sprintf('http://%s:%s', ip, "3753");
 
 
     % computerName = getenv('COMPUTERNAME');
@@ -30,10 +30,10 @@ function data = reciever(ip, port, maxDelay)
     end
     
     
-    fprintf('Recieved Data : \n\tID: %d\n', data.id);
-    fprintf('\tFunction: F%d\n', data.func);
-    fprintf('\tPopulation Size: %s\n', strjoin(string(data.pop), " | "));
-    fprintf('\tNumber: %d\n', data.number);
+    % fprintf('Recieved Data : \n\tID: %d\n', data.id);
+    % fprintf('\tFunction: F%d\n', data.func);
+    % fprintf('\tPopulation Size: %s\n', strjoin(string(data.pop), " | "));
+    % fprintf('\tNumber: %d\n', data.number);
     
     % index = 0;
     % for func = 1:height(data.func)

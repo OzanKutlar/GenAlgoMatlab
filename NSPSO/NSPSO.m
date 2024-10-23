@@ -1,79 +1,82 @@
-clear all
-global parameters;
-global op;
-op.name = "Dtlz1";
-addpath('..\Shared');
-% whitebg("black");
-benchmark(zeros(2,2), true);
-op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
-
-parameters.particleCount = 100; % Number of particles
-parameters.personalConst = linspace(0.25, 0.75, parameters.particleCount);
-parameters.socialConst = 1 - parameters.personalConst;
-parameters.maxFE = Inf; % Maximum number of function evaluations to be used.
-parameters.socialDistance = Inf; % Distance at which particles are moved apart.
-parameters.eliteCount = parameters.particleCount * 0.5; % 10% of the population as elites by default
-
-% Create a structure array to hold the particles
-swarm(parameters.particleCount) = struct('position', [], 'velocity', [], 'personalBest', [], 'paretoPosition', []);
-
-% Use a loop to initialize the particles
-for i = 1:parameters.particleCount
-    % Assign random values to the position, velocity, and personalBest
-    swarm(i).velocity = rand(1, op.numberOfDecisionVar);
-    for ii = 1:op.numberOfDecisionVar
-        swarm(i).position(ii) = op.bounds(ii, 1) + (op.bounds(ii, 2)-op.bounds(ii, 1)) .* rand(1, 1);
+function NSPSO(problem, fe, individuals)
+    global parameters;
+    global op;
+    op.name = problem;
+    addpath('..\Shared');
+    addpath('..\CompareMethods');
+    % whitebg("black");
+    benchmark(zeros(2,2), true);
+    op.bounds = repmat(op.bounds, op.numberOfDecisionVar, 1);
+    
+    parameters.particleCount = individuals; % Number of particles
+    parameters.personalConst = 1;
+    parameters.socialConst = 2;
+    parameters.maxFE = fe; % Maximum number of function evaluations to be used.
+    parameters.socialDistance = Inf; % Distance at which particles are moved apart.
+    parameters.eliteCount = parameters.particleCount * 0.5; % 10% of the population as elites by default
+    
+    % Create a structure array to hold the particles
+    swarm(parameters.particleCount) = struct('position', [], 'velocity', [], 'personalBest', [], 'paretoPosition', []);
+    
+    % Use a loop to initialize the particles
+    for i = 1:parameters.particleCount
+        % Assign random values to the position, velocity, and personalBest
+        swarm(i).velocity = rand(1, op.numberOfDecisionVar);
+        for ii = 1:op.numberOfDecisionVar
+            swarm(i).position(ii) = op.bounds(ii, 1) + (op.bounds(ii, 2)-op.bounds(ii, 1)) .* rand(1, 1);
+        end
+        swarm(i).velocity = zeros(1, op.numberOfDecisionVar);
+        swarm(i).paretoPosition = benchmark(swarm(i).position);
+        swarm(i).personalBest = swarm(i);
+    
     end
-    swarm(i).velocity = zeros(1, op.numberOfDecisionVar);
-    swarm(i).paretoPosition = benchmark(swarm(i).position);
-    swarm(i).personalBest = swarm(i);
+    clear i ii
+    
+    selectedElites(parameters.eliteCount + 1) = swarm(1);
+    selectedElites(parameters.eliteCount + 1) = [];
+    
+    igd_arr = [];
+    while op.currentFE < parameters.maxFE
+        
+        nonDomLayers = getNonDominatedSwarm(swarm);
+        
+        % Select elites from the non-dominated solutions
+        
+        selectedElites = selectElites(nonDomLayers, selectedElites);
+    
+        % Update and evaluate
+        swarm = updatePositions(swarm, selectedElites);
+        
+        swarm = evaluate(swarm);
+    
+        igd_arr(1, end + 1) = igd(getParetoSpace(selectedElites), get_pf(op.name, parameters.particleCount));
+        fprintf('Function Eval : %d/%d \n',op.currentFE, parameters.maxFE);
+    
+        displayFigure(selectedElites, swarm, igd_arr)
+    
+    end
+    
+    disp("Finished!")
+    fprintf('Convergence Score: %d \n', sum(igd_arr));
+    
+    
+    pareto = getParetoSpace(selectedElites);
+    scatter(pareto(:, 1), pareto(:, 2), 'filled');
+    clear pareto
+    
+    paretoFront = getParetoSpace(selectedElites);
+    
+    pareto.name = op.name;
+    pareto.data = paretoFront;
+    pareto.N = parameters.eliteCount;
+    
+    counter = 1;
+    while isfile("result" + counter + ".mat")
+        counter = counter + 1;
+    end
+    save("result" + counter + ".mat", "pareto");
 
 end
-clear i ii
-
-selectedElites(parameters.eliteCount + 1) = swarm(1);
-selectedElites(parameters.eliteCount + 1) = [];
-
-igd_arr = [];
-while op.currentFE < parameters.maxFE
-    
-    nonDomLayers = getNonDominatedSwarm(swarm);
-    
-    % Select elites from the non-dominated solutions
-    
-    selectedElites = selectElites(nonDomLayers, selectedElites);
-
-    % Update and evaluate
-    swarm = updatePositions(swarm, selectedElites);
-    
-    swarm = evaluate(swarm);
-
-    igd_arr(1, end + 1) = igd(getParetoSpace(selectedElites), get_pf(op.name, parameters.particleCount));
-    fprintf('Function Eval : %d/%d \n',op.currentFE, parameters.maxFE);
-
-    displayFigure(selectedElites, swarm, igd_arr)
-
-end
-
-disp("Finished!")
-fprintf('Convergence Score: %d \n', sum(igd_arr));
-
-return;
-pareto = getParetoSpace(selectedElites);
-scatter(pareto(:, 1), pareto(:, 2), 'filled');
-clear pareto
-
-paretoFront = getParetoSpace(selectedElites);
-
-pareto.name = op.name;
-pareto.data = paretoFront;
-pareto.N = parameters.eliteCount;
-
-counter = 1;
-while isfile("result" + counter + ".mat")
-    counter = counter + 1;
-end
-save("result" + counter + ".mat", "pareto");
 
 function displayFigure(elites, all, igd_arr)
     pareto = getParetoSpace(all);
