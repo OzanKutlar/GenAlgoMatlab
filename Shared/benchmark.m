@@ -1,164 +1,44 @@
-function resultArr = benchmark(individual, setup)
+function resultArr = benchmark(individual)
     global op;
-    if(nargin == 1) 
-        setup = false; 
-    end
-    if setup
-        op.currentFE = 0;
-    else
-        op.currentFE = op.currentFE + height(individual);
-    end
+    op.currentFE = op.currentFE + height(individual);
+    
     switch upper(op.name)
         case "ZDT1"
-            if setup
-                op.numberOfDecisionVar = 10;
-                op.numberOfObjectives = 2;
-                op.bounds = [0,1];
-                return;
-            end
             resultArr = zdt1(individual);
         case "ZDT2"
-            if setup
-                op.numberOfDecisionVar = 10;
-                op.numberOfObjectives = 2;
-                op.bounds = [0,1];
-                return;
-            end
             resultArr = zdt2(individual);
         case "ZDT3"
-            if setup
-                op.numberOfDecisionVar = 10;
-                op.numberOfObjectives = 2;
-                op.bounds = [0,1];
-                return;
-            end
             resultArr = zdt3(individual);
         case "ZDT4"
-            if setup
-                op.numberOfDecisionVar = 10;
-                op.numberOfObjectives = 2;
-                op.bounds = [0,1];
-                return;
-            end
             resultArr = zdt4(individual);
         case "ZDT6"
-            if setup
-                op.numberOfDecisionVar = 10;
-                op.numberOfObjectives = 2;
-                op.bounds = [0,1];
-                return;
-            end
             resultArr = zdt6(individual);
         case "KUR"
-            if setup
-                op.numberOfDecisionVar = 3;
-                op.numberOfObjectives = 2;
-                op.bounds = [-5,5];
-                return;
-            end
             resultArr = kur(individual);
         case "VIENNET"
-            if setup
-                op.numberOfDecisionVar = 2;
-                op.numberOfObjectives = 3;
-                op.bounds = [-3,3];
-                return;
-            end
             resultArr = Viennet(individual);
         case "DF1"
-            if setup
-                op.changeFreq = 1 / 10;
-                op.changeSeverity = 1 / 10;
-                op.currentGen = 0;
-                op.numberOfDecisionVar = 10;
-                op.numberOfObjectives = 2;
-                op.bounds = [0,1];
-                return;
-            end
             resultArr = df1(individual, op.currentGen);
         case "DTLZ1"
-            if setup
-                op.numberOfDecisionVar = 5;
-                op.numberOfObjectives = 3;
-                op.bounds = [0,1];
-                return;
-            end
             resultArr = dtlz1(individual);
         case "DTLZ2"
-            if setup
-                op.numberOfDecisionVar = 10;
-                op.numberOfObjectives = 3;
-                op.bounds = [0,1];
-                return;
-            end
             resultArr = dtlz2(individual);
         case "DTLZ3"
-            if setup
-                op.numberOfDecisionVar = 10;
-                op.numberOfObjectives = 3;
-                op.bounds = [0,1];
-                return;
-            end
             resultArr = dtlz3(individual);
         case "DTLZ4"
-            if setup
-                op.numberOfDecisionVar = 10;
-                op.numberOfObjectives = 3;
-                op.bounds = [0,1];
-                return;
-            end
             resultArr = dtlz4(individual);
         case "DF3"
-            if setup
-                op.changeFreq = 1 / 10;
-                op.changeSeverity = 1 / 50;
-                op.currentGen = 0;
-                op.numberOfDecisionVar = 10;
-                op.numberOfObjectives = 2;
-                op.bounds = [0,1];
-                return;
-            end
             resultArr = df3(individual, op.currentGen);
         otherwise
-            disp("No matches found.")
-            return;
+            error("No matches found for problem name: %s", op.name);
     end
 end
 
-function arr2 = zdt1(arr)
-    g = g1(arr);
-    f1 = arr(1);
-    f2 = g * (1 - sqrt(arr(1) / g));
-    arr2 = [f1, f2];
-end
 
-function arr2 = df1(arr, gen)
-    global op;
-    gen = max(gen + op.changeFreq - (51), 0);
-    t = op.changeSeverity * floor(gen * op.changeFreq);
-
-    G = 1 + sum( power(arr(2:length(arr)) - abs(sin(0.5*pi*t) ), 2)  );
-    H = 0.75*sin(0.5*pi*t)+1.25;
-    f1 = arr(1);
-    f2 = G * (1 - power((arr(1)/G), H));
-    arr2 = [f1, f2];
-end
-
-function arr2 = df3(arr, gen)
-    global op;
-    t = op.changeSeverity * (gen * op.changeFreq);
-    f1 = arr(1);
-    g_x = 1 + sum(arr(2:end) - sin(0.5*pi*t) - arr(1).^(1.5 + sin(0.5*pi*t)).^2);
-    f2 = g_x * (1 - (arr(1)/g_x).^(1.5 + sin(0.5*pi*t)));
-    arr2 = [f1, f2];
-end
-
-function arr2 = df12(arr, gen)
-    global op;
-    t = op.changeSeverity * (gen * op.changeFreq);
-    f1 = arr(1);
-    f2 = gdf1(arr, t);
-    f2 = f2 * (1 - power((arr(1)/f2), 0.75*sin(0.5*pi) + 1.25));
+function arr2 = zdt1(pop)
+    g = g1(pop);
+    f1 = pop(:, 1);
+    f2 = g .* (1 - sqrt(f1 ./ g));
     arr2 = [f1, f2];
 end
 

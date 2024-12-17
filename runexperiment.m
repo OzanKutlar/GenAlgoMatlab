@@ -1,8 +1,9 @@
 function runexperiment(data)
-    algorithms = data.algo;
-    popCounts = data.pop;
-    maxFEs = data.FE;
-    ComputerID = data.id;
+    algorithms = string(data.algo);
+    funcs = string(data.func);
+    popCounts = string(data.pop);
+    maxFEs = string(data.FE);
+    ComputerID = string(data.id);
 
     array = ["SPPSO/pso",
         "SPEA2/runIt",
@@ -27,19 +28,23 @@ function runexperiment(data)
     for i = 1:width(algorithms)
         folderName = algorithms(i);
         for j = 1:height(array)
-            temp = split(array(j));
+            temp = split(array(j), "/");
             if(upper(folderName) == temp(1))
                 eval(sprintf('cd %s', temp(1)));
                 break;
             end
         end
-        for ii = 1:width(popCounts)
-            popCount = popCounts(ii);
-            for iii = 1:width(maxFEs)
-                maxFE = maxFEs(iii);
-                
+        for ii = 1:width(funcs)
+            func = funcs(ii);
+            for iii = 1:width(popCounts)
+                popCount = popCounts(iii);
+                for iV = 1:width(maxFEs)
+                    maxFE = maxFEs(iV);
+                    eval(sprintf('%s("%s",%s,%s)', temp(2), func, maxFE, popCount));
+                end
             end
         end
+        cd ..
     end
 
 end
