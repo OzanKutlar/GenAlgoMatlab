@@ -17,8 +17,6 @@ function resultArr = benchmark(pop)
             resultArr = kur(pop);
         case "VIENNET"
             resultArr = Viennet(pop);
-        case "DF1"
-            resultArr = df1(pop, op.currentGen);
         case "DTLZ1"
             resultArr = dtlz1(pop);
         case "DTLZ2"
@@ -27,8 +25,6 @@ function resultArr = benchmark(pop)
             resultArr = dtlz3(pop);
         case "DTLZ4"
             resultArr = dtlz4(pop);
-        case "DF3"
-            resultArr = df3(pop, op.currentGen);
         otherwise
             error("No matches found for problem name: %s", op.name);
     end
